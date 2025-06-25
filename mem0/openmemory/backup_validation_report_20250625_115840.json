@@ -1,0 +1,74 @@
+{
+  "test_start": "2025-06-25T11:58:40.441582",
+  "backup_discovery": {
+    "total_backups": 2,
+    "backup_types": [
+      "docker_volume_backup",
+      "directory_backup"
+    ],
+    "total_size_mb": 0.0009126663208007812
+  },
+  "integrity_tests": [
+    {
+      "backup_path": "backups/20250625_114622",
+      "test_type": "integrity_check",
+      "test_status": "PASSED",
+      "integrity_score": 1.0,
+      "errors": [],
+      "checksum_valid": true,
+      "accessibility_score": 1.0,
+      "archive_valid": true,
+      "duration_seconds": 0.0003807544708251953
+    },
+    {
+      "backup_path": "backups/20250625_114622/mem0_storage.tar.gz",
+      "test_type": "integrity_check",
+      "test_status": "PASSED",
+      "integrity_score": 1.0,
+      "errors": [],
+      "checksum_valid": true,
+      "accessibility_score": 1.0,
+      "archive_valid": true,
+      "duration_seconds": 0.0017559528350830078
+    }
+  ],
+  "restoration_tests": [
+    {
+      "backup_path": "backups/20250625_114622",
+      "test_type": "restoration_test",
+      "test_status": "PASSED",
+      "restore_time_minutes": 1.304149627685547e-05,
+      "restoration_success": true,
+      "errors": [],
+      "duration_seconds": 0.0008783340454101562,
+      "test_directory": "backup_test_workspace/restore_test_1750867120"
+    },
+    {
+      "backup_path": "backups/20250625_114622/mem0_storage.tar.gz",
+      "test_type": "restoration_test",
+      "test_status": "FAILED",
+      "restore_time_minutes": 1.2969970703125e-05,
+      "restoration_success": false,
+      "errors": [],
+      "duration_seconds": 0.0007815361022949219,
+      "test_directory": "backup_test_workspace/restore_test_1750867120"
+    }
+  ],
+  "performance_benchmarks": {
+    "average_restore_time_minutes": 1.3005733489990234e-05,
+    "max_restore_time_minutes": 1.304149627685547e-05,
+    "rto_compliance": true,
+    "average_integrity_score": 1.0,
+    "min_integrity_score": 1.0,
+    "integrity_pass_rate": 1.0
+  },
+  "summary": {
+    "overall_status": "FAILED",
+    "critical_issues": [
+      "1 backups failed restoration tests"
+    ],
+    "warnings": [],
+    "recommendations": []
+  },
+  "test_duration_minutes": 0.0014485637346903482
+}

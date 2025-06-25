@@ -1,0 +1,79 @@
+[
+  {
+    "name": "High API Response Time",
+    "component": "api",
+    "metric": "api_response_time",
+    "threshold": 2.0,
+    "operator": ">",
+    "severity": "WARNING",
+    "cooldown_minutes": 30,
+    "notification_channels": [
+      "email",
+      "desktop"
+    ]
+  },
+  {
+    "name": "API Down",
+    "component": "api",
+    "metric": "api_status",
+    "threshold": "DOWN",
+    "operator": "==",
+    "severity": "CRITICAL",
+    "cooldown_minutes": 5,
+    "notification_channels": [
+      "email",
+      "webhook",
+      "desktop"
+    ]
+  },
+  {
+    "name": "High CPU Usage",
+    "component": "system",
+    "metric": "cpu_usage",
+    "threshold": 80.0,
+    "operator": ">",
+    "severity": "WARNING",
+    "cooldown_minutes": 60,
+    "notification_channels": [
+      "email"
+    ]
+  },
+  {
+    "name": "High Memory Usage",
+    "component": "system",
+    "metric": "memory_usage",
+    "threshold": 85.0,
+    "operator": ">",
+    "severity": "WARNING",
+    "cooldown_minutes": 60,
+    "notification_channels": [
+      "email"
+    ]
+  },
+  {
+    "name": "Critical Disk Usage",
+    "component": "system",
+    "metric": "disk_usage",
+    "threshold": 90.0,
+    "operator": ">",
+    "severity": "CRITICAL",
+    "cooldown_minutes": 30,
+    "notification_channels": [
+      "email",
+      "webhook",
+      "desktop"
+    ]
+  },
+  {
+    "name": "Memory Growth Spike",
+    "component": "memory_system",
+    "metric": "memory_count_hourly_growth",
+    "threshold": 50.0,
+    "operator": ">",
+    "severity": "WARNING",
+    "cooldown_minutes": 120,
+    "notification_channels": [
+      "email"
+    ]
+  }
+]
