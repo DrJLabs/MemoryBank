@@ -1,0 +1,99 @@
+---
+# Dashy Configuration - HOST Network Mode (Fixed Connectivity)
+pageInfo:
+  title: DrJ Labs Dashboard  
+  description: Self-hosted services with direct host network access
+  logo: https://i.ibb.co/qWWpD0v/astro-dab-128.png
+  
+appConfig:
+  theme: night
+  layout: auto
+  iconSize: large
+  language: en
+  startingView: default
+  defaultOpeningMethod: sametab
+  statusCheck: true
+  statusCheckInterval: 300
+  enableMultiTasking: true
+  allowConfigEdit: true
+
+sections:
+- name: Container Management
+  icon: fas fa-server
+  items:
+  - title: Portainer HTTPS
+    description: Container management interface
+    icon: https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/portainer.svg
+    url: https://localhost:9443
+    target: newtab
+    statusCheck: true
+    statusCheckAcceptCodes: "200,300,301,302,403,404"
+    
+  - title: Portainer HTTP
+    description: Edge agent interface  
+    icon: https://raw.githubusercontent.com/walkxcode/dashboard-icons/main/svg/portainer.svg
+    url: http://localhost:8000
+    target: newtab
+    statusCheck: true
+    statusCheckAcceptCodes: "200,300,301,302,403,404"
+
+- name: Development & Monitoring
+  icon: fas fa-code
+  items:
+  - title: Memory Dashboard
+    description: Mem0 OpenMemory UI
+    icon: fas fa-brain
+    url: http://localhost:3010
+    target: sametab
+    statusCheck: true
+    
+  - title: Memory API
+    description: Memory system API
+    icon: fas fa-database
+    url: http://localhost:8765
+    target: newtab
+    statusCheck: true
+    
+  - title: Qdrant Vector DB
+    description: Vector database
+    icon: fas fa-vector-square
+    url: http://localhost:6333
+    target: sametab
+    statusCheck: true
+    
+  - title: Working Memory Dashboard
+    description: Alternative memory UI
+    icon: fas fa-memory
+    url: http://localhost:8082
+    target: sametab
+    statusCheck: true
+
+- name: System Services
+  icon: fas fa-cog
+  items:
+  - title: System Monitor
+    description: System monitoring
+    icon: fas fa-chart-line
+    url: http://localhost:19999
+    target: sametab
+    statusCheck: false
+    
+  - title: Local Services
+    description: Other local services
+    icon: fas fa-server
+    url: http://localhost
+    target: newtab
+    statusCheck: false
+
+- name: External Links
+  icon: fas fa-external-link-alt
+  items:
+  - title: GitHub
+    icon: fab fa-github
+    url: https://github.com
+    target: newtab
+    
+  - title: Docker Hub
+    icon: fab fa-docker
+    url: https://hub.docker.com
+    target: newtab
