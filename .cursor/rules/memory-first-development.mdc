@@ -1,6 +1,6 @@
 ---
-description:
-globs:
+description: "Memory-first development ensuring AI always searches context before operations and stores insights after completion"
+globs: ["**/*.py", "**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx", "**/*.sh", "**/*.bash"]
 alwaysApply: false
 ---
 # Memory-First Development Protocol

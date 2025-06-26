@@ -1,7 +1,7 @@
 ---
-description:
-globs:
-alwaysApply: false
+description: "Enhanced bash environment integration ensuring all rules use optimized commands for 60-80% keystroke reduction"
+globs: ["**/*.mdc", "**/*.sh", "**/*.bash", "**/Makefile", "**/*command*", "**/*script*"]
+alwaysApply: true
 ---
 # Enhanced Bash Environment Integration for Cursor
 
