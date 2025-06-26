@@ -59,6 +59,10 @@ class MemoryConfig(BaseModel):
         description="Custom prompt for the update memory",
         default=None,
     )
+    single_store_mode: bool = Field(
+        description="If True, disables graph layer and uses only vector store for reduced complexity",
+        default=False,
+    )
 
 
 class AzureConfig(BaseModel):

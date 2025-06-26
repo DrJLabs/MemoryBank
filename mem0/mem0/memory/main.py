@@ -23,6 +23,7 @@ from mem0.configs.prompts import (
 from mem0.memory.base import MemoryBase
 from mem0.memory.setup import mem0_dir, setup_config
 from mem0.memory.storage import SQLiteManager
+from mem0.memory.sync_manager import MemorySyncManager, AsyncMemorySyncManager, OperationType
 from mem0.memory.telemetry import capture_event
 from mem0.memory.utils import (
     get_fact_retrieval_messages,
@@ -145,6 +146,15 @@ class Memory(MemoryBase):
             self.enable_graph = True
         else:
             self.graph = None
+        
+        # Initialize synchronization manager
+        self.sync_manager = MemorySyncManager(
+            vector_store=self.vector_store,
+            graph_store=self.graph,
+            single_store_mode=self.config.single_store_mode,
+            max_retries=3,
+            retry_backoff=1.0
+        )
         self.config.vector_store.config.collection_name = "mem0migrations"
         if self.config.vector_store.provider in ["faiss", "qdrant"]:
             provider_path = f"migrations_{self.config.vector_store.provider}"
@@ -944,23 +954,38 @@ class Memory(MemoryBase):
             Deletes the vector store collection
             Resets the database
             Recreates the vector store with a new client
+            Resets the graph store if enabled
         """
         logger.warning("Resetting all memories")
 
+        # Reset database
         if hasattr(self.db, "connection") and self.db.connection:
             self.db.connection.execute("DROP TABLE IF EXISTS history")
             self.db.connection.close()
 
         self.db = SQLiteManager(self.config.history_db_path)
 
+        # Use synchronized reset operation
+        result = self.sync_manager.synchronized_operation(
+            operation_type=OperationType.RESET,
+            filters={"user_id": "default"}
+        )
+        
+        if not result["success"]:
+            logger.error(f"Reset operation failed: {result.get('error', 'Unknown error')}")
+            raise RuntimeError(f"Reset failed: {result.get('error', 'Unknown error')}")
+
+        # Recreate vector store
         if hasattr(self.vector_store, "reset"):
             self.vector_store = VectorStoreFactory.reset(self.vector_store)
         else:
-            logger.warning("Vector store does not support reset. Skipping.")
-            self.vector_store.delete_col()
             self.vector_store = VectorStoreFactory.create(
                 self.config.vector_store.provider, self.config.vector_store.config
             )
+        
+        # Update sync manager with new vector store
+        self.sync_manager.vector_store = self.vector_store
+        
         capture_event("mem0.reset", self, {"sync_type": "sync"})
 
     def chat(self, query):
@@ -993,6 +1018,15 @@ class AsyncMemory(MemoryBase):
             self.enable_graph = True
         else:
             self.graph = None
+        
+        # Initialize synchronization manager
+        self.sync_manager = AsyncMemorySyncManager(
+            vector_store=self.vector_store,
+            graph_store=self.graph,
+            single_store_mode=self.config.single_store_mode,
+            max_retries=3,
+            retry_backoff=1.0
+        )
 
         capture_event("mem0.init", self, {"sync_type": "async"})
 
@@ -1219,6 +1253,8 @@ class AsyncMemory(MemoryBase):
             except Exception as e:
                 logging.error(f"Invalid JSON response: {e}")
                 new_memories_with_actions = {}
+        else:
+            new_memories_with_actions = {}
 
         returned_memories = []
         try:
