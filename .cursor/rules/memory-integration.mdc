@@ -1,0 +1,209 @@
+---
+description: "Advanced AI memory integration with enterprise OpenMemory API and multi-strategy search"
+globs: ["*.py", "mem0/**/*", "openmemory/**/*"]
+alwaysApply: true
+---
+
+# Advanced AI Memory Integration System
+
+## Memory System Architecture
+
+### Enterprise OpenMemory API (Primary)
+- **Base URL**: http://localhost:8765/api/v1
+- **User ID**: drj  
+- **Total Memories**: 44+ across 5 pages
+- **Apps**: 2 (openmemory, cursor_ai)
+- **Categories**: 8 sophisticated categories (PREFERENCE, TECHNICAL, WORKFLOW, PROJECT, LEARNING, SYSTEM, ERROR, INSIGHT)
+
+### Advanced Features Available:
+- **Multi-strategy intelligent search** with confidence scoring (0.31-0.76 range)
+- **Pagination and filtering** with sorting capabilities
+- **Related memories discovery** via semantic relationships
+- **Access logging** for enterprise audit trails
+- **Memory states** (active/paused/archived) management
+- **Real-time analytics** and performance monitoring
+
+## Memory Commands
+
+### Basic Memory Operations (Primary Interface):
+```bash
+# Add Memory (Always use these for basic operations)
+mem-add "information to store"
+# OR
+py /home/drj/*C-System/Memory-C*/mem0/openmemory/cursor-memory-enhanced.py remember "information to store"
+
+# Search Memory (Always use first before answering questions)
+mem-search "search query"
+# OR  
+py /home/drj/*C-System/Memory-C*/mem0/openmemory/cursor-memory-enhanced.py recall "search query"
+```
+
+### Advanced Memory Commands:
+```bash
+# Multi-strategy search with relevance scoring
+ai-search "query" [preference|technical|project|workflow|learning|general]
+
+# Rich conversational context generation
+ai-context "query" [type]  # Returns formatted context for AI responses
+
+# Quick context functions
+ai-ctx-pref "query"     # Preference-specific context
+ai-ctx-tech "query"     # Technical context  
+ai-ctx-project "query"  # Project-specific context
+ai-ctx-workflow "query" # Workflow context
+```
+
+### Analytics and Management:
+```bash
+ai-analytics           # Comprehensive system analytics
+ai-demo               # Demonstrate advanced capabilities
+ai-archive-old [days] # Archive memories older than specified days
+mem-health            # Basic memory health check
+```
+
+## Memory Workflow Protocol
+
+### **CRITICAL**: Always Search Memories First
+Before answering questions about:
+- User preferences 
+- Past conversations
+- Project history
+- Technical topics
+- Workflow patterns
+
+**ALWAYS RUN FIRST:**
+```bash
+mem-search "relevant search query"
+```
+
+### Example Usage Pattern:
+**Before answering**: "What programming languages do I prefer?"
+**First run**: `mem-search "programming languages preferences"`
+
+**When user says**: "I prefer TypeScript over JavaScript"  
+**Then run**: `mem-add "Prefers TypeScript over JavaScript for development"`
+
+### Memory Integration Protocol
+
+### Before AI Responses:
+**CRITICAL**: Always search memories for context using:
+```python
+# Example integration pattern:
+search_result = ai_memory.intelligent_memory_search(user_query, query_type)
+if search_result.confidence > 0.5:
+    context = ai_memory.get_conversational_context(user_query, query_type)
+    # Use context to enrich response
+```
+
+### Context Generation Output:
+```
+=== RELEVANT MEMORY CONTEXT ===
+1. Memory content with relevance score and age
+2. Related memories with semantic connections
+
+📈 Search: strategy1(5) + strategy2(3) + strategy3(2)  
+🎯 Confidence: 0.76
+📂 Categories: PREFERENCE, TECHNICAL, WORKFLOW
+
+=== AI INSTRUCTIONS ===
+Use this context to provide personalized, informed responses.
+```
+
+## System Information
+
+### Memory System Endpoints:
+- **Memory API**: http://localhost:8765
+- **UI Dashboard**: http://localhost:3010  
+- **User ID**: "drj"
+- **Vector Database**: Provides intelligent semantic search
+
+### Key Features:
+- **Semantic Search**: System understands context, not just keywords
+- **Intelligent Categorization**: Auto-categorizes memories by type
+- **Conversational Context**: Follows LangChain best practices
+- **Enterprise Analytics**: Performance monitoring and insights
+
+### Query Type Classification:
+- **preference**: User preferences, settings, choices, likes/dislikes
+- **technical**: Programming, development, technology topics
+- **project**: Project-specific information, current work context
+- **workflow**: Processes, commands, automation, procedures  
+- **learning**: Insights, discoveries, knowledge, techniques
+- **general**: Default for unclassified queries
+
+## API Endpoint Utilization
+
+### Core Endpoints Used:
+```bash
+POST /api/v1/memories/filter    # Advanced filtering with pagination
+GET  /api/v1/stats/             # System analytics  
+GET  /api/v1/memories/categories # Category management
+GET  /api/v1/apps/              # Application organization
+POST /api/v1/memories/{id}/access-log # Access tracking
+GET  /api/v1/memories/{id}/related    # Related memories
+```
+
+### Advanced Features:
+- **Pagination**: Navigate 5+ pages of memories efficiently
+- **Sorting**: By creation date, relevance, content length
+- **Filtering**: By user, app, category, date ranges  
+- **State Management**: Active/paused/archived memory states
+
+## Memory Categories and Usage
+
+### Category Mapping:
+- **PREFERENCE**: User preferences, settings, configurations
+- **TECHNICAL**: Programming languages, frameworks, development
+- **WORKFLOW**: Commands, processes, automation scripts
+- **PROJECT**: Project-specific information, features, requirements
+- **LEARNING**: Insights, discoveries, techniques, knowledge
+- **SYSTEM**: Infrastructure, setup, environment configuration
+- **ERROR**: Bug patterns, issues, troubleshooting solutions
+- **INSIGHT**: Strategic decisions, approaches, best practices
+
+### Auto-Categorization Logic:
+```python
+#!/usr/bin/env py
+def auto_categorize(text):
+    # Preference indicators: prefer, like, always, never, setting
+    # Technical indicators: code, programming, development, framework
+    # Workflow indicators: command, process, script, automation
+    # Learning indicators: learned, discovered, technique, insight
+    # System indicators: install, setup, configure, environment
+    # Error indicators: error, bug, issue, problem, fix
+```
+
+## Conversational Memory Patterns
+
+### Following LangChain Best Practices:
+- **ConversationSummaryBufferMemory** approach with semantic search
+- **Context enrichment** with related memories
+- **Relevance scoring** using Jaccard similarity + temporal + content factors
+- **Access logging** for memory analytics
+- **Confidence metrics** for response quality assessment
+
+### Memory Lifecycle:
+1. **Search Phase**: Multi-strategy intelligent search
+2. **Relevance Scoring**: Sophisticated algorithms (0.000-1.000 range)
+3. **Context Generation**: Rich formatting with metadata
+4. **Access Logging**: Enterprise audit trail
+5. **Continuous Learning**: Auto-categorization and relationships
+
+## Performance Optimization
+
+### Search Strategies:
+- **Semantic Search**: Core term extraction and matching
+- **Query Expansion**: Category-specific keyword addition
+- **Temporal Boosting**: Recent memories get relevance boost
+- **Content Analysis**: Length and detail factor scoring
+- **Relationship Discovery**: Connected memories via embeddings
+
+### Confidence Scoring:
+- **High (0.70+)**: Strong matches, multiple strategies successful
+- **Medium (0.50-0.69)**: Good matches, moderate confidence
+- **Low (0.30-0.49)**: Weak matches, limited relevance
+- **Very Low (<0.30)**: Poor matches, minimal confidence
+
+@mem0/openmemory/advanced-memory-ai.py
+@advanced-memory-aliases.sh
+@mem0/openmemory/cursor-memory-enhanced.py

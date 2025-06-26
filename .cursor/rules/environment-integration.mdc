@@ -1,0 +1,125 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Enhanced Bash Environment Integration for Cursor
+
+## CRITICAL: Always Use Enhanced Commands
+
+### Command Mappings (MUST USE)
+**NEVER use the long form - ALWAYS use the enhanced version:**
+
+| ❌ NEVER USE | ✅ ALWAYS USE | Purpose |
+|-------------|--------------|----------|
+| `git status` | `gs` | Enhanced git status |
+| `git` | `g` | All git operations |
+| `git add . && git commit -m` | `gac` | Add and commit in one |
+| `python3` | `py` | Python shortcut |
+| `mkdir dir && cd dir` | `mkcd dir` | Create and navigate |
+| `cd` (with detection) | `cdl` | Smart navigation |
+
+### Enhanced Environment Commands
+```bash
+# Project Context (ALWAYS start with these)
+ctx                    # Comprehensive project context
+health                 # Environment health check
+status                 # Enhanced project status
+dev                    # Smart server startup
+dev-health            # Development health check
+info                  # Full environment capabilities
+
+# Memory Integration (USE before responses)
+ai-search "query" [type]      # Intelligent search
+ai-context "query" [type]     # Rich context generation
+ai-ctx-pref "query"          # Preference context
+ai-ctx-tech "query"          # Technical context
+ai-ctx-project "query"       # Project context
+ai-ctx-workflow "query"      # Workflow context
+ai-analytics                 # System analytics
+
+# Basic Memory (fallback)
+mem-search "query"           # Basic search
+mem-add "information"        # Add memory
+mem-analytics               # Basic analytics
+```
+
+### Date/Time Protocol
+```bash
+# NEVER hardcode dates - ALWAYS use:
+date                    # Full date/time
+date +%Y-%m-%d         # YYYY-MM-DD format
+date +%Y-%m-%d\ %H:%M  # With time
+```
+
+## Rule Writing Standards
+
+### When Writing ANY Rule:
+1. **Replace all basic commands** with enhanced versions
+2. **Start workflows** with `ctx` or `health`
+3. **Use memory integration** for context
+4. **Include date commands** for temporal context
+5. **Reference enhanced aliases** explicitly
+
+### Example Transformation:
+```bash
+# ❌ OLD WAY (DON'T DO THIS):
+git status
+git add .
+git commit -m "message"
+python3 script.py
+
+# ✅ NEW WAY (DO THIS):
+gs                      # Enhanced git status
+gac "message"          # Add and commit
+py script.py           # Python shortcut
+```
+
+## Memory Integration Protocol
+
+### Before ANY AI Response:
+```bash
+# Get context first
+ai-context "user_query" [type]
+
+# Quick context by type
+ai-ctx-pref "preferences query"
+ai-ctx-tech "technical query"
+ai-ctx-project "project query"
+ai-ctx-workflow "workflow query"
+```
+
+### After Successful Operations:
+```bash
+# Store insights
+ai-add "LEARNING: [what_was_learned]" technical
+ai-add "WORKFLOW: [effective_pattern]" workflow
+ai-add "PROJECT: [project_insight]" project
+```
+
+## Environment Variables & Paths
+- **User**: drj
+- **Workspace**: /home/drj/*C-System/Memory-C*
+- **Memory API**: http://localhost:8765
+- **UI Dashboard**: http://localhost:3010
+- **Shell**: /usr/bin/bash with enhanced profile
+
+## Performance Metrics
+- **60-80% keystroke reduction** via aliases
+- **Automatic project detection** (all major stacks)
+- **AI-optimized operations** (non-hanging)
+- **Self-documenting** modular architecture
+
+## Integration Checklist for Rules
+When creating/updating ANY rule:
+- [ ] All git commands use `g`, `gs`, `gac`
+- [ ] All python commands use `py`
+- [ ] Workflows start with `ctx` or `health`
+- [ ] Memory search before operations
+- [ ] Date commands for temporal context
+- [ ] Enhanced navigation with `cdl`, `mkcd`
+- [ ] Memory storage after insights
+
+@core-development.mdc
+@advanced-memory-aliases.sh
+@ai-memory-aliases.sh

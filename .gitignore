@@ -148,8 +148,8 @@ docs/build/
 *.sublime-workspace
 
 # Cursor specific
-.cursorrules
-.cursor/
+# .cursorrules
+# .cursor/
 
 #Ignore cursor AI rules
 .cursor/rules/codacy.mdc

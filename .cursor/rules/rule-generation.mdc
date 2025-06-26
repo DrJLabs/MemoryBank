@@ -1,0 +1,132 @@
+---
+description: "USE WHEN creating, managing, or modifying Cursor rules, or when establishing development patterns and workflows"
+globs: ["**/.cursor/**", "**/*.mdc", "**/rules/**"]
+alwaysApply: false
+---
+
+# Rule Generation and Editing Protocol
+
+## CRITICAL: Always Use Temp Directory Workflow
+
+When editing Cursor rules, **ALWAYS** follow this systematic approach:
+
+### 1. Create Temporary Working Directory
+```bash
+mkdir -p /tmp/cursor-rules-work
+```
+
+### 2. Copy Rule to Temp Directory
+```bash
+cp .cursor/rules/[rule-name].mdc /tmp/cursor-rules-work/
+cd /tmp/cursor-rules-work
+```
+
+### 3. Convert to Markdown for Editing
+```bash
+mv [rule-name].mdc [rule-name].md
+```
+
+### 4. Examine Current Structure
+- Read the file to understand current metadata and content
+- Check for proper MDC headers (description, globs, alwaysApply)
+- Identify optimization opportunities
+
+### 5. Edit with Proper MDC Format
+**Required MDC Header Structure:**
+```yaml
+---
+description: "Clear, actionable description for Agent/rule selection"
+globs: ["pattern1", "pattern2", "**/*.ext"]  # Specific file patterns
+alwaysApply: true|false  # Whether rule always applies
+---
+```
+
+**MDC Best Practices:**
+- **description**: 10-20 words, action-oriented
+- **globs**: Specific patterns, avoid overly broad matches
+- **alwaysApply**: Use sparingly, only for core rules
+
+Always use correct frontmatter syntax. Every rule file must contain the proper frontmatter as the first 5 lines:
+
+---
+description:
+globs:
+alwaysApply:
+---
+
+### 6. Convert Back to MDC
+```bash
+mv [rule-name].md [rule-name].mdc
+```
+
+### 7. Copy Back to Rules Directory
+```bash
+cp [rule-name].mdc /home/drj/*C-System/Memory-C*/.cursor/rules/
+```
+
+### 8. Clean Up
+```bash
+rm -rf /tmp/cursor-rules-work
+```
+
+## Rule Generation Guidelines
+
+### From Conversations
+When generating rules from chat conversations:
+1. Use `/Generate Cursor Rules` command
+2. Extract key decisions and patterns
+3. Convert to actionable instructions
+4. Add appropriate globs for auto-attachment
+
+### Memory Integration
+Before creating new rules:
+```bash
+# Search for existing patterns
+ai-search "cursor rules [topic]" workflow
+ai-ctx-workflow "rule generation patterns"
+
+# After creating effective rules
+ai-add "CURSOR RULE: Created [rule-name] for [purpose]" workflow
+```
+
+### Rule Categories
+Organize rules by purpose:
+- **Development**: Language-specific patterns
+- **Workflow**: Process automation
+- **Testing**: Test-driven development
+- **Debugging**: Troubleshooting protocols
+- **Git**: Version control workflows
+- **Memory**: AI memory integration
+
+### Quality Checklist
+Before finalizing a rule:
+- [ ] Clear, actionable description
+- [ ] Specific glob patterns
+- [ ] Under 500 lines (split if larger)
+- [ ] References other rules with @rule-name
+- [ ] Includes concrete examples
+- [ ] Integrates with enhanced commands
+
+## Integration with Enhanced Environment
+
+### Always Reference Enhanced Commands
+In all rules, use shortcuts from @core-development.mdc:
+- `g` instead of `git`
+- `py` instead of `python3`
+- `ctx` for project context
+- `health` for environment checks
+
+### Date Awareness
+Include date commands where temporal context matters:
+```bash
+current_date=$(date +%Y-%m-%d)
+```
+
+### Memory System Integration
+Every rule should consider:
+1. Searching memories before operations
+2. Storing successful patterns after completion
+3. Using categorized memory commands
+
+@core-development.mdc
+@workflow-automation.mdc

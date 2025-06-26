@@ -1,0 +1,265 @@
+---
+description: "Enhanced development workflow automation with memory integration and bash aliases"
+globs: ["**/workflows/**", "**/scripts/**", "**/.github/**", "**/automation/**", "**/deploy/**", "**/*.sh", "**/*.yml", "**/*.yaml"]
+alwaysApply: false
+---
+
+# Enhanced Cursor Development Environment & Workflow Automation
+
+## CRITICAL: Date & Time Protocol
+**NEVER use hardcoded dates. ALWAYS use system commands for current date/time.**
+```bash
+# ALWAYS run these commands when date context is needed:
+date                    # Get full current date and time
+date +%Y-%m-%d         # Get date in YYYY-MM-DD format
+date +%Y-%m-%d\ %H:%M  # Get date and time in YYYY-MM-DD HH:MM format
+```
+
+## Enhanced Commands Reference
+**For all enhanced command definitions, see:** `@core-development.mdc`
+
+Key commands used in workflows:
+- `ctx`, `status`, `health`, `dev-health`, `info`
+- `g`, `gs`, `gac`, `py`, `mkcd`, `dev`
+- `ai-search`, `ai-context`, `mem-search`, `mem-add`
+
+## AI Workflow Protocol
+
+### **ALWAYS START WITH:**
+1. **Get current date/time** with `date` command when date context matters
+2. **Run `ctx`** to understand current project context
+3. **Use enhanced shortcuts** (`g` over `git`, `py` over `python3`)
+4. **Prioritize current information** based on actual system date
+5. **Leverage automatic project detection** capabilities
+
+### **NEVER:**
+1. Use hardcoded dates - ALWAYS use `date` command for current date
+2. Use long-form commands when shortcuts exist (`git` → `g`, `python3` → `py`)
+3. Assume project structure without running `ctx`
+4. Use outdated approaches - check actual date with `date` command first
+5. Skip health checks (`dev-health`) when debugging
+
+## Enhanced Development Workflows
+
+### 1. Project Initialization Workflow
+
+#### New Project Setup:
+```bash
+# Enhanced project initialization
+mkcd new-project               # Create and navigate to directory
+init-project                   # Smart project initialization based on type
+ctx                           # Verify project structure
+
+# Search for project templates in memory
+ai-ctx-project "project setup template [technology]"
+ai-search "project structure best practices" workflow
+```
+
+#### Project Type Detection:
+```bash
+# Automatic project type detection and setup
+ctx                           # Auto-detects: Node.js, Python, etc.
+
+# Technology-specific initialization
+if [[ -f "package.json" ]]; then
+    echo "📦 Node.js project"
+    npm install
+    dev                       # Smart server startup
+elif [[ -f "requirements.txt" ]]; then
+    echo "🐍 Python project" 
+    py -m venv venv
+    source venv/bin/activate
+    py -m pip install -r requirements.txt
+fi
+```
+
+### 2. Git Workflow Automation
+
+#### Enhanced Git Operations:
+```bash
+# Daily development workflow
+gs                            # Enhanced git status (NOT git status)
+g pull origin main           # Update from remote (NOT git pull)
+gac "feature: description"   # Add, commit in one command
+g push origin feature-branch # Push changes
+
+# Git context analysis
+git-context                  # Enhanced git information (if available)
+g log --oneline -10         # Recent commit history
+```
+
+#### Memory-Enhanced Git Workflow:
+```bash
+# Search for git workflow patterns
+ai-ctx-workflow "git best practices"
+ai-search "branching strategy [project_type]" workflow
+
+# Store effective git patterns
+ai-add "GIT WORKFLOW: Effective pattern for [project]: [workflow_description]" workflow
+```
+
+### 3. Memory-Integrated Development Workflows
+
+#### Information Gathering Workflow:
+```bash
+# Before starting work on a feature
+ai-ctx-project "current_feature requirements"
+ai-ctx-tech "technology_stack best practices"
+ai-search "similar_feature implementation" project
+
+# Context-aware development
+ctx                          # Current project state
+ai-context "feature_description" project  # Get relevant memory context
+```
+
+#### Learning and Documentation Workflow:
+```bash
+# After completing a task or learning something new
+ai-add "LEARNING: [technology] technique: [description]" learning
+ai-add "PROJECT: [project_name] pattern: [pattern_description]" project
+ai-add "WORKFLOW: Effective process for [task_type]: [steps]" workflow
+```
+
+### 4. Development Server Management
+
+#### Smart Server Operations:
+```bash
+# Enhanced server management
+dev                          # Smart server startup with auto-detection
+health                       # Environment health check
+status                       # Project status including services
+
+# Server debugging
+netstat -tulpn | grep :port  # Check port availability
+ai-search "server startup issues [technology]" technical
+```
+
+#### Multi-Service Management:
+```bash
+# Memory-C* project specific services
+# OpenMemory API: http://localhost:8765
+# OpenMemory UI: http://localhost:3010
+# Qdrant Vector DB: localhost:6333
+
+# Service health check workflow
+curl http://localhost:8765/health    # Memory API health
+ai-analytics                         # Memory system analytics
+mem-health                          # Basic memory health check
+```
+
+### 5. Testing and Validation Workflows
+
+#### Enhanced Testing Protocol:
+```bash
+# Testing workflow with memory integration
+ctx                                  # Project context
+ai-ctx-tech "testing strategy [technology]"  # Get testing patterns from memory
+
+# Run tests with enhanced commands
+py -m pytest                        # Python testing (NOT python3 -m pytest)
+npm test                            # Node.js testing
+
+# Store testing insights
+ai-add "TESTING: Effective test pattern for [feature]: [pattern]" technical
+```
+
+#### Validation Workflow:
+```bash
+# Pre-deployment validation
+gs                                   # Git status check (NOT git status)
+health                              # Environment health
+dev                                 # Start services for testing
+
+# Memory search for deployment checklist
+ai-ctx-workflow "deployment checklist [project_type]"
+ai-search "pre-deployment validation" workflow
+```
+
+### 6. Documentation and Knowledge Management
+
+#### Automated Documentation Workflow:
+```bash
+# Documentation generation with current date
+current_date=$(date +%Y-%m-%d)      # Get actual current date
+ai-search "documentation patterns [project_type]" workflow
+ai-ctx-project "current documentation needs"
+
+# Create documentation with memory context
+ai-context "documentation requirements" project
+```
+
+### 7. Error Recovery and Debugging Automation
+
+#### Automated Error Detection:
+```bash
+# Health monitoring workflow
+health                              # Overall environment health
+dev-health                         # Development-specific health
+status                             # Project status
+
+# Memory-enhanced error detection
+ai-search "common errors [technology]" technical
+ai-ctx-tech "troubleshooting [current_issue]"
+```
+
+### 8. Dependency and Environment Management
+
+#### Dependency Workflow:
+```bash
+# Enhanced dependency management
+py -m pip list --outdated           # Python dependencies (NOT python3)
+npm outdated                        # Node.js dependencies
+
+# Memory search for dependency patterns
+ai-ctx-tech "dependency management [technology]"
+ai-search "package upgrade strategy" technical
+
+# After dependency changes (triggers automatic Codacy security analysis)
+# Security analysis runs automatically via Codacy rules
+```
+
+### 9. Custom Workflow Templates
+
+#### Workflow Template Pattern:
+```bash
+#!/bin/bash
+# Enhanced workflow template
+source ~/.cursor-config/env          # Load enhanced environment
+
+# 1. Context gathering
+current_date=$(date +%Y-%m-%d)      # Get actual current date
+ctx                                  # Project context
+ai-context "$1" workflow            # Memory context for task
+
+# 2. Pre-task checks  
+health                              # Environment health
+gs                                  # Git status (NOT git status)
+
+# 3. Task execution with enhanced commands
+# [Task-specific enhanced commands]
+
+# 4. Post-task actions
+gs                                  # Check changes
+ai-add "WORKFLOW: Completed $1 using [process] on $current_date" workflow  # Store results
+
+# 5. Optional quality check (automatic via Codacy rules)
+```
+
+## Integration Summary
+
+### Memory-First Approach:
+1. **Search before starting**: Get context from memory system using `mem-search`
+2. **Document during work**: Store insights and patterns using `mem-add`
+3. **Share after completion**: Add learnings to memory
+4. **Build workflows**: Create reusable memory-driven processes
+
+### Performance Optimization:
+- **60-80% keystroke reduction** through enhanced commands
+- **Automatic project detection** and context awareness
+- **Memory-driven decision making** and pattern recognition
+- **Self-improving workflows** through memory learning
+- **Real-time date awareness** via system `date` command
+
+@core-development.mdc
+@memory-integration.mdc
+@debugging-troubleshooting.mdc

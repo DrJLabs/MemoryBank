@@ -1,0 +1,253 @@
+---
+description: "Advanced debugging and troubleshooting workflows with memory-enhanced diagnostics and systematic issue resolution"
+globs: ["**/*test*", "**/*debug*", "**/*error*", "**/*.log", "**/logs/**", "**/*spec*", "**/*e2e*", "**/scripts/**", "**/*.sh", "package.json", "requirements.txt", "Dockerfile*", "docker-compose*"]
+alwaysApply: false
+---
+# Debugging and Troubleshooting Workflows
+
+## Enhanced Commands Reference
+**For all enhanced command definitions, see:** `@core-development.mdc`
+
+Key debugging commands:
+- `health`, `dev-health`, `ctx`, `status`
+- `gs`, `g`, `py`
+- `ai-search`, `ai-ctx-tech`, `mem-search`
+
+## Enhanced Debugging Protocol
+
+### 1. Environment Health Check
+```bash
+# Always start with environment verification
+health                    # Overall development environment health
+dev-health               # Detailed development health check
+status                   # Enhanced project status
+ctx                     # Comprehensive project context
+```
+
+### 2. Memory-Enhanced Diagnostics
+
+#### Search for Similar Issues:
+```bash
+# Search memories for related problems
+ai-ctx-tech "error_description debugging"
+ai-search "similar_error_pattern" technical
+ai-search "project_name issue" project
+```
+
+#### Common Debugging Searches:
+- `ai-ctx-tech "dependency issues"` - Package/dependency problems
+- `ai-ctx-workflow "debugging commands"` - Known debugging procedures
+- `ai-search "error_message" technical` - Exact error pattern searches
+- `ai-ctx-project "similar_bug"` - Project-specific issue patterns
+
+### 3. Systematic Issue Analysis
+
+#### Git Context Analysis:
+```bash
+gs                      # Enhanced git status
+g log --oneline -10     # Recent changes that might have caused issues
+g diff HEAD~1           # Changes since last commit
+```
+
+#### Project Context Gathering:
+```bash
+ctx                     # Auto-detect project type and current state
+ls -la                  # File permissions and structure
+df -h                   # Disk space issues
+ps aux | grep -i [service_name]  # Process status
+```
+
+### 4. Enhanced Error Handling
+
+#### Python Debugging Template:
+```python
+import logging
+import traceback
+from typing import Optional, Dict, Any
+
+# Enhanced logging setup
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(filename)s:%(lineno)d'
+)
+logger = logging.getLogger(__name__)
+
+def debug_with_memory_context(error: Exception, context: str = ""):
+    """Enhanced debugging with memory integration"""
+    
+    # 1. Log full error details
+    error_details = {
+        "error_type": type(error).__name__,
+        "error_message": str(error),
+        "context": context,
+        "traceback": traceback.format_exc()
+    }
+    logger.error(f"Debug session: {error_details}")
+    
+    # 2. Search memories for similar issues
+    search_query = f"{type(error).__name__} {str(error)[:50]}"
+    # Use: ai-search "search_query" technical
+    
+    # 3. Store debugging session for future reference
+    debug_memory = f"DEBUGGING: {error_details['error_type']} in {context}. Solution: [to be filled]"
+    # Use: ai-add debug_memory ERROR
+    
+    return error_details
+```
+
+#### TypeScript Debugging Template:
+```typescript
+// Enhanced error boundary for debugging
+class ErrorBoundary {
+  static async debugWithContext<T>(
+    operation: () => Promise<T>,
+    context: string
+  ): Promise<Result<T>> {
+    try {
+      const result = await operation();
+      return { success: true, data: result };
+    } catch (error) {
+      // Enhanced error logging
+      const errorDetails = {
+        type: error.constructor.name,
+        message: error.message,
+        stack: error.stack,
+        context,
+        timestamp: new Date().toISOString()
+      };
+      
+      console.error('Debug Context:', errorDetails);
+      
+      // Search for similar issues in memory
+      // Use ai-search command with error details
+      
+      return { success: false, error: error as Error };
+    }
+  }
+}
+```
+
+### 5. Common Issue Resolution Patterns
+
+#### Dependency Issues:
+```bash
+# Enhanced dependency debugging
+py -m pip list --outdated          # Python package issues
+npm outdated                       # Node.js dependency issues
+py -m pip check                    # Python dependency conflicts
+
+# Memory search for dependency solutions
+ai-ctx-tech "dependency conflict resolution"
+ai-search "package_name version issue" technical
+```
+
+#### Server/Service Issues:
+```bash
+# Enhanced service debugging
+dev                               # Smart server restart
+netstat -tulpn | grep :8765      # Check port availability
+systemctl status [service]       # Service status (if applicable)
+journalctl -u [service] -f        # Real-time service logs
+
+# Memory search for service issues
+ai-ctx-workflow "server startup debugging"
+ai-search "service_name startup issue" technical
+```
+
+#### Memory System Debugging:
+```bash
+# Memory system health check
+ai-analytics                      # Memory system analytics
+mem-health                       # Basic memory health
+curl http://localhost:8765/health # Direct API health check
+
+# Debug memory integration
+ai-demo                         # Demonstrate capabilities
+ai-search "memory system debug" technical
+```
+
+### 6. Code Quality Analysis Integration
+
+#### Post-Debugging Analysis:
+```bash
+# Always run code analysis after fixing issues
+# (Automated via Codacy rules when files are edited)
+
+# Manual analysis for debugging sessions
+# codacy_cli_analyze will be triggered automatically for edited files
+```
+
+### 7. Issue Documentation Pattern
+
+#### Memory Storage for Future Reference:
+```bash
+# After resolving an issue, store the solution
+ai-add "RESOLVED: [error_type] in [context]. Root cause: [cause]. Solution: [solution]. Prevention: [prevention_steps]" technical
+
+# Store debugging commands that worked
+ai-add "DEBUGGING: Effective commands for [issue_type]: [command_list]" workflow
+
+# Store project-specific debugging insights
+ai-add "PROJECT: [project_name] debugging pattern: [pattern_description]" project
+```
+
+### 8. Refresh/Reset Debugging (Based on Community Practices)
+
+When debugging gets stuck or AI assistance is not effective:
+
+#### Comprehensive Reset Protocol:
+```bash
+# 1. Fresh environment assessment
+health && ctx && status
+
+# 2. Clear mental context and restart
+ai-context "debugging [issue] fresh perspective" technical
+
+# 3. Step-by-step systematic approach
+ai-search "step by step debugging [technology]" workflow
+
+# 4. Look for alternative approaches
+ai-search "alternative solutions [issue_type]" technical
+```
+
+#### Break Complex Issues Down:
+- Isolate components (database, API, frontend, etc.)
+- Test individual parts with `dev` and focused testing
+- Use enhanced git commands to isolate when issue started
+- Search memories for modular debugging approaches
+
+### 9. Performance Debugging
+
+#### Memory and Performance Issues:
+```bash
+# System performance
+top                             # Current resource usage
+free -h                        # Memory usage
+iostat 1 5                     # I/O performance
+
+# Application performance with enhanced commands
+py -m cProfile script.py       # Python profiling
+time [command]                 # Command execution timing
+
+# Memory search for performance patterns
+ai-ctx-tech "performance optimization [technology]"
+ai-search "performance debugging techniques" technical
+```
+
+## Integration with Enhanced Environment
+
+### Memory-First Debugging:
+1. **Search first**: Check memories for similar issues using `ai-search`
+2. **Document solutions**: Store effective debugging patterns using `ai-add`
+3. **Share context**: Use memory system for team knowledge sharing
+4. **Learn patterns**: Build debugging memory for future efficiency
+
+### Enhanced Command Usage:
+- **Always use shortcuts**: `ctx`, `gs`, `health`, `py` (see @core-development.mdc)
+- **Leverage project detection** for technology-specific debugging
+- **Use date commands** for timestamped debugging documentation
+
+@core-development.mdc
+@memory-integration.mdc
+@testing-workflows.mdc
+@git-workflows.mdc
