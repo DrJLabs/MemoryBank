@@ -1,6 +1,5 @@
 ---
-description: "Enhanced development workflow automation with memory integration and bash aliases"
-globs: ["**/workflows/**", "**/scripts/**", "**/.github/**", "**/automation/**", "**/deploy/**", "**/*.sh", "**/*.yml", "**/*.yaml"]
+globs: "**/workflow"
 alwaysApply: false
 ---
 

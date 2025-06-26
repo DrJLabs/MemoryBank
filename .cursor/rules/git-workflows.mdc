@@ -1,5 +1,4 @@
 ---
-description: "Enhanced git workflows with memory integration for version control, branching, merging, and repository management"
 globs: [".gitignore", ".gitmodules", ".gitattributes", "**/.github/**", "**/CHANGELOG*", "**/HISTORY*", "**/*merge*", "**/*conflict*", "package.json", "requirements.txt"]
 alwaysApply: false
 ---

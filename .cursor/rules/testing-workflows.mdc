@@ -1,5 +1,4 @@
 ---
-description: "Enhanced testing workflows with TDD, memory integration, and quality assurance for comprehensive test coverage"
 globs: ["**/*test*", "**/*spec*", "**/tests/**", "**/__tests__/**", "**/*.test.*", "**/*.spec.*", "**/cypress/**", "**/e2e/**", "jest.config.*", "pytest.ini", "tox.ini", "karma.conf.*", "vitest.config.*"]
 alwaysApply: false
 ---

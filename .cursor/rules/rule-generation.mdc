@@ -1,132 +1,85 @@
 ---
-description: "USE WHEN creating, managing, or modifying Cursor rules, or when establishing development patterns and workflows"
-globs: ["**/.cursor/**", "**/*.mdc", "**/rules/**"]
+globs: "**/.cursor/rules/*.mdc","**/*.mdc"
 alwaysApply: false
 ---
 
-# Rule Generation and Editing Protocol
+# Cursor Rule Authoring Protocol (v2025.06c)
 
-## CRITICAL: Always Use Temp Directory Workflow
+This protocol is the canonical guide for creating and maintaining rules in this project. Adhering to it prevents parsing errors and ensures optimal context usage.
 
-When editing Cursor rules, **ALWAYS** follow this systematic approach:
+## 1. CRITICAL: The Front-Matter Workflow
 
-### 1. Create Temporary Working Directory
-```bash
-mkdir -p /tmp/cursor-rules-work
-```
+**Problem:** Cursor's AI can struggle to read and understand the YAML front-matter of a `.mdc` file directly. Attempting to analyze or edit the front-matter *before* following this workflow will lead to parsing errors and bad decisions.
 
-### 2. Copy Rule to Temp Directory
-```bash
-cp .cursor/rules/[rule-name].mdc /tmp/cursor-rules-work/
-cd /tmp/cursor-rules-work
-```
+**Solution:** You **must first** move the rule file to a temporary location and rename it to `.md`. This action allows Cursor to see it as a standard Markdown file, enabling correct front-matter parsing. **Only then** can you safely examine or edit the header.
 
-### 3. Convert to Markdown for Editing
-```bash
-mv [rule-name].mdc [rule-name].md
-```
+### The Mandatory Workflow for Header Edits
 
-### 4. Examine Current Structure
-- Read the file to understand current metadata and content
-- Check for proper MDC headers (description, globs, alwaysApply)
-- Identify optimization opportunities
+* **Applies to:** Creating a new rule OR modifying the front-matter of an existing rule.
+* **Purpose:** To ensure Cursor can correctly read the rule's header.
 
-### 5. Edit with Proper MDC Format
-**Required MDC Header Structure:**
-```yaml
+# 1. Define your rule name
+RULE_NAME="my-new-rule"
+
+# 2. !! FIRST, execute the move-and-rename operation !!
+work="/tmp/cursor-rules-work"
+rule_path=".cursor/rules/$RULE_NAME.mdc"
+mkdir -p "$work"
+touch "$rule_path"      # Create an empty file if it's new
+cp "$rule_path" "$work"
+cd "$work"
+mv "$RULE_NAME.mdc" "$RULE_NAME.md"
+
+# 3. THEN, examine and edit the file in your editor
+# At this stage, Cursor can correctly see the front-matter.
+${EDITOR:-nano} "$RULE_NAME.md"
+
+# 4. FINALLY, sanitize and move the file back
+sed -i '1s/^\xEF\xBB\xBF//' "$RULE_NAME.md" && sed -i 's/\r$//' "$RULE_NAME.md"
+mv "$RULE_NAME.md" "$RULE_NAME.mdc"
+cp "$RULE_NAME.mdc" "$OLDPWD/$rule_path"
+rm -rf "$work"
+cd "$OLDPWD"
+
+You can skip this entire workflow ONLY when editing the body of a rule whose front-matter is already correct and requires no changes.
+
+## 2. Choose Your Rule Type
+
+After performing the workflow above, ensure the front-matter conforms to one of these three types.  When `alwaysApply` is `false`, you **must** choose **either** a `description` **or** `globs`, but not both.
+
+### Type A: Agent-Selected Rule
+
+The AI decides when to apply it.  Use `description` for this type.
+
 ---
-description: "Clear, actionable description for Agent/rule selection"
-globs: ["pattern1", "pattern2", "**/*.ext"]  # Specific file patterns
-alwaysApply: true|false  # Whether rule always applies
----
-```
-
-**MDC Best Practices:**
-- **description**: 10-20 words, action-oriented
-- **globs**: Specific patterns, avoid overly broad matches
-- **alwaysApply**: Use sparingly, only for core rules
-
-Always use correct frontmatter syntax. Every rule file must contain the proper frontmatter as the first 5 lines:
-
----
-description:
-globs:
-alwaysApply:
+description: "A 10-20 word, action-oriented summary for the AI."
+alwaysApply: false
 ---
 
-### 6. Convert Back to MDC
-```bash
-mv [rule-name].md [rule-name].mdc
-```
+### Type B: Automatic Rule (via File Path)
 
-### 7. Copy Back to Rules Directory
-```bash
-cp [rule-name].mdc /home/drj/*C-System/Memory-C*/.cursor/rules/
-```
+Applies automatically when a matching file is in context.  Use `globs` for this type.
 
-### 8. Clean Up
-```bash
-rm -rf /tmp/cursor-rules-work
-```
+---
+globs: ["**/components/**/*.tsx"]
+alwaysApply: false
+---
 
-## Rule Generation Guidelines
+### Type C: Global Rule (Always On)
 
-### From Conversations
-When generating rules from chat conversations:
-1. Use `/Generate Cursor Rules` command
-2. Extract key decisions and patterns
-3. Convert to actionable instructions
-4. Add appropriate globs for auto-attachment
+Always active. Use sparingly.  This type does not use `globs` or `description`.
 
-### Memory Integration
-Before creating new rules:
-```bash
-# Search for existing patterns
-ai-search "cursor rules [topic]" workflow
-ai-ctx-workflow "rule generation patterns"
+---
+alwaysApply: true
+---
 
-# After creating effective rules
-ai-add "CURSOR RULE: Created [rule-name] for [purpose]" workflow
-```
+## 3. Quality & Syntax Checklist
 
-### Rule Categories
-Organize rules by purpose:
-- **Development**: Language-specific patterns
-- **Workflow**: Process automation
-- **Testing**: Test-driven development
-- **Debugging**: Troubleshooting protocols
-- **Git**: Version control workflows
-- **Memory**: AI memory integration
+Before committing, verify the following:
 
-### Quality Checklist
-Before finalizing a rule:
-- [ ] Clear, actionable description
-- [ ] Specific glob patterns
-- [ ] Under 500 lines (split if larger)
-- [ ] References other rules with @rule-name
-- [ ] Includes concrete examples
-- [ ] Integrates with enhanced commands
-
-## Integration with Enhanced Environment
-
-### Always Reference Enhanced Commands
-In all rules, use shortcuts from @core-development.mdc:
-- `g` instead of `git`
-- `py` instead of `python3`
-- `ctx` for project context
-- `health` for environment checks
-
-### Date Awareness
-Include date commands where temporal context matters:
-```bash
-current_date=$(date +%Y-%m-%d)
-```
-
-### Memory System Integration
-Every rule should consider:
-1. Searching memories before operations
-2. Storing successful patterns after completion
-3. Using categorized memory commands
-
-@core-development.mdc
-@workflow-automation.mdc
+* [ ] Workflow Adhered To: Was the file renamed to .md before its front-matter was edited?
+* [ ] Correct Type: The front-matter uses exactly one of the three patterns above.
+* [ ] Exclusive Properties: When `alwaysApply` is `false`, the front-matter contains **either** `description` **or** `globs`, but not both.
+* [ ] No Redundancy: The description key is only present in "Agent-Selected" rules.
+* [ ] File Hygiene: The file is UTF-8 with LF line endings and no BOM (the script handles this).
+* [ ] Clarity: The body contains concrete examples and @rule

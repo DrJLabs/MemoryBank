@@ -1,10 +1,4 @@
 ---
-description: USE WHEN creating new code, implementing templates, applying best practices, or following development patterns for TypeScript, Python, memory integration, and modern development approaches
-globs: 
-alwaysApply: false
----
----
-description: "Development templates and best practices with TypeScript preference and memory integration"
 globs: ["*.ts", "*.tsx", "*.py", "*.js", "*.jsx"]
 alwaysApply: false
 ---

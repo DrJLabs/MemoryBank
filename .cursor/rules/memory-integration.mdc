@@ -1,7 +1,6 @@
 ---
-description: "Advanced AI memory integration with enterprise OpenMemory API and multi-strategy search"
-globs: ["*.py", "mem0/**/*", "openmemory/**/*"]
-alwaysApply: true
+description: "Advanced AI memory integration ensuring AI always searches context before operations and stores insights after completion"
+alwaysApply: false
 ---
 
 # Advanced AI Memory Integration System

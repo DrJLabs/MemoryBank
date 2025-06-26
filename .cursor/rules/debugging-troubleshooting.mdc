@@ -1,5 +1,4 @@
 ---
-description: "Advanced debugging and troubleshooting workflows with memory-enhanced diagnostics and systematic issue resolution"
 globs: ["**/*test*", "**/*debug*", "**/*error*", "**/*.log", "**/logs/**", "**/*spec*", "**/*e2e*", "**/scripts/**", "**/*.sh", "package.json", "requirements.txt", "Dockerfile*", "docker-compose*"]
 alwaysApply: false
 ---
