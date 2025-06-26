@@ -1,0 +1,80 @@
+# Cursor Context Optimization
+# Based on https://docs.cursor.com/context/ignore-files
+
+# Large data and backup files
+backups/
+backup_temp/
+backup_test_workspace/
+enhanced_backups/
+growth_reports/
+*.backup
+*.bak
+
+# Logs and temporary files  
+logs/
+*.log
+*.log.*
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# Generated charts and images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+!docs/images/
+!README_images/
+
+# Large model files
+*.model
+*.pkl
+*.pickle
+
+# Node.js
+node_modules/
+.npm
+.yarn/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# IDE and editor files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Memory system specific large files
+mem0/openmemory/backup_*/
+mem0/openmemory/enhanced_backups/
+mem0/openmemory/logs/
+
+# Test reports and coverage
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Docker build context (unless needed)
+Dockerfile.build
+docker-compose.override.yml
+
+# Large dependency files
+*.whl
+*.tar.gz
+*.zip 
