@@ -1,8 +1,8 @@
 ---
-# Dashy Configuration - Fixed Network Connectivity
+# Dashy Configuration - Production Ready
 pageInfo:
-  title: DrJ Labs Dashboard
-  description: Self-hosted services dashboard with proper network routing
+  title: Memory-C* Dashboard
+  description: Enterprise AI Memory System - Production Dashboard
   logo: https://i.ibb.co/qWWpD0v/astro-dab-128.png
   
 # App configuration

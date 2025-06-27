@@ -70,9 +70,6 @@ coverage/
 htmlcov/
 .pytest_cache/
 
-# Docker build context (unless needed)
-Dockerfile.build
-docker-compose.override.yml
 
 # Large dependency files
 *.whl
