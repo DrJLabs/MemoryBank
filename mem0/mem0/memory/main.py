@@ -24,6 +24,11 @@ from mem0.memory.base import MemoryBase
 from mem0.memory.setup import mem0_dir, setup_config
 from mem0.memory.storage import SQLiteManager
 from mem0.memory.sync_manager import MemorySyncManager, AsyncMemorySyncManager, OperationType
+from mem0.memory.reset_manager import ResetManager, AsyncResetManager, ResetOptions, ResetScope
+from mem0.memory.error_handler import (
+    ErrorHandler, OperationResult, OperationStatus, ErrorSeverity,
+    RetryConfig, CircuitBreaker, with_error_handling
+)
 from mem0.memory.telemetry import capture_event
 from mem0.memory.utils import (
     get_fact_retrieval_messages,
@@ -155,6 +160,30 @@ class Memory(MemoryBase):
             max_retries=3,
             retry_backoff=1.0
         )
+        
+        # Initialize reset manager
+        self.reset_manager = ResetManager(
+            vector_store=self.vector_store,
+            graph_store=self.graph,
+            db=self.db
+        )
+        
+        # Initialize error handler with memory-specific configuration
+        self.error_handler = ErrorHandler(
+            retry_config=RetryConfig(
+                max_retries=3,
+                base_delay=1.0,
+                max_delay=30.0,
+                exponential_base=2.0,
+                jitter=True,
+                retryable_exceptions=(ConnectionError, TimeoutError, RuntimeError, Exception)
+            ),
+            circuit_breaker=CircuitBreaker(
+                failure_threshold=5,
+                reset_timeout=60.0,
+                expected_exception=Exception
+            )
+        )
         self.config.vector_store.config.collection_name = "mem0migrations"
         if self.config.vector_store.provider in ["faiss", "qdrant"]:
             provider_path = f"migrations_{self.config.vector_store.provider}"
@@ -262,14 +291,47 @@ class Memory(MemoryBase):
         else:
             messages = parse_vision_messages(messages)
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future1 = executor.submit(self._add_to_vector_store, messages, processed_metadata, effective_filters, infer)
-            future2 = executor.submit(self._add_to_graph, messages, effective_filters)
-
-            concurrent.futures.wait([future1, future2])
-
-            vector_store_result = future1.result()
-            graph_result = future2.result()
+        # Execute parallel operations with error handling
+        vector_operation = lambda: self._add_to_vector_store(messages, processed_metadata, effective_filters, infer)
+        graph_operation = lambda: self._add_to_graph(messages, effective_filters)
+        
+        # Execute vector store operation with error handling
+        vector_result = self.error_handler.execute_with_handling(
+            vector_operation, 
+            "memory_add_vector_store",
+            {"user_id": user_id, "agent_id": agent_id, "run_id": run_id}
+        )
+        
+        # Execute graph operation with error handling
+        graph_result = self.error_handler.execute_with_handling(
+            graph_operation,
+            "memory_add_graph_store", 
+            {"user_id": user_id, "agent_id": agent_id, "run_id": run_id}
+        )
+        
+        # Handle partial success scenarios
+        vector_store_result = []
+        graph_entities_result = []
+        
+        if vector_result.is_success():
+            vector_store_result = vector_result.data
+        elif vector_result.is_partial_success():
+            vector_store_result = vector_result.data or []
+            logger.warning(f"Vector store operation had partial success: {vector_result.warnings}")
+        else:
+            logger.error(f"Vector store operation failed: {[e.error_message for e in vector_result.errors]}")
+            # For add operations, vector store failure is critical
+            raise Exception(f"Memory add failed: {vector_result.errors[0].error_message if vector_result.errors else 'Unknown error'}")
+        
+        if graph_result.is_success():
+            graph_entities_result = graph_result.data
+        elif graph_result.is_partial_success():
+            graph_entities_result = graph_result.data or []
+            logger.warning(f"Graph store operation had partial success: {graph_result.warnings}")
+        else:
+            logger.warning(f"Graph store operation failed: {[e.error_message for e in graph_result.errors]}")
+            # Graph failure is non-critical, continue with vector results only
+            graph_entities_result = []
 
         if self.api_version == "v1.0":
             warnings.warn(
@@ -284,7 +346,7 @@ class Memory(MemoryBase):
         if self.enable_graph:
             return {
                 "results": vector_store_result,
-                "relations": graph_result,
+                "relations": graph_entities_result,
             }
 
         return {"results": vector_store_result}
@@ -552,18 +614,46 @@ class Memory(MemoryBase):
             "mem0.get_all", self, {"limit": limit, "keys": keys, "encoded_ids": encoded_ids, "sync_type": "sync"}
         )
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_memories = executor.submit(self._get_all_from_vector_store, effective_filters, limit)
-            future_graph_entities = (
-                executor.submit(self.graph.get_all, effective_filters, limit) if self.enable_graph else None
+        # Execute parallel operations with error handling
+        memories_operation = lambda: self._get_all_from_vector_store(effective_filters, limit)
+        
+        # Execute vector store operation with error handling
+        memories_result = self.error_handler.execute_with_handling(
+            memories_operation,
+            "memory_get_all_vector_store",
+            {"user_id": user_id, "agent_id": agent_id, "run_id": run_id, "limit": limit}
+        )
+        
+        # Handle vector store result
+        all_memories_result = []
+        if memories_result.is_success():
+            all_memories_result = memories_result.data
+        elif memories_result.is_partial_success():
+            all_memories_result = memories_result.data or []
+            logger.warning(f"Vector store get_all had partial success: {memories_result.warnings}")
+        else:
+            logger.error(f"Vector store get_all failed: {[e.error_message for e in memories_result.errors]}")
+            # For get_all, we can return empty results rather than failing completely
+            all_memories_result = []
+        
+        # Execute graph operation with error handling if graph is enabled
+        graph_entities_result = None
+        if self.enable_graph:
+            graph_operation = lambda: self.graph.get_all(effective_filters, limit)
+            graph_result = self.error_handler.execute_with_handling(
+                graph_operation,
+                "memory_get_all_graph_store",
+                {"user_id": user_id, "agent_id": agent_id, "run_id": run_id, "limit": limit}
             )
-
-            concurrent.futures.wait(
-                [future_memories, future_graph_entities] if future_graph_entities else [future_memories]
-            )
-
-            all_memories_result = future_memories.result()
-            graph_entities_result = future_graph_entities.result() if future_graph_entities else None
+            
+            if graph_result.is_success():
+                graph_entities_result = graph_result.data
+            elif graph_result.is_partial_success():
+                graph_entities_result = graph_result.data or []
+                logger.warning(f"Graph store get_all had partial success: {graph_result.warnings}")
+            else:
+                logger.warning(f"Graph store get_all failed: {[e.error_message for e in graph_result.errors]}")
+                graph_entities_result = []
 
         if self.enable_graph:
             return {"results": all_memories_result, "relations": graph_entities_result}
@@ -667,18 +757,46 @@ class Memory(MemoryBase):
             },
         )
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            future_memories = executor.submit(self._search_vector_store, query, effective_filters, limit, threshold)
-            future_graph_entities = (
-                executor.submit(self.graph.search, query, effective_filters, limit) if self.enable_graph else None
+        # Execute parallel operations with error handling
+        search_operation = lambda: self._search_vector_store(query, effective_filters, limit, threshold)
+        
+        # Execute vector store search with error handling
+        search_result = self.error_handler.execute_with_handling(
+            search_operation,
+            "memory_search_vector_store",
+            {"user_id": user_id, "agent_id": agent_id, "run_id": run_id, "query": query, "limit": limit}
+        )
+        
+        # Handle vector store search result
+        original_memories = []
+        if search_result.is_success():
+            original_memories = search_result.data
+        elif search_result.is_partial_success():
+            original_memories = search_result.data or []
+            logger.warning(f"Vector store search had partial success: {search_result.warnings}")
+        else:
+            logger.error(f"Vector store search failed: {[e.error_message for e in search_result.errors]}")
+            # For search, we can return empty results rather than failing completely
+            original_memories = []
+        
+        # Execute graph search with error handling if graph is enabled
+        graph_entities = None
+        if self.enable_graph:
+            graph_search_operation = lambda: self.graph.search(query, effective_filters, limit)
+            graph_search_result = self.error_handler.execute_with_handling(
+                graph_search_operation,
+                "memory_search_graph_store",
+                {"user_id": user_id, "agent_id": agent_id, "run_id": run_id, "query": query, "limit": limit}
             )
-
-            concurrent.futures.wait(
-                [future_memories, future_graph_entities] if future_graph_entities else [future_memories]
-            )
-
-            original_memories = future_memories.result()
-            graph_entities = future_graph_entities.result() if future_graph_entities else None
+            
+            if graph_search_result.is_success():
+                graph_entities = graph_search_result.data
+            elif graph_search_result.is_partial_success():
+                graph_entities = graph_search_result.data or []
+                logger.warning(f"Graph store search had partial success: {graph_search_result.warnings}")
+            else:
+                logger.warning(f"Graph store search failed: {[e.error_message for e in graph_search_result.errors]}")
+                graph_entities = []
 
         if self.enable_graph:
             return {"results": original_memories, "relations": graph_entities}
@@ -948,45 +1066,61 @@ class Memory(MemoryBase):
         capture_event("mem0._delete_memory", self, {"memory_id": memory_id, "sync_type": "sync"})
         return memory_id
 
-    def reset(self):
+    def reset(self, options: Optional[ResetOptions] = None):
         """
-        Reset the memory store by:
-            Deletes the vector store collection
-            Resets the database
-            Recreates the vector store with a new client
-            Resets the graph store if enabled
+        Reset the memory store with configurable options.
+        
+        Args:
+            options (ResetOptions, optional): Configuration for what to reset.
+                                            Defaults to ResetOptions() which resets everything.
+        
+        Examples:
+            # Full reset (default)
+            memory.reset()
+            
+            # Reset only vector store
+            memory.reset(ResetOptions(scope=ResetScope.VECTOR_ONLY))
+            
+            # Keep graph, reset everything else
+            memory.reset(ResetOptions.from_cli_args(keep_graph=True))
+            
+            # Dry run to see what would be deleted
+            memory.reset(ResetOptions(dry_run=True))
         """
-        logger.warning("Resetting all memories")
-
-        # Reset database
-        if hasattr(self.db, "connection") and self.db.connection:
-            self.db.connection.execute("DROP TABLE IF EXISTS history")
-            self.db.connection.close()
-
-        self.db = SQLiteManager(self.config.history_db_path)
-
-        # Use synchronized reset operation
-        result = self.sync_manager.synchronized_operation(
-            operation_type=OperationType.RESET,
-            filters={"user_id": "default"}
-        )
+        if options is None:
+            options = ResetOptions()
+            
+        logger.warning(f"Resetting memories with scope: {options.scope.value}")
+        
+        # Use the reset manager
+        result = self.reset_manager.reset(options)
         
         if not result["success"]:
-            logger.error(f"Reset operation failed: {result.get('error', 'Unknown error')}")
-            raise RuntimeError(f"Reset failed: {result.get('error', 'Unknown error')}")
-
-        # Recreate vector store
-        if hasattr(self.vector_store, "reset"):
-            self.vector_store = VectorStoreFactory.reset(self.vector_store)
-        else:
+            errors = "\n".join(result.get("errors", ["Unknown error"]))
+            raise RuntimeError(f"Reset failed:\n{errors}")
+            
+        # Recreate stores if they were reset
+        if "vector_store" in result.get("components_reset", []):
+            # Recreate vector store
             self.vector_store = VectorStoreFactory.create(
                 self.config.vector_store.provider, self.config.vector_store.config
             )
+            # Update references
+            self.sync_manager.vector_store = self.vector_store
+            self.reset_manager.vector_store = self.vector_store
+            
+        if "history_database" in result.get("components_reset", []):
+            # Recreate database connection
+            self.db = SQLiteManager(self.config.history_db_path)
+            self.reset_manager.db = self.db
+            
+        capture_event("mem0.reset", self, {
+            "sync_type": "sync",
+            "reset_scope": options.scope.value,
+            "dry_run": options.dry_run
+        })
         
-        # Update sync manager with new vector store
-        self.sync_manager.vector_store = self.vector_store
-        
-        capture_event("mem0.reset", self, {"sync_type": "sync"})
+        return result
 
     def chat(self, query):
         raise NotImplementedError("Chat function not implemented yet.")
@@ -1026,6 +1160,30 @@ class AsyncMemory(MemoryBase):
             single_store_mode=self.config.single_store_mode,
             max_retries=3,
             retry_backoff=1.0
+        )
+        
+        # Initialize reset manager
+        self.reset_manager = AsyncResetManager(
+            vector_store=self.vector_store,
+            graph_store=self.graph,
+            db=self.db
+        )
+        
+        # Initialize error handler with memory-specific configuration
+        self.error_handler = ErrorHandler(
+            retry_config=RetryConfig(
+                max_retries=3,
+                base_delay=1.0,
+                max_delay=30.0,
+                exponential_base=2.0,
+                jitter=True,
+                retryable_exceptions=(ConnectionError, TimeoutError, RuntimeError, Exception)
+            ),
+            circuit_breaker=CircuitBreaker(
+                failure_threshold=5,
+                reset_timeout=60.0,
+                expected_exception=Exception
+            )
         )
 
         capture_event("mem0.init", self, {"sync_type": "async"})
@@ -1850,31 +2008,66 @@ class AsyncMemory(MemoryBase):
         capture_event("mem0._delete_memory", self, {"memory_id": memory_id, "sync_type": "async"})
         return memory_id
 
-    async def reset(self):
+    async def reset(self, options: Optional[ResetOptions] = None):
         """
-        Reset the memory store asynchronously by:
-            Deletes the vector store collection
-            Resets the database
-            Recreates the vector store with a new client
+        Reset the memory store asynchronously with configurable options.
+        
+        Args:
+            options (ResetOptions, optional): Configuration for what to reset.
+                                            Defaults to ResetOptions() which resets everything.
+        
+        Examples:
+            # Full reset (default)
+            await memory.reset()
+            
+            # Reset only vector store
+            await memory.reset(ResetOptions(scope=ResetScope.VECTOR_ONLY))
+            
+            # Keep graph, reset everything else
+            await memory.reset(ResetOptions.from_cli_args(keep_graph=True))
+            
+            # Dry run to see what would be deleted
+            await memory.reset(ResetOptions(dry_run=True))
         """
-        logger.warning("Resetting all memories")
-        await asyncio.to_thread(self.vector_store.delete_col)
-
-        gc.collect()
-
-        if hasattr(self.vector_store, "client") and hasattr(self.vector_store.client, "close"):
-            await asyncio.to_thread(self.vector_store.client.close)
-
-        if hasattr(self.db, "connection") and self.db.connection:
-            await asyncio.to_thread(lambda: self.db.connection.execute("DROP TABLE IF EXISTS history"))
-            await asyncio.to_thread(self.db.connection.close)
-
-        self.db = SQLiteManager(self.config.history_db_path)
-
-        self.vector_store = VectorStoreFactory.create(
-            self.config.vector_store.provider, self.config.vector_store.config
-        )
-        capture_event("mem0.reset", self, {"sync_type": "async"})
+        if options is None:
+            options = ResetOptions()
+            
+        logger.warning(f"Resetting memories with scope: {options.scope.value}")
+        
+        # Use the reset manager
+        result = await self.reset_manager.reset_async(options)
+        
+        if not result["success"]:
+            errors = "\n".join(result.get("errors", ["Unknown error"]))
+            raise RuntimeError(f"Reset failed:\n{errors}")
+            
+        # Recreate stores if they were reset
+        if "vector_store" in result.get("components_reset", []):
+            # Cleanup old vector store
+            gc.collect()
+            if hasattr(self.vector_store, "client") and hasattr(self.vector_store.client, "close"):
+                await asyncio.to_thread(self.vector_store.client.close)
+                
+            # Recreate vector store
+            self.vector_store = VectorStoreFactory.create(
+                self.config.vector_store.provider, self.config.vector_store.config
+            )
+            # Update references
+            self.sync_manager.vector_store = self.vector_store
+            self.reset_manager.vector_store = self.vector_store
+            
+        if "history_database" in result.get("components_reset", []):
+            # Recreate database connection
+            self.db = SQLiteManager(self.config.history_db_path)
+            self.reset_manager.db = self.db
+            
+        capture_event("mem0.reset", self, {
+            "sync_type": "async",
+            "reset_scope": options.scope.value,
+            "dry_run": options.dry_run
+        })
+        
+        return result
 
     async def chat(self, query):
         raise NotImplementedError("Chat function not implemented yet.")

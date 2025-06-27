@@ -1,6 +1,6 @@
 ---
-description: "Memory-first development ensuring AI always searches context before operations and stores insights after completion"
-alwaysApply: false
+description: 
+alwaysApply: true
 ---
 # Memory-First Development Protocol
 

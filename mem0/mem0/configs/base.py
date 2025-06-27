@@ -26,6 +26,46 @@ class MemoryItem(BaseModel):
     updated_at: Optional[str] = Field(None, description="The timestamp when the memory was updated")
 
 
+class ErrorHandlingConfig(BaseModel):
+    """Configuration for error handling and retry policies"""
+    enabled: bool = Field(
+        description="Enable graceful error handling",
+        default=True,
+    )
+    max_retries: int = Field(
+        description="Maximum number of retry attempts",
+        default=3,
+    )
+    base_delay: float = Field(
+        description="Base delay in seconds for exponential backoff",
+        default=1.0,
+    )
+    max_delay: float = Field(
+        description="Maximum delay in seconds for retry attempts",
+        default=60.0,
+    )
+    exponential_base: float = Field(
+        description="Base for exponential backoff calculation",
+        default=2.0,
+    )
+    jitter: bool = Field(
+        description="Add random jitter to retry delays",
+        default=True,
+    )
+    circuit_breaker_enabled: bool = Field(
+        description="Enable circuit breaker pattern",
+        default=True,
+    )
+    circuit_breaker_failure_threshold: int = Field(
+        description="Number of failures before opening circuit breaker",
+        default=5,
+    )
+    circuit_breaker_reset_timeout: float = Field(
+        description="Time in seconds before attempting to reset circuit breaker",
+        default=60.0,
+    )
+
+
 class MemoryConfig(BaseModel):
     vector_store: VectorStoreConfig = Field(
         description="Configuration for the vector store",
