@@ -147,9 +147,40 @@ docs/build/
 *.sublime-project
 *.sublime-workspace
 
+# Obsidian notes (personal)
+.obsidian/
+
 # Cursor specific
 # .cursorrules
 # .cursor/
 
 #Ignore cursor AI rules
 .cursor/rules/codacy.mdc
+
+# Additional security patterns
+*.pem
+*.p12
+*.key
+*.crt
+*.csr
+**/secrets/
+**/.secrets/
+**/private/
+**/*.private
+**/*_secret*
+**/*_private*
+**/*_key*
+**/auth.json
+**/credentials.yaml
+**/credentials.yml
+
+# Development environment files
+.vscode/settings.json
+.idea/workspace.xml
+*.code-workspace
+
+# Database dumps and exports
+*.sql
+*.dump
+*.backup
+*.bak
