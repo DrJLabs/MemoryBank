@@ -1,0 +1,74 @@
+---
+description: 
+globs: ["**/*.sh", "**/*.bash", "**/*.yml", "**/*.yaml", "**/.git*", "**/test*", "**/debug*", "**/Makefile"]
+alwaysApply: false
+---
+
+# Essential Development Workflows
+
+## 🕐 CRITICAL: Date Protocol
+**NEVER hardcode dates. ALWAYS use system commands:**
+```bash
+date                    # Current date/time
+date +%Y-%m-%d         # YYYY-MM-DD format  
+date +%Y-%m-%d\ %H:%M  # With time
+```
+
+## 📋 Git Essentials
+```bash
+# Standard git workflow
+git status && git add . && git commit -m "feat: $(date '+%Y-%m-%d %H:%M') - description"
+git push origin main
+
+# Branch management
+git checkout -b feature/name && git push -u origin feature/name
+git merge main && git branch -d feature/completed
+```
+
+## 🧪 Testing Patterns
+```bash
+# Project detection & testing
+if [ -f "package.json" ]; then
+    npm test
+elif [ -f "requirements.txt" ]; then
+    python3 -m pytest
+elif [ -f "Cargo.toml" ]; then
+    cargo test
+fi
+
+echo "Tests completed at $(date '+%Y-%m-%d %H:%M')"
+```
+
+## 🐛 Debug Workflow
+```bash
+# Debug session with context
+echo "Debug session: $(date '+%Y-%m-%d %H:%M')"
+pwd && ls -la && git status
+
+# Find and analyze logs
+find . -name "*.log" | head -5
+grep -r "ERROR\|CRITICAL" . --include="*.log" | tail -10
+```
+
+## 💾 Memory Integration
+```bash
+# Store successful patterns after completion
+echo "## Workflow Success - $(date '+%Y-%m-%d %H:%M')" >> progress.md
+echo "- Method: [approach_used]" >> progress.md
+echo "- Result: [outcome]" >> progress.md
+```
+
+## ✅ Valid Example
+```bash
+echo "Starting deployment at $(date '+%Y-%m-%d %H:%M')"
+git status && npm test && npm run build
+git tag "v$(date '+%Y.%m.%d')" && git push --tags
+echo "Deployment completed at $(date '+%Y-%m-%d %H:%M')"
+```
+
+## ❌ Invalid Example  
+```bash
+# Hardcoded date and missing context - WRONG!
+echo "Starting at 2024-01-15"
+git add . && git commit -m "update"  # No date context!
+```

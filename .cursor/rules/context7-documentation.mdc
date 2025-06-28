@@ -1,179 +1,42 @@
 ---
-# description: "Enforces Context7 MCP server usage for retrieving up-to-date technical documentation, API references, and code templates to prevent outdated responses"
+# description: "Context7 Technical Implementation Protocol - MANDATORY: Use Context7 for ALL technical implementation"
 alwaysApply: true
 ---
-# Context7 Documentation Protocol
 
-## CRITICAL: Always Use Context7 for Technical Documentation
+# Context7 Technical Implementation Protocol
 
-### When to Use Context7 (MANDATORY)
-**You MUST use Context7 MCP for ANY query involving:**
-- Library/framework documentation (React, Next.js, Vue, Angular, etc.)
-- API references and method signatures
-- Code examples and implementation patterns
-- Version-specific features or breaking changes
-- Package usage and configuration
-- Framework-specific best practices
-- New or recently updated library features
+## MANDATORY: Context7 for ALL Technical Implementation
 
-### How to Use Context7
+### Triggers (Any of these = MUST use Context7)
+- Framework/library names (React, Next.js, Vue, Angular, Django, FastAPI, etc.)
+- Package installations (`npm install`, `pip install`, etc.)
+- Import statements or code examples
+- API integrations (Supabase, Auth0, Stripe, etc.)
+- Configuration files (package.json, requirements.txt, etc.)
+- Database queries and schemas
+- Authentication/authorization implementations
+- Testing, deployment, or DevOps
 
-#### For Direct Documentation Queries:
-When users ask about library features, APIs, or implementations:
-```
-# DO NOT rely on training data - ALWAYS use Context7
-# Examples of proper usage:
-"How does Next.js App Router work? <use context7>"
-"Show me React Query invalidation patterns <use context7>"
-"Explain Tailwind CSS container queries <use context7>"
-```
+### Mandatory Workflow
+1. **Detect** any technical trigger above
+2. **Resolve** library IDs: `mcp_Context7_resolve-library-id("library-name")`
+3. **Fetch** docs: `mcp_Context7_get-library-docs("/org/project", tokens=15000)`
+4. **Generate** code ONLY from Context7 results
+5. **Cite** Context7 as source
 
-#### Automatic Invocation Protocol:
-**Even if the user doesn't explicitly mention Context7, you MUST:**
-1. Detect when the query involves library/framework documentation
-2. Automatically invoke Context7 using the pattern: `<use context7>`
-3. Wait for the documentation before generating code
-4. Base ALL code generation on Context7's response
+### Critical Rules
+**NEVER:**
+- Generate technical code from training data
+- Use APIs without Context7 verification
+- Skip Context7 for "simple" implementations
 
-### Context7 MCP Tools Available
+**ALWAYS:**
+- Wait for Context7 before ANY technical code
+- Use exact API signatures from Context7 docs
+- Include proper imports and error handling
+- Cite Context7 as authoritative source
 
-#### resolve-library-id
-- **Purpose**: Converts library names to Context7-compatible IDs
-- **Usage**: ALWAYS call this first unless user provides exact `/org/project` format
-- **Example**: "react-query" → "/tanstack/query"
+### Enforcement
+**CRITICAL ERROR:** Generating any technical implementation without Context7 verification.
 
-#### get-library-docs
-- **Purpose**: Fetches current documentation with code examples
-- **Parameters**:
-  - `context7CompatibleLibraryID`: From resolve-library-id
-  - `tokens`: Default 10000 (increase for comprehensive docs)
-  - `topic`: Specific feature focus (optional)
-
-### Implementation Workflow
-
-#### Step 1: Library Detection
-```python
-# Detect library mentions in user query
-libraries_mentioned = detect_libraries(user_query)
-if libraries_mentioned:
-    # MUST use Context7 - no exceptions
-    invoke_context7 = True
-```
-
-#### Step 2: Documentation Retrieval
-```python
-# For each detected library:
-1. Call resolve-library-id(library_name)
-2. Call get-library-docs(library_id, tokens=15000, topic=specific_feature)
-3. Parse returned documentation
-4. Generate code based ONLY on Context7 results
-```
-
-#### Step 3: Response Generation
-- **NEVER** generate code from training data for libraries
-- **ALWAYS** cite Context7 as the source
-- **INCLUDE** version information from Context7
-- **FOLLOW** exact API signatures from documentation
-
-### Common Library Patterns
-
-#### React/Next.js Ecosystem:
-- Next.js: `/vercel/next.js`
-- React: `/facebook/react`
-- React Query: `/tanstack/query`
-- React Hook Form: `/react-hook-form/react-hook-form`
-
-#### Popular Libraries:
-- Tailwind CSS: `/tailwindlabs/tailwindcss`
-- Zod: `/colinhacks/zod`
-- Prisma: `/prisma/prisma`
-- tRPC: `/trpc/trpc`
-
-### Error Prevention Protocol
-
-#### Before ANY code generation involving libraries:
-1. **Check**: Is this about a library/framework?
-2. **Verify**: Did I fetch docs from Context7?
-3. **Validate**: Am I using the EXACT API from Context7?
-4. **Confirm**: Is the version mentioned compatible?
-
-#### Common Mistakes to AVOID:
-- ❌ Using outdated `getServerSideProps` when Context7 shows App Router
-- ❌ Using old React class components when hooks are standard
-- ❌ Inventing APIs that don't exist in the documentation
-- ❌ Mixing syntax from different library versions
-
-### Quality Assurance Checklist
-
-Before responding with library-related code:
-- [ ] Context7 was invoked for ALL mentioned libraries
-- [ ] Documentation was successfully retrieved
-- [ ] Code matches EXACTLY with Context7 examples
-- [ ] Version compatibility is verified
-- [ ] No training data contamination in response
-- [ ] All imports/APIs are from Context7 docs
-
-### Integration with Memory System
-
-#### Before Using Context7:
-```bash
-# Check if we have recent Context7 results cached
-ai-search "context7 [library_name] recent" technical
-ai-ctx-tech "context7 documentation [library_name]"
-```
-
-#### After Successful Context7 Usage:
-```bash
-# Store the pattern for future reference
-ai-add "CONTEXT7: Retrieved [library] v[version] docs - key APIs: [apis]" technical
-ai-add "PATTERN: [library] implementation using Context7 docs" project
-```
-
-### User Communication
-
-When using Context7:
-- Mention you're fetching latest documentation
-- Show version being used
-- Explain why Context7 is necessary (prevents outdated code)
-- Cite specific sections from Context7 results
-
-Example response pattern:
-```
-I'll fetch the latest Next.js documentation using Context7 to ensure 
-I provide you with current, working code...
-
-[Context7 invocation]
-
-Based on the official Next.js v14.2.0 documentation from Context7, 
-here's the correct implementation...
-```
-
-### Performance Optimization
-
-#### Token Management:
-- Use 10,000 tokens for quick lookups
-- Use 15,000+ tokens for comprehensive features
-- Use topic parameter to focus results
-- Cache results in memory system
-
-#### Batch Operations:
-When multiple libraries are involved:
-1. Resolve all library IDs in parallel
-2. Fetch all documentation simultaneously
-3. Process and cross-reference
-4. Generate unified response
-
-## Rule Enforcement
-
-This rule has `alwaysApply: true` - Context7 usage is MANDATORY for:
-- Any library/framework question
-- Code generation involving external packages
-- API reference lookups
-- Version-specific queries
-- Best practice inquiries
-
-Failure to use Context7 for library documentation is considered a critical error.
-
-@context7-integration
-@memory-first-development.mdc
-@environment-integration.mdc
+**Bottom Line:** If it's technical → Context7 is MANDATORY.

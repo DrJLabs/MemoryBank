@@ -1,85 +1,170 @@
 ---
-globs: "**/.cursor/rules/*.mdc","**/*.mdc"
+globs: ["**/.cursor/rules/*.mdc", "**/*.mdc"]
 alwaysApply: false
 ---
 
-# Cursor Rule Authoring Protocol (v2025.06c)
+# Cursor Rule Optimization & Quality Enhancement Protocol
 
-This protocol is the canonical guide for creating and maintaining rules in this project. Adhering to it prevents parsing errors and ensures optimal context usage.
+## INTEGRATION WITH BMAD SYSTEM
 
-## 1. CRITICAL: The Front-Matter Workflow
+This rule **complements** BMAD's automatic rule generation system. Use BMAD's built-in `/Generate Cursor Rules` command for initial rule creation, then use this protocol for optimization.
 
-**Problem:** Cursor's AI can struggle to read and understand the YAML front-matter of a `.mdc` file directly. Attempting to analyze or edit the front-matter *before* following this workflow will lead to parsing errors and bad decisions.
+### BMAD-First Approach:
+1. **Create rules**: Use `/Generate Cursor Rules` command in conversation
+2. **Let BMAD handle**: Automatic type determination and frontmatter configuration
+3. **Then optimize**: Use this rule for consolidation and quality improvements
 
-**Solution:** You **must first** move the rule file to a temporary location and rename it to `.md`. This action allows Cursor to see it as a standard Markdown file, enabling correct front-matter parsing. **Only then** can you safely examine or edit the header.
+## RULE OPTIMIZATION TRIGGERS
 
-### The Mandatory Workflow for Header Edits
+### When to Apply This Rule:
+- Multiple small rules exist for the same concept (e.g., many TypeScript rules)
+- Rules have become redundant or conflicting
+- Performance optimization needed (too many rules slowing context)
+- Rule consolidation requested
+- Quality improvements needed for existing rules
 
-* **Applies to:** Creating a new rule OR modifying the front-matter of an existing rule.
-* **Purpose:** To ensure Cursor can correctly read the rule's header.
+### When NOT to Apply:
+- Initial rule creation (use BMAD's `/Generate Cursor Rules` instead)
+- Simple rule updates (let BMAD handle automatically)
 
-# 1. Define your rule name
-RULE_NAME="my-new-rule"
+## OPTIMIZATION PATTERNS
 
-# 2. !! FIRST, execute the move-and-rename operation !!
-work="/tmp/cursor-rules-work"
-rule_path=".cursor/rules/$RULE_NAME.mdc"
-mkdir -p "$work"
-touch "$rule_path"      # Create an empty file if it's new
-cp "$rule_path" "$work"
-cd "$work"
-mv "$RULE_NAME.mdc" "$RULE_NAME.md"
+### 1. Rule Consolidation
+**Problem**: Multiple related rules in same category
+**Solution**: Combine into single, comprehensive rule
 
-# 3. THEN, examine and edit the file in your editor
-# At this stage, Cursor can correctly see the front-matter.
-${EDITOR:-nano} "$RULE_NAME.md"
+**Example**: Instead of separate rules for:
+- `typescript-imports.mdc`
+- `typescript-naming.mdc` 
+- `typescript-types.mdc`
 
-# 4. FINALLY, sanitize and move the file back
-sed -i '1s/^\xEF\xBB\xBF//' "$RULE_NAME.md" && sed -i 's/\r$//' "$RULE_NAME.md"
-mv "$RULE_NAME.md" "$RULE_NAME.mdc"
-cp "$RULE_NAME.mdc" "$OLDPWD/$rule_path"
-rm -rf "$work"
-cd "$OLDPWD"
+Create: `typescript-standards.mdc` with consolidated best practices
 
-You can skip this entire workflow ONLY when editing the body of a rule whose front-matter is already correct and requires no changes.
+### 2. Performance Optimization
+**Target**: Reduce rule count while maintaining effectiveness
+**Method**: 
+- Merge overlapping rules
+- Remove redundant patterns
+- Consolidate similar globs
+- Eliminate rules made obsolete by codebase evolution
 
-## 2. Choose Your Rule Type
+### 3. Rule Type Optimization
+Following BMAD's rule type system:
 
-After performing the workflow above, ensure the front-matter conforms to one of these three types.  When `alwaysApply` is `false`, you **must** choose **either** a `description` **or** `globs`, but not both.
+#### Agent Selected (description + alwaysApply: false)
+- AI decides when to apply
+- Best for context-dependent rules
+- Use for complex decision-making scenarios
 
-### Type A: Agent-Selected Rule
+#### Auto Selected (globs + alwaysApply: false)  
+- Triggered by file patterns
+- Best for file-type specific rules
+- Use for consistent patterns across specific file types
 
-The AI decides when to apply it.  Use `description` for this type.
+#### Always Applied (alwaysApply: true)
+- Use sparingly for core project standards
+- Best for universal principles
+- Avoid overuse (impacts performance)
 
----
-description: "A 10-20 word, action-oriented summary for the AI."
-alwaysApply: false
----
+#### Manual (no description, no globs, alwaysApply: false)
+- User explicitly references with @ruleName
+- Best for specialized, occasional use rules
 
-### Type B: Automatic Rule (via File Path)
+## QUALITY ENHANCEMENT CHECKLIST
 
-Applies automatically when a matching file is in context.  Use `globs` for this type.
+### Content Quality:
+- [ ] **Specific Examples**: Rules include concrete code examples
+- [ ] **Clear Language**: Avoid vague guidance like "follow best practices"
+- [ ] **Actionable Instructions**: Each rule provides clear actions
+- [ ] **Scope Definition**: Clear boundaries on when rule applies
+- [ ] **Context Awareness**: Rules consider project-specific needs
 
----
-globs: ["**/components/**/*.tsx"]
-alwaysApply: false
----
+### Technical Quality:
+- [ ] **Proper Frontmatter**: Follows BMAD's type conventions
+- [ ] **Appropriate Triggers**: Right balance of specificity and coverage
+- [ ] **No Conflicts**: Rules don't contradict each other
+- [ ] **Performance Impact**: Minimal context overhead
+- [ ] **Maintainability**: Easy to update as project evolves
 
-### Type C: Global Rule (Always On)
+### Integration Quality:
+- [ ] **BMAD Compatibility**: Works with BMAD's automatic generation
+- [ ] **References**: Uses @filename.ext for context inclusion
+- [ ] **Categorization**: Proper subfolder organization
+- [ ] **Version Control**: Changes tracked and documented
 
-Always active. Use sparingly.  This type does not use `globs` or `description`.
+## CONSOLIDATION WORKFLOW
 
----
-alwaysApply: true
----
+### Step 1: Audit Existing Rules
+```bash
+# Identify consolidation opportunities
+find .cursor/rules -name "*.mdc" -exec basename {} .mdc \; | sort | uniq -c | sort -nr
+```
 
-## 3. Quality & Syntax Checklist
+### Step 2: Group Related Rules
+- Identify rules with overlapping concerns
+- Group by technology, pattern, or domain
+- Look for redundant functionality
 
-Before committing, verify the following:
+### Step 3: Create Consolidated Rule
+**Use BMAD to generate the consolidated rule:**
+```
+/Generate Cursor Rules
 
-* [ ] Workflow Adhered To: Was the file renamed to .md before its front-matter was edited?
-* [ ] Correct Type: The front-matter uses exactly one of the three patterns above.
-* [ ] Exclusive Properties: When `alwaysApply` is `false`, the front-matter contains **either** `description` **or** `globs`, but not both.
-* [ ] No Redundancy: The description key is only present in "Agent-Selected" rules.
-* [ ] File Hygiene: The file is UTF-8 with LF line endings and no BOM (the script handles this).
-* [ ] Clarity: The body contains concrete examples and @rule
+Please consolidate these existing rules into a single comprehensive rule:
+- [List specific rules to consolidate]
+- Maintain all important functionality
+- Optimize for clarity and performance
+- Use appropriate rule type based on usage pattern
+```
+
+### Step 4: Test and Validate
+- Test consolidated rule with relevant file types
+- Verify all original functionality preserved
+- Check for performance improvements
+- Remove original redundant rules
+
+## PERFORMANCE GUIDELINES
+
+### Rule Count Optimization:
+- **Ideal**: 10-20 focused rules per project
+- **Maximum**: Avoid exceeding 50 rules total
+- **Review Frequency**: Monthly rule audit and consolidation
+
+### Context Size Management:
+- Prefer fewer, comprehensive rules over many small ones
+- Use file references (@filename) instead of embedding large examples
+- Regular pruning of obsolete rules
+
+### Glob Pattern Efficiency:
+- Use specific patterns to avoid unnecessary triggering
+- Combine similar patterns when possible
+- Test pattern matching with representative files
+
+## INTEGRATION WITH MEMORY SYSTEM
+
+### Before Optimizing:
+- Search memory for previous optimization decisions
+- Check for user preferences on rule organization
+- Review past consolidation patterns
+
+### After Optimizing:
+- Store successful consolidation patterns
+- Document performance improvements achieved
+- Record user feedback on rule effectiveness
+
+## BMAD COMPATIBILITY NOTES
+
+### Works With:
+- BMAD's automatic rule generation
+- `/Generate Cursor Rules` command
+- BMAD's rule type system
+- Custom agent configurations
+
+### Enhances:
+- Rule quality and consistency
+- Performance optimization
+- Long-term maintainability
+- Project-specific customization
+
+@memory-integration.mdc
+@auto-memory-workflow.mdc

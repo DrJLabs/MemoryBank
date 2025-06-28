@@ -1,0 +1,30 @@
+# AI-Friendly Testing Suite Dependencies
+# Production-grade testing infrastructure requirements
+
+# Core Testing Framework
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-asyncio>=0.21.0
+pytest-mock>=3.11.0
+pytest-xdist>=3.3.0  # Parallel test execution
+
+# AI Testing Enhancements
+hypothesis>=6.82.0    # Property-based testing
+psutil>=5.9.0         # System monitoring and metrics
+
+# CI/CD Integration
+pytest-html>=3.2.0   # HTML test reports
+pytest-json-report>=1.5.0  # JSON test reports
+coverage[toml]>=7.3.0 # Coverage configuration
+
+# Security Testing
+safety>=2.3.0        # Dependency vulnerability scanning
+bandit>=1.7.0        # Python security analysis
+
+# Performance Testing
+pytest-benchmark>=4.0.0  # Performance benchmarking
+memory-profiler>=0.60.0  # Memory usage profiling
+
+# Optional Enhanced Features (install separately if needed)
+# semgrep>=1.40.0     # Advanced security scanning
+# pytest-profiling>=1.7.0  # Advanced performance profiling 

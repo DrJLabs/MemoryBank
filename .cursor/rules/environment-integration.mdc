@@ -1,123 +1,116 @@
 ---
-alwaysApply: true
+description: "USE FOR development environment setup, command usage, bash operations, project initialization, and when standard development commands are needed"
+globs: 
+alwaysApply: false
 ---
-# Enhanced Bash Environment Integration for Cursor
+---
+description: "USE FOR development environment setup, command usage, bash operations, project initialization, and when standard development commands are needed"
+globs: 
+alwaysApply: false
+---
 
-## CRITICAL: Always Use Enhanced Commands
+# Standard Development Environment Integration
 
-### Command Mappings (MUST USE)
-**NEVER use the long form - ALWAYS use the enhanced version:**
+## Standard Development Commands
 
-| ❌ NEVER USE | ✅ ALWAYS USE | Purpose |
-|-------------|--------------|----------|
-| `git status` | `gs` | Enhanced git status |
-| `git` | `g` | All git operations |
-| `git add . && git commit -m` | `gac` | Add and commit in one |
-| `python3` | `py` | Python shortcut |
-| `mkdir dir && cd dir` | `mkcd dir` | Create and navigate |
-| `cd` (with detection) | `cdl` | Smart navigation |
+### Core Command Usage
+Use standard system commands for all operations:
 
-### Enhanced Environment Commands
+| Command Type | Standard Command | Purpose |
+|-------------|------------------|----------|
+| Git Status | `git status` | Check repository status |
+| Git Operations | `git` | All git operations |
+| Python | `python3` or `python` | Python interpreter |
+| Directory Creation | `mkdir -p dir && cd dir` | Create and navigate |
+| Navigation | `cd` | Change directory |
+
+### Project Context Commands
 ```bash
-# Project Context (ALWAYS start with these)
-ctx                    # Comprehensive project context
-health                 # Environment health check
-status                 # Enhanced project status
-dev                    # Smart server startup
-dev-health            # Development health check
-info                  # Full environment capabilities
-
-# Memory Integration (USE before responses)
-ai-search "query" [type]      # Intelligent search
-ai-context "query" [type]     # Rich context generation
-ai-ctx-pref "query"          # Preference context
-ai-ctx-tech "query"          # Technical context
-ai-ctx-project "query"       # Project context
-ai-ctx-workflow "query"      # Workflow context
-ai-analytics                 # System analytics
-
-# Basic Memory (fallback)
-mem-search "query"           # Basic search
-mem-add "information"        # Add memory
-mem-analytics               # Basic analytics
+# Standard project information gathering
+pwd                         # Current directory
+ls -la                      # List files
+git status                  # Git repository status
+git log --oneline -10       # Recent commits
+find . -name "package.json" # Find project files
+find . -name "requirements.txt" # Find Python dependencies
 ```
 
 ### Date/Time Protocol
 ```bash
-# NEVER hardcode dates - ALWAYS use:
+# Use standard date command
 date                    # Full date/time
 date +%Y-%m-%d         # YYYY-MM-DD format
-date +%Y-%m-%d\ %H:%M  # With time
+date "+%Y-%m-%d %H:%M" # With time
 ```
 
-## Rule Writing Standards
+## Standard Development Workflow
 
-### When Writing ANY Rule:
-1. **Replace all basic commands** with enhanced versions
-2. **Start workflows** with `ctx` or `health`
-3. **Use memory integration** for context
-4. **Include date commands** for temporal context
-5. **Reference enhanced aliases** explicitly
+### Project Setup
+1. **Navigate to project**: Use `cd /path/to/project`
+2. **Check status**: Use `git status` and `ls -la`
+3. **Understand structure**: Use `find` and `ls` commands
+4. **Check dependencies**: Look for package.json, requirements.txt, etc.
 
-### Example Transformation:
+### Standard Git Operations
 ```bash
-# ❌ OLD WAY (DON'T DO THIS):
-git status
-git add .
-git commit -m "message"
-python3 script.py
-
-# ✅ NEW WAY (DO THIS):
-gs                      # Enhanced git status
-gac "message"          # Add and commit
-py script.py           # Python shortcut
+git status                  # Check repository status
+git add .                   # Stage changes
+git commit -m "message"     # Commit changes
+git push                    # Push to remote
+git pull                    # Pull from remote
+git branch                  # List branches
+git checkout -b branch      # Create new branch
 ```
 
-## Memory Integration Protocol
-
-### Before ANY AI Response:
+### Standard Development Tasks
 ```bash
-# Get context first
-ai-context "user_query" [type]
+# Python development
+python3 -m venv venv        # Create virtual environment
+source venv/bin/activate    # Activate virtual environment
+python3 -m pip install -r requirements.txt  # Install dependencies
+python3 script.py           # Run Python script
 
-# Quick context by type
-ai-ctx-pref "preferences query"
-ai-ctx-tech "technical query"
-ai-ctx-project "project query"
-ai-ctx-workflow "workflow query"
-```
+# Node.js development
+npm install                 # Install dependencies
+npm start                   # Start development server
+npm test                    # Run tests
+npm run build              # Build project
 
-### After Successful Operations:
-```bash
-# Store insights
-ai-add "LEARNING: [what_was_learned]" technical
-ai-add "WORKFLOW: [effective_pattern]" workflow
-ai-add "PROJECT: [project_insight]" project
+# Basic project analysis
+find . -name "*.py" | wc -l # Count Python files
+find . -name "*.js" | wc -l # Count JavaScript files
+du -sh .                    # Directory size
 ```
 
 ## Environment Variables & Paths
 - **User**: drj
-- **Workspace**: /home/drj/*C-System/Memory-C*
-- **Memory API**: http://localhost:8765
-- **UI Dashboard**: http://localhost:3010
-- **Shell**: /usr/bin/bash with enhanced profile
+- **Workspace**: /home/drj/C-System/Memory-C*
+- **Shell**: /usr/bin/bash (standard configuration)
 
-## Performance Metrics
-- **60-80% keystroke reduction** via aliases
-- **Automatic project detection** (all major stacks)
-- **AI-optimized operations** (non-hanging)
-- **Self-documenting** modular architecture
+## Standard Rule Writing Guidelines
 
-## Integration Checklist for Rules
-When creating/updating ANY rule:
-- [ ] All git commands use `g`, `gs`, `gac`
-- [ ] All python commands use `py`
-- [ ] Workflows start with `ctx` or `health`
-- [ ] Memory search before operations
-- [ ] Date commands for temporal context
-- [ ] Enhanced navigation with `cdl`, `mkcd`
-- [ ] Memory storage after insights
+### When Writing Rules:
+1. **Use standard commands** (git, python3, npm, etc.)
+2. **Include full command paths** when necessary
+3. **Use proper error checking** with standard bash patterns
+4. **Reference system documentation** for command options
+
+### Standard Command Patterns:
+```bash
+# Standard error checking
+if [ -f "package.json" ]; then
+    echo "Node.js project detected"
+    npm install
+elif [ -f "requirements.txt" ]; then
+    echo "Python project detected"
+    python3 -m pip install -r requirements.txt
+fi
+
+# Standard git workflow
+git status
+git add .
+git commit -m "Update: $(date '+%Y-%m-%d %H:%M')"
+git push
+```
 
 @core-development.mdc
-@advanced-memory-aliases.sh
-@ai-memory-aliases.sh

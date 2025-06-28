@@ -172,7 +172,7 @@ echo ""
 echo "🚀 Next Steps:"
 echo "1. Follow instructions above to add to Cursor User Rules"
 echo "2. Test with: mem-search \"test query\""
-echo "3. Verify memory system integration works globally"
-echo ""
+  echo "3. Verify memory system integration works globally"
+  echo ""
 
 exit 0 

@@ -1,0 +1,88 @@
+markdownExploder: true
+prd:
+  prdFile: docs/prd.md
+  prdVersion: v4
+  prdSharded: true
+  prdShardedLocation: docs/prd
+  epicFilePattern: epic-{n}*.md
+architecture:
+  architectureFile: docs/architecture.md
+  architectureVersion: v4
+  architectureSharded: true
+  architectureShardedLocation: docs/architecture
+customTechnicalDocuments: null
+
+# Memory Bank Integration Configuration
+memoryBank:
+  enabled: true
+  autoContext: true
+  confidenceThreshold: 0.7
+  searchStrategy: "multi-strategy"
+  
+  # Standard Categories
+  categories: ["TECHNICAL", "PREFERENCE", "PROJECT", "WORKFLOW", "LEARNING"]
+  
+  # Project-Specific Categories for Memory-C*
+  projectCategories:
+    - "MEMORY_OPS"      # Core memory operations, embeddings, vector stores
+    - "AI_ML"           # Machine learning models, predictions, analytics
+    - "INTEGRATION"     # GitHub Projects, API connections, system integrations
+    - "MONITORING"      # 5-phase monitoring, health checks, performance metrics
+    - "TESTING"         # AI testing framework, validation, quality assurance
+    - "PHASE"           # Development phases, milestones, progression patterns
+    - "UI_UX"           # User interface, dashboard, visualization components
+    - "BMAD"            # BMAD integration, agent coordination, workflow patterns
+    - "ARCHITECTURE"    # System design, dependencies, component relationships
+    - "MAINTENANCE"     # Backup strategies, system health, operational procedures
+    
+  # Auto-categorization patterns for Memory-C*
+  categoryPatterns:
+    MEMORY_OPS: ["memory operation", "embedding", "vector store", "mem0", "openmemory core"]
+    AI_ML: ["machine learning", "prediction", "analytics", "model accuracy", "phase5", "predictive"]
+    INTEGRATION: ["github projects", "api integration", "webhook", "sync", "graphql"]
+    MONITORING: ["health check", "monitoring", "alert", "metrics", "performance", "dashboard"]
+    TESTING: ["test framework", "validation", "coverage", "quality", "hypothesis", "pytest"]
+    PHASE: ["phase", "milestone", "development stage", "sprint", "iteration"]
+    UI_UX: ["dashboard", "visualization", "interface", "user experience", "frontend"]
+    BMAD: ["bmad", "agent", "orchestration", "workflow", "task execution"]
+    ARCHITECTURE: ["system design", "component", "dependency", "architecture", "structure"]
+    MAINTENANCE: ["backup", "maintenance", "operational", "system health", "cleanup"]
+    
+  commands:
+    contextRetrieval: "ai-get-context"
+    smartAdd: "ai-add-smart"
+    search: "ai-search"
+    analytics: "ai-analytics"
+  integration:
+    preTaskContext: true
+    postTaskStorage: true
+    autoLoad: true
+    
+# Enhanced Development Configuration
+devLoadAlwaysFiles:
+  - docs/architecture/coding-standards.md
+  - docs/architecture/tech-stack.md
+  - docs/architecture/source-tree.md
+devMemoryIntegration:
+  autoContextCommands:
+    - "ai-ctx-tech"
+    - "ai-ctx-project"
+    - "ai-ctx-workflow"
+  preTaskWorkflow:
+    - command: "ai-get-context"
+      parameters: ["{task_description}", "auto-detect"]
+  postTaskWorkflow:
+    - command: "ai-add-smart"
+      parameters: ["TASK: {task_summary} - RESULT: {outcome}"]
+      
+devDebugLog: .ai/debug-log.md
+devStoryLocation: docs/stories
+agentCoreDump: .ai/core-dump{n}.md
+
+# Agent Memory Behavior
+agentMemoryConfig:
+  mandatoryContext: true
+  memoryFirstWorkflow: true
+  autoStoreLearnings: true
+  crossAgentMemorySharing: true
+  projectSpecificCategories: true
