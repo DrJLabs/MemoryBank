@@ -1,0 +1,125 @@
+version: '3.8'
+
+# Development overrides for BMAD testing containers
+# This file is automatically loaded by docker-compose in development
+
+services:
+  # Development mode for main test runner
+  bmad-tests:
+    environment:
+      - PYTEST_TIMEOUT=600  # Longer timeout for debugging
+      - BMAD_ENV=development
+      - PYTEST_VERBOSE=true
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./tests:/app/tests:rw
+      - ./reports/bmad:/app/reports/bmad:rw
+      - ./.bmad-core:/app/.bmad-core:rw
+      - ./quality:/app/quality:rw
+    stdin_open: true
+    tty: true
+    command: >
+      sh -c "
+        echo '🔧 BMAD Development Mode' &&
+        echo 'Run: pytest tests/bmad/ -v' &&
+        echo 'Or use: python -m pytest tests/bmad/ --pdb for debugging' &&
+        /bin/bash
+      "
+
+  # Hot reload for Phase 1 tests
+  bmad-phase1:
+    volumes:
+      - ./tests:/app/tests:rw
+      - ./reports/bmad/phase1:/app/reports/bmad/phase1:rw
+    environment:
+      - PYTEST_WATCH=true
+    command: >
+      sh -c "
+        pip install pytest-watch &&
+        ptw tests/bmad/unit/ -- -v --tb=short
+      "
+
+  # Interactive mode for Phase 2 tests
+  bmad-phase2:
+    volumes:
+      - ./tests:/app/tests:rw
+      - ./reports/bmad/phase2:/app/reports/bmad/phase2:rw
+    stdin_open: true
+    tty: true
+    environment:
+      - INTERACTIVE_MODE=true
+    command: /bin/bash
+
+  # Development quality gates with detailed output
+  bmad-quality-gates:
+    environment:
+      - DEBUG_MODE=true
+      - VERBOSE_OUTPUT=true
+    command: >
+      sh -c "
+        echo '🔍 Quality Gates Debug Mode' &&
+        python quality/gates/coverage_gate.py --verbose &&
+        echo '📊 Detailed quality metrics available'
+      "
+
+  # Development report server with auto-reload
+  bmad-reports:
+    environment:
+      - NGINX_ENTRYPOINT_QUIET_LOGS=1
+    volumes:
+      - ./reports/bmad:/usr/share/nginx/html:ro
+      - ./scripts/nginx-dev.conf:/etc/nginx/conf.d/default.conf:ro
+    labels:
+      - "com.bmad.environment=development"
+      - "com.bmad.auto-reload=true"
+
+  # Development monitoring service
+  bmad-monitor:
+    image: python:3.12-slim
+    container_name: bmad-monitor-dev
+    volumes:
+      - ./tests:/app/tests:ro
+      - ./reports/bmad:/app/reports:ro
+      - ./logs/bmad:/app/logs:rw
+    environment:
+      - MONITOR_INTERVAL=5
+      - ALERT_THRESHOLD=90
+    command: >
+      sh -c "
+        pip install watchdog colorama &&
+        python -c '
+        import time
+        import os
+        from watchdog.observers import Observer
+        from watchdog.events import FileSystemEventHandler
+        from colorama import init, Fore, Style
+        
+        init()
+        
+        class TestMonitor(FileSystemEventHandler):
+            def on_modified(self, event):
+                if event.src_path.endswith(\".py\"):
+                    print(f\"{Fore.YELLOW}📝 Modified: {event.src_path}{Style.RESET_ALL}\")
+                elif event.src_path.endswith(\".html\"):
+                    print(f\"{Fore.GREEN}📊 Report updated: {event.src_path}{Style.RESET_ALL}\")
+        
+        print(f\"{Fore.CYAN}🔍 BMAD Test Monitor Active{Style.RESET_ALL}\")
+        print(f\"Watching: /app/tests and /app/reports\")
+        
+        observer = Observer()
+        handler = TestMonitor()
+        observer.schedule(handler, \"/app/tests\", recursive=True)
+        observer.schedule(handler, \"/app/reports\", recursive=True)
+        observer.start()
+        
+        try:
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            observer.stop()
+        observer.join()
+        '
+      "
+    networks:
+      - bmad-network 

@@ -16,6 +16,7 @@ agent:
 
 startup:
   - Announce: Greet the user with your name and role, and inform of the *help command.
+  - CRITICAL: Infisical Integration - Load Infisical context using scripts/bmad-agent-infisical-integration.sh "Full Stack Developer"
   - CRITICAL: Load .bmad-core/core-config.yml and read devLoadAlwaysFiles list and devDebugLog values
   - CRITICAL: Load ONLY files specified in devLoadAlwaysFiles. If any missing, inform user but continue
   - MEMORY: Validate memory system availability with ai-memory-status

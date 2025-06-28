@@ -1,0 +1,133 @@
+name: mem0-infisical-secured
+
+# Enhanced Docker Compose with Infisical Secret Management
+# Architecture: Memory-C* Infisical Integration Architecture v1.0
+# Pattern: Container Platform Integration with Secret Injection
+
+services:
+  # Infisical-enhanced Mem0 Server
+  mem0:
+    build:
+      context: ..
+      dockerfile: server/infisical.Dockerfile  # Enhanced Dockerfile with Infisical CLI
+    ports:
+      - "8888:8000"
+    environment:
+      - INFISICAL_DISABLE_UPDATE_CHECK=true
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    networks:
+      - mem0_network
+    volumes:
+      - ./history:/app/history
+      - .:/app  
+      - ../mem0:/app/packages/mem0
+      - ../.infisical.json:/app/.infisical.json:ro  # Mount Infisical config
+    depends_on:
+      postgres:
+        condition: service_healthy
+      neo4j:
+        condition: service_healthy
+    # Enhanced command with Infisical secret injection
+    command: >
+      sh -c "
+        echo '🔐 Starting Mem0 with Infisical secret injection...' &&
+        infisical run --env=dev -- uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+      "
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Enhanced PostgreSQL with Infisical secrets
+  postgres:
+    image: ankane/pgvector:v0.5.1
+    restart: on-failure
+    shm_size: "128mb"
+    networks:
+      - mem0_network
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+      - ../.infisical.json:/app/.infisical.json:ro
+    ports:
+      - "8432:5432"
+    environment:
+      - INFISICAL_DISABLE_UPDATE_CHECK=true
+    # Use Infisical for database credentials
+    entrypoint: >
+      sh -c "
+        echo '🔐 Starting PostgreSQL with Infisical secrets...' &&
+        export POSTGRES_USER=$$(infisical secrets get POSTGRES_USER --env=dev --plain 2>/dev/null || echo 'postgres') &&
+        export POSTGRES_PASSWORD=$$(infisical secrets get POSTGRES_PASSWORD --env=dev --plain 2>/dev/null || echo 'postgres') &&
+        docker-entrypoint.sh postgres
+      "
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "postgres", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Enhanced Neo4j with Infisical secrets  
+  neo4j:
+    image: neo4j:5.26.4
+    networks:
+      - mem0_network
+    ports:
+      - "8474:7474"
+      - "8687:7687"
+    volumes:
+      - neo4j_data:/data
+      - ../.infisical.json:/app/.infisical.json:ro
+    environment:
+      - NEO4J_PLUGINS=["apoc"]
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+      - INFISICAL_DISABLE_UPDATE_CHECK=true
+    # Use Infisical for Neo4j credentials
+    entrypoint: >
+      sh -c "
+        echo '🔐 Starting Neo4j with Infisical secrets...' &&
+        export NEO4J_AUTH=neo4j/$$(infisical secrets get NEO4J_PASSWORD --env=dev --plain 2>/dev/null || echo 'mem0graph') &&
+        /startup/docker-entrypoint.sh neo4j
+      "
+    healthcheck:
+      test: wget http://localhost:7687 || exit 1
+      interval: 1s
+      timeout: 10s
+      retries: 20
+      start_period: 3s
+
+  # Infisical Secret Management Sidecar
+  infisical-agent:
+    image: infisical/cli:latest
+    networks:
+      - mem0_network
+    volumes:
+      - ../.infisical.json:/app/.infisical.json:ro
+    environment:
+      - INFISICAL_DISABLE_UPDATE_CHECK=true
+    command: >
+      sh -c "
+        echo '🔐 Infisical Agent: Monitoring secret updates...' &&
+        while true; do 
+          infisical secrets --env=dev >/dev/null 2>&1 && echo '✅ Secrets accessible' || echo '⚠️ Secret access check failed'
+          sleep 60
+        done
+      "
+    restart: unless-stopped
+
+volumes:
+  neo4j_data:
+    driver: local
+  postgres_db:
+    driver: local
+
+networks:
+  mem0_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16 

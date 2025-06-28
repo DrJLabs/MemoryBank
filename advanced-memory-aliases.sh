@@ -180,4 +180,4 @@ echo "🎯 AI Context: ai-ctx, ai-ctx-pref, ai-ctx-tech, ai-ctx-project, ai-ctx-
 echo "📊 Features: Multi-Strategy Search, Relevance Scoring, Auto-Categorization"
 echo "💡 AI Integration: Use ai-get-context before responses for personalized context"
 echo "❓ Help: Type 'ai-memory-help' for full command reference"
-echo "" 
+echo "" alias bmad=\"/home/drj/C-System/Memory-C*/bmad.sh\"

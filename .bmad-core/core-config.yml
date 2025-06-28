@@ -60,9 +60,7 @@ memoryBank:
     
 # Enhanced Development Configuration
 devLoadAlwaysFiles:
-  - docs/architecture/coding-standards.md
-  - docs/architecture/tech-stack.md
-  - docs/architecture/source-tree.md
+  - docs/architecture.md
 devMemoryIntegration:
   autoContextCommands:
     - "ai-ctx-tech"

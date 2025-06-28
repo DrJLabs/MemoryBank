@@ -1,0 +1,170 @@
+version: '3.8'
+
+services:
+  # BMAD Testing Framework Container
+  bmad-tests:
+    build:
+      context: .
+      dockerfile: tests/bmad/Dockerfile
+    container_name: bmad-test-runner
+    volumes:
+      - ./tests:/app/tests
+      - ./reports/bmad:/app/reports/bmad
+      - ./.bmad-core:/app/.bmad-core
+    environment:
+      - PYTEST_TIMEOUT=300
+      - BMAD_ENV=testing
+      - COVERAGE_THRESHOLD=95
+    command: >
+      sh -c "
+        echo '🧪 Starting BMAD Test Suite...' &&
+        pytest tests/bmad/ -v \
+          --cov=.bmad-core \
+          --cov-report=html:/app/reports/bmad/coverage \
+          --cov-report=term \
+          --cov-fail-under=95 \
+          --html=/app/reports/bmad/test-report.html \
+          --self-contained-html
+      "
+    networks:
+      - bmad-network
+
+  # Phase 1 Foundation Tests
+  bmad-phase1:
+    build:
+      context: .
+      dockerfile: tests/bmad/Dockerfile
+    container_name: bmad-phase1-tests
+    volumes:
+      - ./tests:/app/tests
+      - ./reports/bmad/phase1:/app/reports/bmad/phase1
+    environment:
+      - PYTEST_TIMEOUT=60
+      - PHASE=1
+    command: >
+      pytest tests/bmad/unit/memory/ tests/bmad/unit/agents/ -v \
+        --html=/app/reports/bmad/phase1/report.html
+    networks:
+      - bmad-network
+
+  # Phase 2 Advanced Tests (BDD + Property)
+  bmad-phase2:
+    build:
+      context: .
+      dockerfile: tests/bmad/Dockerfile
+    container_name: bmad-phase2-tests
+    volumes:
+      - ./tests:/app/tests
+      - ./reports/bmad/phase2:/app/reports/bmad/phase2
+    environment:
+      - PYTEST_TIMEOUT=120
+      - PHASE=2
+    command: >
+      python tests/bmad/test_phase2_advanced.py
+    networks:
+      - bmad-network
+
+  # Quality Gates Service
+  bmad-quality-gates:
+    build:
+      context: .
+      dockerfile: tests/bmad/Dockerfile
+    container_name: bmad-quality-gates
+    volumes:
+      - ./quality:/app/quality
+      - ./reports/bmad:/app/reports/bmad
+    environment:
+      - COVERAGE_THRESHOLD=95
+      - PERFORMANCE_THRESHOLD=2000  # 2 seconds in ms
+      - QUALITY_SCORE_THRESHOLD=95
+    command: >
+      sh -c "
+        echo '🎯 Running Quality Gates...' &&
+        python quality/gates/coverage_gate.py &&
+        echo '✅ Quality Gates Passed'
+      "
+    depends_on:
+      - bmad-tests
+    networks:
+      - bmad-network
+
+  # Test Report Server
+  bmad-reports:
+    image: nginx:alpine
+    container_name: bmad-report-server
+    ports:
+      - "8090:80"
+    volumes:
+      - ./reports/bmad:/usr/share/nginx/html:ro
+    labels:
+      - "com.bmad.service=reports"
+      - "com.bmad.description=BMAD Test Reports Server"
+    networks:
+      - bmad-network
+
+  # Memory System Test Container
+  bmad-memory-tests:
+    build:
+      context: .
+      dockerfile: tests/bmad/Dockerfile
+    container_name: bmad-memory-tests
+    volumes:
+      - ./tests:/app/tests
+      - ./mem0:/app/mem0
+      - ./reports/bmad/memory:/app/reports/bmad/memory
+    environment:
+      - MEMORY_TEST_ITERATIONS=100
+      - PROPERTY_TEST_ENABLED=true
+    command: >
+      pytest tests/bmad/unit/memory/ tests/bmad/properties/ -v \
+        --html=/app/reports/bmad/memory/report.html
+    networks:
+      - bmad-network
+
+  bmad-monitor:
+    build:
+      context: .
+      dockerfile: tests/bmad/Dockerfile
+    container_name: bmad-monitor
+    volumes:
+      - ./tests:/app/tests
+      - ./.bmad-core:/app/.bmad-core
+    command: >
+      sh -c "
+        echo '🔄 Starting BMAD Monitor with Hot Reload...' &&
+        pip install watchmedo &&
+        watchmedo auto-restart --directory=./tests --pattern='*.py' --recursive -- \
+        pytest tests/bmad/
+      "
+    networks:
+      - bmad-network
+
+  bmad-phase4:
+    build:
+      context: .
+      dockerfile: tests/bmad/Dockerfile
+    container_name: bmad-phase4-monitoring
+    volumes:
+      - ./scripts:/app/scripts
+      - ./logs:/app/logs
+      - ./reports/bmad/phase4:/app/reports/bmad/phase4
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PHASE=4
+    command: >
+      sh -c "echo '📈 Running Phase 4 Monitoring & Optimization Tests...' && \
+        python scripts/infisical-monitoring.py --once && \
+        echo '✅ Phase 4 Monitoring Completed'"
+    networks:
+      - bmad-network
+
+networks:
+  bmad-network:
+    driver: bridge
+    name: bmad-testing-network
+
+volumes:
+  bmad-reports:
+    name: bmad-test-reports
+  bmad-coverage:
+    name: bmad-coverage-data 
