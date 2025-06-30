@@ -105,10 +105,10 @@ export const Install = () => {
                 key
               )} data-[state=active]:border-b-2 data-[state=active]:shadow-none text-zinc-400 data-[state=active]:text-white flex items-center justify-center gap-2 text-sm`}
             >
-              {icon.startsWith("/") ? (
+              {icon && icon.startsWith("/") ? (
                 <div>
                   <div className="w-6 h-6 rounded-full bg-zinc-700 flex items-center justify-center overflow-hidden">
-                    <Image src={icon} alt={label} width={40} height={40} />
+                    <Image src={icon} alt={label || "icon"} width={40} height={40} />
                   </div>
                 </div>
               ) : (

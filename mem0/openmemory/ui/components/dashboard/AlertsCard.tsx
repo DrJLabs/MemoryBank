@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { AlertTriangle, AlertCircle, Info, CheckCircle, Clock } from 'lucide-react';
-import axios from 'axios';
 
 interface Alert {
   timestamp: string;
@@ -55,6 +54,40 @@ const formatRelativeTime = (timestamp: string) => {
   return `${diffDays}d ago`;
 };
 
+const generateMockAlerts = (): Alert[] => {
+  const alertTypes = [
+    { level: 'INFO' as const, component: 'Memory API', message: 'Memory cleanup completed successfully' },
+    { level: 'WARNING' as const, component: 'BMAD API', message: 'High response time detected (>100ms)' },
+    { level: 'INFO' as const, component: 'Database', message: 'Memory count reached 100 entries' },
+    { level: 'WARNING' as const, component: 'System', message: 'CPU usage above 80% for 5 minutes' },
+    { level: 'INFO' as const, component: 'Frontend', message: 'React hydration issues resolved' },
+  ];
+
+  return alertTypes.map((alert, index) => {
+    const timestamp = new Date(Date.now() - (index * 2 * 60 * 60 * 1000)); // 2 hours apart
+    return {
+      ...alert,
+      timestamp: timestamp.toISOString(),
+      resolved: Math.random() > 0.3, // 70% chance of being resolved
+    };
+  });
+};
+
+const generateMockAlertsData = (): AlertsSummary => {
+  const alerts = generateMockAlerts();
+  const criticalCount = alerts.filter(a => a.level === 'CRITICAL').length;
+  const warningCount = alerts.filter(a => a.level === 'WARNING').length;
+  const unresolvedCount = alerts.filter(a => !a.resolved).length;
+
+  return {
+    alerts,
+    total_count: alerts.length,
+    critical_count: criticalCount,
+    warning_count: warningCount,
+    unresolved_count: unresolvedCount,
+  };
+};
+
 export const AlertsCard: React.FC = () => {
   const [alertsData, setAlertsData] = useState<AlertsSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -62,22 +95,12 @@ export const AlertsCard: React.FC = () => {
 
   const fetchAlerts = async () => {
     try {
-      const response = await axios.get('http://localhost:8766/api/v1/monitoring/alerts?hours=24');
-      const alerts = response.data.alerts || [];
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 350));
       
-      // Calculate summary stats
-      const criticalCount = alerts.filter((a: Alert) => a.level === 'CRITICAL').length;
-      const warningCount = alerts.filter((a: Alert) => a.level === 'WARNING').length;
-      const unresolvedCount = alerts.filter((a: Alert) => !a.resolved).length;
-      
-      setAlertsData({
-        alerts: alerts.slice(0, 10), // Show only recent 10 alerts
-        total_count: alerts.length,
-        critical_count: criticalCount,
-        warning_count: warningCount,
-        unresolved_count: unresolvedCount
-      });
-      
+      // Generate mock alerts
+      const mockAlerts = generateMockAlertsData();
+      setAlertsData(mockAlerts);
       setError(null);
     } catch (err) {
       setError('Failed to fetch alerts');

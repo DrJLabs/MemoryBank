@@ -8,12 +8,17 @@ import { PageSizeSelector } from "./PageSizeSelector";
 import { useMemoriesApi } from "@/hooks/useMemoriesApi";
 import { useRouter, useSearchParams } from "next/navigation";
 import { MemoryTableSkeleton } from "@/skeleton/MemoryTableSkeleton";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export function MemoriesSection() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { fetchMemories } = useMemoriesApi();
-  const [memories, setMemories] = useState<any[]>([]);
+  
+  // 🔧 FIX: Use Redux store memories instead of local state for display logic
+  const memoriesFromRedux = useSelector((state: RootState) => state.memories.memories);
+  
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,22 +35,33 @@ export function MemoriesSection() {
       setIsLoading(true);
       try {
         const searchQuery = searchParams.get("search") || "";
+        console.log("🔍 DEBUGGING: About to fetch memories with:", {
+          searchQuery,
+          currentPage,
+          itemsPerPage
+        });
+        
         const result = await fetchMemories(
           searchQuery,
           currentPage,
           itemsPerPage
         );
-        setMemories(result.memories);
+        
+        console.log("🔍 DEBUGGING: fetchMemories result:", result);
+        console.log("🔍 DEBUGGING: memories count:", result.memories.length);
+        console.log("🔍 DEBUGGING: Redux memories count:", memoriesFromRedux.length);
+        
+        // Only update pagination info, not memories (Redux handles that)
         setTotalItems(result.total);
         setTotalPages(result.pages);
       } catch (error) {
-        console.error("Failed to fetch memories:", error);
+        console.error("❌ DEBUGGING: Failed to fetch memories:", error);
       }
       setIsLoading(false);
     };
 
     loadMemories();
-  }, [currentPage, itemsPerPage, fetchMemories, searchParams]);
+  }, [currentPage, itemsPerPage, fetchMemories, searchParams, memoriesFromRedux.length]);
 
   const setCurrentPage = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -77,7 +93,7 @@ export function MemoriesSection() {
   return (
     <div className="w-full bg-transparent">
       <div>
-        {memories.length > 0 ? (
+        {memoriesFromRedux.length > 0 ? (
           <>
             <MemoryTable />
             <div className="flex items-center justify-between mt-4">

@@ -181,3 +181,4 @@ echo "📊 Features: Multi-Strategy Search, Relevance Scoring, Auto-Categorizati
 echo "💡 AI Integration: Use ai-get-context before responses for personalized context"
 echo "❓ Help: Type 'ai-memory-help' for full command reference"
 echo "" alias bmad=\"/home/drj/C-System/Memory-C*/bmad.sh\"
+alias bmad="python3 /home/drj/C-System/Memory-C*/bmad_interpreter.py"

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -16,7 +18,13 @@ const Stats = () => {
   const { fetchStats } = useStats();
 
   useEffect(() => {
-    fetchStats();
+    console.log("🔍 DEBUG: Stats useEffect triggered, totalMemories:", totalMemories, "totalApps:", totalApps);
+    console.log("🔍 DEBUG: About to call fetchStats");
+    fetchStats().then(() => {
+      console.log("🔍 DEBUG: fetchStats completed");
+    }).catch((err) => {
+      console.error("🔍 DEBUG: fetchStats failed:", err);
+    });
   }, []);
 
   return (

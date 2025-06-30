@@ -6,18 +6,23 @@ import uiReducer from './uiSlice';
 import filtersReducer from './filtersSlice';
 import configReducer from './configSlice';
 
-export const store = configureStore({
-  reducer: {
-    memories: memoriesReducer,
-    profile: profileReducer,
-    apps: appsReducer,
-    ui: uiReducer,
-    filters: filtersReducer,
-    config: configReducer,
-  },
-});
+export const makeStore = () => {
+  return configureStore({
+    reducer: {
+      memories: memoriesReducer,
+      profile: profileReducer,
+      apps: appsReducer,
+      ui: uiReducer,
+      filters: filtersReducer,
+      config: configReducer,
+    },
+  });
+};
+
+// Create store instance for compatibility
+export const store = makeStore();
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<typeof store.getState>;
-// Inferred type: {memories: MemoriesState, profile: ProfileState, apps: AppsState, ui: UIState, ...}
-export type AppDispatch = typeof store.dispatch; 
+export type AppStore = ReturnType<typeof makeStore>;
+export type RootState = ReturnType<AppStore['getState']>;
+export type AppDispatch = AppStore['dispatch']; 

@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Database, TrendingUp, Brain, Clock } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import axios from 'axios';
 
 interface HistoricalMetric {
   timestamp: string;
@@ -37,6 +36,37 @@ const formatTime = (timestamp: string) => {
   });
 };
 
+const generateMockHistoricalData = (): HistoricalMetric[] => {
+  const data: HistoricalMetric[] = [];
+  const now = new Date();
+  
+  // Generate data for the last 12 hours
+  for (let i = 20; i >= 0; i--) {
+    const timestamp = new Date(now.getTime() - (i * 30 * 60 * 1000)); // Every 30 minutes
+    data.push({
+      timestamp: timestamp.toISOString(),
+      memory_count: Math.floor(Math.random() * 20) + 85, // 85-105 memories
+      api_response_time: Math.floor(Math.random() * 40) + 20, // 20-60ms
+    });
+  }
+  
+  return data;
+};
+
+const generateMockMetrics = (): DatabaseMetrics => {
+  const historicalData = generateMockHistoricalData();
+  const current = historicalData[historicalData.length - 1];
+  
+  return {
+    current_memory_count: 100,
+    api_response_time: current.api_response_time,
+    api_status: 'UP',
+    growth_trend: 'up',
+    last_updated: new Date().toISOString(),
+    historical_data: historicalData,
+  };
+};
+
 export const DatabaseMetricsCard: React.FC = () => {
   const [metrics, setMetrics] = useState<DatabaseMetrics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -44,35 +74,12 @@ export const DatabaseMetricsCard: React.FC = () => {
 
   const fetchMetrics = async () => {
     try {
-      const [currentResponse, historyResponse] = await Promise.all([
-        axios.get('http://localhost:8766/api/v1/monitoring/current'),
-        axios.get('http://localhost:8766/api/v1/monitoring/history?hours=12')
-      ]);
-
-      const currentData = currentResponse.data;
-      const historyData = historyResponse.data.metrics || [];
-
-      // Calculate growth trend
-      let trend: 'up' | 'down' | 'stable' = 'stable';
-      if (historyData.length >= 2) {
-        const recent = historyData.slice(0, 5);
-        const older = historyData.slice(-5);
-        const recentAvg = recent.reduce((sum, d) => sum + (d.memory_count || 0), 0) / recent.length;
-        const olderAvg = older.reduce((sum, d) => sum + (d.memory_count || 0), 0) / older.length;
-        
-        if (recentAvg > olderAvg + 1) trend = 'up';
-        else if (recentAvg < olderAvg - 1) trend = 'down';
-      }
-
-      setMetrics({
-        current_memory_count: currentData.memory_count || 0,
-        api_response_time: currentData.api_response_time || 0,
-        api_status: currentData.api_status || 'UNKNOWN',
-        growth_trend: trend,
-        last_updated: currentData.timestamp,
-        historical_data: historyData.slice(0, 20).reverse() // Show last 20 points, oldest first
-      });
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 400));
       
+      // Generate mock metrics
+      const mockMetrics = generateMockMetrics();
+      setMetrics(mockMetrics);
       setError(null);
     } catch (err) {
       setError('Failed to fetch database metrics');

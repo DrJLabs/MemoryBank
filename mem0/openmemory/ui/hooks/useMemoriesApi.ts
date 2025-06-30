@@ -121,20 +121,29 @@ export const useMemoriesApi = (): UseMemoriesApiReturn => {
     setIsLoading(true);
     setError(null);
     try {
+      const requestData = {
+        user_id: user_id,
+        page: page,
+        size: size,
+        search_query: query,
+        app_ids: filters?.apps,
+        category_ids: filters?.categories,
+        sort_column: filters?.sortColumn?.toLowerCase(),
+        sort_direction: filters?.sortDirection,
+        show_archived: filters?.showArchived
+      };
+      
+      console.log("🚀 DEBUGGING: API request URL:", `${URL}/api/v1/memories/filter`);
+      console.log("🚀 DEBUGGING: API request data:", requestData);
+      console.log("🚀 DEBUGGING: user_id being sent:", user_id);
+      
       const response = await axios.post<ApiResponse>(
         `${URL}/api/v1/memories/filter`,
-        {
-          user_id: user_id,
-          page: page,
-          size: size,
-          search_query: query,
-          app_ids: filters?.apps,
-          category_ids: filters?.categories,
-          sort_column: filters?.sortColumn?.toLowerCase(),
-          sort_direction: filters?.sortDirection,
-          show_archived: filters?.showArchived
-        }
+        requestData
       );
+
+      console.log("✅ DEBUGGING: API response status:", response.status);
+      console.log("✅ DEBUGGING: API response data:", response.data);
 
       const adaptedMemories: Memory[] = response.data.items.map((item: ApiMemoryItem) => ({
         id: item.id,
@@ -154,6 +163,8 @@ export const useMemoriesApi = (): UseMemoriesApiReturn => {
         pages: response.data.pages
       };
     } catch (err: any) {
+      console.error("❌ DEBUGGING: API request failed:", err);
+      console.error("❌ DEBUGGING: Error details:", err.response?.data);
       const errorMessage = err.message || 'Failed to fetch memories';
       setError(errorMessage);
       setIsLoading(false);

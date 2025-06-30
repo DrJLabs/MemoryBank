@@ -3,9 +3,15 @@ import { BiEdit } from "react-icons/bi";
 import Image from "next/image";
 
 export const Icon = ({ source }: { source: string }) => {
+  if (!source) {
+    return null;
+  }
+
+  const altText = source.split("/").pop() || "Icon";
+
   return (
     <div className="w-4 h-4 rounded-full bg-zinc-700 flex items-center justify-center overflow-hidden -mr-1">
-      <Image src={source} alt={source} width={40} height={40} />
+      <Image src={source} alt={altText} width={40} height={40} />
     </div>
   );
 };

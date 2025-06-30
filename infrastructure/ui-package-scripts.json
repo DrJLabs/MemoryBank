@@ -1,0 +1,27 @@
+{
+  "name": "memory-c-ui-enhanced",
+  "version": "1.0.0",
+  "description": "Enhanced UI package configuration with proper port management",
+  "scripts": {
+    "dev": "next dev --port 3010",
+    "dev:3000": "next dev --port 3000",
+    "dev:turbo": "next dev --port 3010 --turbo",
+    "build": "next build",
+    "start": "next start --port 3010",
+    "start:prod": "NODE_ENV=production next start --port 3010",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "clean": "rm -rf .next node_modules",
+    "reinstall": "npm run clean && pnpm install",
+    "analyze": "ANALYZE=true next build",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "check-port": "lsof -i :3010 || echo 'Port 3010 is free'",
+    "kill-port": "lsof -ti:3010 | xargs kill -9 2>/dev/null || echo 'Port 3010 cleared'"
+  },
+  "engines": {
+    "node": ">=18.17.0",
+    "pnpm": ">=10.5.2"
+  },
+  "packageManager": "pnpm@10.5.2"
+} 

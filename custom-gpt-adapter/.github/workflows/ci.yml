@@ -1,0 +1,135 @@
+name: Custom GPT Adapter CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - 'custom-gpt-adapter/**'
+      - '.github/workflows/custom-gpt-adapter-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'custom-gpt-adapter/**'
+
+defaults:
+  run:
+    working-directory: custom-gpt-adapter
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: custom_gpt_adapter_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('custom-gpt-adapter/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-cov pytest-asyncio
+
+    - name: Run migrations
+      env:
+        DATABASE_URL: postgresql://testuser:testpass@localhost:5432/custom_gpt_adapter_test
+        REDIS_URL: redis://localhost:6379
+      run: |
+        alembic upgrade head
+
+    - name: Run tests with coverage
+      env:
+        DATABASE_URL: postgresql://testuser:testpass@localhost:5432/custom_gpt_adapter_test
+        REDIS_URL: redis://localhost:6379
+        MEMORY_BANK_API_URL: http://mock-memory-bank:8000
+        MEMORY_BANK_API_KEY: test-key
+      run: |
+        pytest tests/ -v --cov=app --cov-report=xml --cov-report=html --cov-report=term-missing
+
+    - name: Check test coverage
+      run: |
+        coverage report --fail-under=90
+
+    - name: Upload coverage reports
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push API image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./custom-gpt-adapter
+        file: ./custom-gpt-adapter/docker/Dockerfile.api
+        push: true
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/custom-gpt-adapter-api:latest
+          ${{ secrets.DOCKER_USERNAME }}/custom-gpt-adapter-api:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+    - name: Build and push Worker image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./custom-gpt-adapter
+        file: ./custom-gpt-adapter/docker/Dockerfile.worker
+        push: true
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/custom-gpt-adapter-worker:latest
+          ${{ secrets.DOCKER_USERNAME }}/custom-gpt-adapter-worker:${{ github.sha }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max 

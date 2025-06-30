@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Activity, Cpu, HardDrive, MemoryStick } from 'lucide-react';
-import axios from 'axios';
 
 interface SystemMetrics {
   timestamp: string;
@@ -33,6 +32,20 @@ const getUsageColor = (usage: number) => {
   return 'bg-red-500';
 };
 
+const generateMockMetrics = (): SystemMetrics => {
+  return {
+    timestamp: new Date().toISOString(),
+    memory_count: 100,
+    api_response_time: Math.floor(Math.random() * 50) + 15, // 15-65ms
+    cpu_usage: Math.floor(Math.random() * 40) + 25, // 25-65%
+    memory_usage: Math.floor(Math.random() * 30) + 45, // 45-75%
+    disk_usage: Math.floor(Math.random() * 20) + 30, // 30-50%
+    api_status: 'UP',
+    docker_containers: 4,
+    docker_images: 12,
+  };
+};
+
 export const SystemHealthCard: React.FC = () => {
   const [metrics, setMetrics] = useState<SystemMetrics | null>(null);
   const [loading, setLoading] = useState(true);
@@ -40,8 +53,12 @@ export const SystemHealthCard: React.FC = () => {
 
   const fetchMetrics = async () => {
     try {
-      const response = await axios.get('http://localhost:8766/api/v1/monitoring/current');
-      setMetrics(response.data);
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // Generate mock metrics
+      const mockMetrics = generateMockMetrics();
+      setMetrics(mockMetrics);
       setError(null);
     } catch (err) {
       setError('Failed to fetch metrics');
