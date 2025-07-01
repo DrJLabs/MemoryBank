@@ -1,3 +1,5 @@
+> **Deprecated:** This document has been consolidated into ../brownfield-architecture.md. Please refer to that file for the latest information.
+
 # Tech Stack Alignment
 
 *The new adapter service follows industry-standard FastAPI microservice patterns while being completely independent from your existing Memory Bank Service technology choices. The adapter service can use compatible but separate technology versions without affecting your core service.*

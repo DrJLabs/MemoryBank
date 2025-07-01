@@ -1,3 +1,5 @@
+> **Deprecated:** This document has been consolidated into ../brownfield-architecture.md. Please refer to that file for the latest information.
+
 # Introduction
 
 This document outlines the architectural approach for enhancing the Memory Bank Service ecosystem with a **Custom GPT Adapter Service**. Its primary goal is to serve as the guiding architectural blueprint for AI-driven development of a completely independent microservice that provides ChatGPT Custom GPT integration while ensuring zero impact on the existing Memory Bank Service.

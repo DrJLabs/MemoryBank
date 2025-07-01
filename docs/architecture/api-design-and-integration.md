@@ -1,3 +1,5 @@
+> **Deprecated:** This document has been consolidated into ../brownfield-architecture.md. Please refer to that file for the latest information.
+
 # API Design and Integration
 
 *The new API endpoints follow standard FastAPI patterns while being completely independent from your existing Memory Bank Service API structure. The adapter service consumes your existing APIs as a standard external client.*

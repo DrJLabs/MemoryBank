@@ -1,3 +1,5 @@
+> **Deprecated:** This document has been consolidated into ../brownfield-architecture.md. Please refer to that file for the latest information.
+
 # Data Models and Schema Changes
 
 *No changes to existing Memory Bank Service database schema. All new data models are in the independent adapter service database.*

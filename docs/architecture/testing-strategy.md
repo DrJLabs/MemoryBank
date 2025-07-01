@@ -1,3 +1,5 @@
+> **Deprecated:** This document has been consolidated into ../brownfield-architecture.md. Please refer to that file for the latest information.
+
 # Testing Strategy
 
 *The adapter service has a completely independent test suite that validates functionality without impacting your existing Memory Bank Service test infrastructure.*
