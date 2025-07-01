@@ -6,7 +6,7 @@
 set -e
 
 echo "🚀 Starting Memory-C* Enhanced Monitoring Dashboard"
-echo "=" * 60
+printf '=%.0s' {1..60}; echo
 
 # Colors for output
 RED='\033[0;31m'
@@ -138,11 +138,11 @@ print_success "React development server started (PID: $UI_PID)"
 # Display status and URLs
 echo ""
 echo "🎉 Enhanced Monitoring Dashboard is now running!"
-echo "=" * 60
+printf '=%.0s' {1..60}; echo
 echo "📊 Monitoring API:     http://localhost:8766"
 echo "📱 Dashboard UI:       http://localhost:3010"  
 echo "📋 API Documentation:  http://localhost:8766/docs"
-echo "=" * 60
+printf '=%.0s' {1..60}; echo
 echo ""
 print_status "Real-time monitoring features:"
 echo "  ✅ System Health (CPU, Memory, Disk)"

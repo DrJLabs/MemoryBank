@@ -1,7 +1,7 @@
 # Memory-C* Enhanced Makefile
 # Ensures all commands execute in correct directories
 
-.PHONY: help ui-dev ui-build ui-install api-dev api-install start-all stop-all status clean setup
+.PHONY: help ui-dev ui-build ui-install api-dev api-install start-all stop-all status clean setup docker-up docker-down docker-logs hadolint shellcheck
 
 # Variables
 PROJECT_ROOT := $(shell pwd)
@@ -37,6 +37,8 @@ help:
 	@echo "$(GREEN)Setup & Maintenance:$(NC)"
 	@echo "  make setup         - Initial project setup"
 	@echo "  make clean         - Clean build artifacts"
+	@echo "  make hadolint      - Lint all Dockerfiles with hadolint"
+	@echo "  make shellcheck    - Lint all shell scripts with ShellCheck"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # UI Commands - Always run in UI directory
@@ -118,4 +120,15 @@ docker-down:
 	@cd $(OPENMEMORY_DIR) && docker compose down
 
 docker-logs:
-	@cd $(OPENMEMORY_DIR) && docker compose logs -f 
+	@cd $(OPENMEMORY_DIR) && docker compose logs -f
+
+# Infrastructure linting
+hadolint:
+	@echo "$(BLUE)[INFO]$(NC) Running hadolint on Dockerfiles..."
+	@find . -name "Dockerfile*" | xargs -I{} sh -c 'hadolint "$${1}" || true' -- {}
+	@echo "$(GREEN)[SUCCESS]$(NC) Dockerfile linting complete"
+
+shellcheck:
+	@echo "$(BLUE)[INFO]$(NC) Running ShellCheck on scripts..."
+	@find . -type f -name "*.sh" | xargs -I{} sh -c 'shellcheck "$${1}" || true' -- {}
+	@echo "$(GREEN)[SUCCESS]$(NC) Shell script linting complete" 

@@ -6,7 +6,7 @@
 set -e
 
 echo "🎯 Starting BMAD Tracking API"
-echo "=" * 60
+printf '=%.0s' {1..60}; echo
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -73,14 +73,14 @@ done
 # Display status
 echo ""
 echo "🎯 BMAD Tracking API is now running!"
-echo "=" * 60
+printf '=%.0s' {1..60}; echo
 echo "📊 API Endpoints:"
 echo "  - Health: http://localhost:8767/api/v1/bmad/health"
 echo "  - Stories: http://localhost:8767/api/v1/bmad/stories"
 echo "  - Epics: http://localhost:8767/api/v1/bmad/epics"
 echo "  - Tasks: http://localhost:8767/api/v1/bmad/tasks/active"
 echo "  - Summary: http://localhost:8767/api/v1/bmad/summary"
-echo "=" * 60
+printf '=%.0s' {1..60}; echo
 echo ""
 print_warning "Keep this terminal open or the API will stop"
 echo ""

@@ -1,7 +1,8 @@
 # syntax=docker.io/docker/dockerfile:1
 
 # Base stage for common setup
-FROM node:18-alpine AS base
+FROM node:18.20.2-alpine AS base
+LABEL org.opencontainers.image.source="Context7 Docker Best Practices"
 
 # Install dependencies for pnpm
 RUN apk add --no-cache libc6-compat curl && \
@@ -47,6 +48,9 @@ USER nextjs
 EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+
+# Provide a simple HTTP healthcheck for container orchestrators
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD wget --no-verbose --tries=1 --spider http://localhost:3000/ || exit 1
 
 ENTRYPOINT ["/home/nextjs/entrypoint.sh"]
 CMD ["node", "server.js"]
