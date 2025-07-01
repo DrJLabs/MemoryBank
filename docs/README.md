@@ -24,6 +24,9 @@
 ### **🗂️ Memory Commands Reference**
 ➡️ **[reference/MEMORY_COMMANDS.md](reference/MEMORY_COMMANDS.md)** - Comprehensive CLI command list
 
+### **🏗️ System Architecture**
+➡️ **[reference/ARCHITECTURE.md](reference/ARCHITECTURE.md)** - Canonical architecture overview
+
 ---
 
 ## 🧠 **System Overview**

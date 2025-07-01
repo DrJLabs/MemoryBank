@@ -44,6 +44,8 @@ For the full and authoritative command list, see [../reference/MEMORY_COMMANDS.m
 
 ## 🏗️ **Component Architecture for AI Agents**
 
+For complete architectural details, refer to the canonical document: [../reference/ARCHITECTURE.md](../reference/ARCHITECTURE.md)
+
 ### **Core Components Map**
 ```
 Memory-C* Component Navigation:
