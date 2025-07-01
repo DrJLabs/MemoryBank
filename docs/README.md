@@ -27,6 +27,9 @@
 ### **🏗️ System Architecture**
 ➡️ **[reference/ARCHITECTURE.md](reference/ARCHITECTURE.md)** - Canonical architecture overview
 
+### **🧪 Testing & QA Guide**
+➡️ **[reference/TESTING_GUIDE.md](reference/TESTING_GUIDE.md)** - Canonical testing & quality assurance
+
 ---
 
 ## 🧠 **System Overview**

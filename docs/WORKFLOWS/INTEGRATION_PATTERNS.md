@@ -5,6 +5,8 @@
 **Update Frequency**: Real-time with system changes  
 **Optimization**: Cross-component understanding
 
+> For detailed testing strategy and QA processes, see [`../reference/TESTING_GUIDE.md`](../reference/TESTING_GUIDE.md)
+
 ---
 
 ## 🏗️ **Component Integration Architecture**
