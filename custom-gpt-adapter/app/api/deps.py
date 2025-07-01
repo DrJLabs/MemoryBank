@@ -1,9 +1,10 @@
 from typing import Generator
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt
+import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
+from jwt.exceptions import InvalidTokenError
 
 from app import crud, models, schemas
 from app.core import security
@@ -29,7 +30,7 @@ async def get_current_application(
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
         )
         token_data = schemas.TokenPayload(**payload)
-    except (jwt.JWTError, ValidationError):
+    except (InvalidTokenError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
@@ -52,7 +53,7 @@ async def get_current_application_from_refresh_token(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Invalid token type",
             )
-    except (jwt.JWTError, ValidationError):
+    except (InvalidTokenError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
