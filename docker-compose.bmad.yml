@@ -1,11 +1,14 @@
 version: '3.8'
 
+x-bmad-build: &bmad_build
+  context: .
+  dockerfile: tests/bmad/Dockerfile
+
 services:
   # BMAD Testing Framework Container
   bmad-tests:
-    build:
-      context: .
-      dockerfile: tests/bmad/Dockerfile
+    build: *bmad_build
+    image: bmad-tests-base
     container_name: bmad-test-runner
     volumes:
       - ./tests:/app/tests
@@ -31,9 +34,7 @@ services:
 
   # Phase 1 Foundation Tests
   bmad-phase1:
-    build:
-      context: .
-      dockerfile: tests/bmad/Dockerfile
+    image: bmad-tests-base
     container_name: bmad-phase1-tests
     volumes:
       - ./tests:/app/tests
@@ -49,9 +50,7 @@ services:
 
   # Phase 2 Advanced Tests (BDD + Property)
   bmad-phase2:
-    build:
-      context: .
-      dockerfile: tests/bmad/Dockerfile
+    image: bmad-tests-base
     container_name: bmad-phase2-tests
     volumes:
       - ./tests:/app/tests
@@ -66,9 +65,7 @@ services:
 
   # Quality Gates Service
   bmad-quality-gates:
-    build:
-      context: .
-      dockerfile: tests/bmad/Dockerfile
+    image: bmad-tests-base
     container_name: bmad-quality-gates
     volumes:
       - ./quality:/app/quality
@@ -104,9 +101,7 @@ services:
 
   # Memory System Test Container
   bmad-memory-tests:
-    build:
-      context: .
-      dockerfile: tests/bmad/Dockerfile
+    image: bmad-tests-base
     container_name: bmad-memory-tests
     volumes:
       - ./tests:/app/tests
@@ -122,9 +117,7 @@ services:
       - bmad-network
 
   bmad-monitor:
-    build:
-      context: .
-      dockerfile: tests/bmad/Dockerfile
+    image: bmad-tests-base
     container_name: bmad-monitor
     volumes:
       - ./tests:/app/tests
@@ -140,9 +133,7 @@ services:
       - bmad-network
 
   bmad-phase4:
-    build:
-      context: .
-      dockerfile: tests/bmad/Dockerfile
+    image: bmad-tests-base
     container_name: bmad-phase4-monitoring
     volumes:
       - ./scripts:/app/scripts
