@@ -21,6 +21,18 @@
 ### **📋 For Decision Context**
 ➡️ **[AI_WORKSPACE/DECISION_LOGS.md](AI_WORKSPACE/DECISION_LOGS.md)** - Decision tracking and rationale
 
+### **🗂️ Memory Commands Reference**
+➡️ **[reference/MEMORY_COMMANDS.md](reference/MEMORY_COMMANDS.md)** - Comprehensive CLI command list
+
+### **🏗️ System Architecture**
+➡️ **[reference/ARCHITECTURE.md](reference/ARCHITECTURE.md)** - Canonical architecture overview
+
+### **🧪 Testing & QA Guide**
+➡️ **[reference/TESTING_GUIDE.md](reference/TESTING_GUIDE.md)** - Canonical testing & quality assurance
+
+### **🚀 Deployment & Ops Guide**
+➡️ **[reference/DEPLOYMENT_GUIDE.md](reference/DEPLOYMENT_GUIDE.md)** - Canonical deployment & operations instructions
+
 ---
 
 ## 🧠 **System Overview**

@@ -70,6 +70,7 @@ Memory-C* Architecture Flow:
 - **API Response**: < 3 seconds ✅
 - **ML Models**: 97.5% accuracy ✅
 - **Test Coverage**: 60% (targeting 80%) ⚠️
+  - See [`docs/reference/TESTING_GUIDE.md`](reference/TESTING_GUIDE.md) for full testing strategy
 - **Documentation**: 45% complete (targeting 100%) ⚠️
 
 ### **Current Sprint Status**
