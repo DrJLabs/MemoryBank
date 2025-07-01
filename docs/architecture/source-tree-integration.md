@@ -1,3 +1,5 @@
+> **Deprecated:** This document has been consolidated into ../brownfield-architecture.md. Please refer to that file for the latest information.
+
 # Source Tree Integration
 
 *The adapter service is completely independent with its own repository structure, separate from your existing Memory Bank Service codebase.*

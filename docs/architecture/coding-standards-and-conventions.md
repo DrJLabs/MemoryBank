@@ -1,3 +1,5 @@
+> **Deprecated:** This document has been consolidated into ../brownfield-architecture.md. Please refer to that file for the latest information.
+
 # Coding Standards and Conventions
 
 *The adapter service follows standard FastAPI microservice patterns, independent from your existing Memory Bank Service coding standards.*

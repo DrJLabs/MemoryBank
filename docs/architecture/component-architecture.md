@@ -1,3 +1,5 @@
+> **Deprecated:** This document has been consolidated into ../brownfield-architecture.md. Please refer to that file for the latest information.
+
 # Component Architecture
 
 *The new components I'm proposing follow standard microservice patterns completely independent from your existing Memory Bank Service codebase. The integration interfaces use only standard REST API consumption patterns. Does this match your preference for architectural isolation?*

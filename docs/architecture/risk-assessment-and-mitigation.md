@@ -1,3 +1,5 @@
+> **Deprecated:** This document has been consolidated into ../brownfield-architecture.md. Please refer to that file for the latest information.
+
 # Risk Assessment and Mitigation
 
 *Risks are completely isolated to the adapter service with comprehensive mitigation strategies that ensure zero impact on your existing Memory Bank Service.*

@@ -1,3 +1,5 @@
+> **Deprecated:** This document has been consolidated into ../brownfield-architecture.md. Please refer to that file for the latest information.
+
 # Infrastructure and Deployment Integration
 
 *The adapter service deployment is completely independent from your existing Memory Bank Service infrastructure, allowing separate scaling and management.*

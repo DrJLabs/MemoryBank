@@ -1,3 +1,5 @@
+> **Deprecated:** This document has been consolidated into ../brownfield-architecture.md. Please refer to that file for the latest information.
+
 # Security Integration
 
 *The adapter service implements enterprise-grade security completely independent from your existing Memory Bank Service security infrastructure.*

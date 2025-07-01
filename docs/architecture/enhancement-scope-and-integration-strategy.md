@@ -1,3 +1,5 @@
+> **Deprecated:** This document has been consolidated into ../brownfield-architecture.md. Please refer to that file for the latest information.
+
 # Enhancement Scope and Integration Strategy
 
 *Based on my analysis, the integration approach I'm proposing takes into account your existing FastAPI microservices architecture, comprehensive API patterns, and enterprise security requirements. The adapter service boundaries respect your current architecture by consuming only public APIs and maintaining complete independence. Is this assessment accurate?*
