@@ -1,0 +1,161 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "memorybank"
+dynamic = ["version"]
+description = "Memory-C* System with Advanced Testing Framework"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+keywords = ["memory", "ai", "testing", "automation"]
+authors = [
+  { name = "MemoryBank Team" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: Implementation :: CPython",
+]
+
+# Test dependencies
+dependencies = [
+  "pytest>=8.0.0",
+  "pytest-asyncio>=0.21.0",
+  "pytest-cov>=4.1.0",
+  "pytest-html>=4.1.0",
+  "pytest-xdist>=3.3.0",
+  "pytest-mock>=3.11.0",
+  "hypothesis>=6.82.0",
+  "psutil>=5.9.0",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8.0.0",
+  "pytest-asyncio>=0.21.0",
+  "pytest-cov>=4.1.0",
+  "pytest-html>=4.1.0",
+  "pytest-xdist>=3.3.0",
+  "pytest-mock>=3.11.0",
+  "pytest-benchmark>=4.0.0",
+  "pytest-timeout>=2.1.0",
+  "hypothesis>=6.82.0",
+  "psutil>=5.9.0",
+  "coverage[toml]>=7.2.0",
+]
+
+[project.urls]
+Documentation = "https://github.com/memorybank/memorybank#readme"
+Issues = "https://github.com/memorybank/memorybank/issues"
+Source = "https://github.com/memorybank/memorybank"
+
+[tool.hatch.version]
+path = "app/core/config.py"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = [
+  "-ra",
+  "--strict-markers",
+  "--strict-config",
+  "--cov=app",
+  "--cov=mem0",
+  "--cov=custom-gpt-adapter",
+  "--cov-report=term-missing:skip-covered",
+  "--cov-report=html:reports/coverage/html",
+  "--cov-report=xml:reports/coverage/coverage.xml",
+  "--html=reports/test-results.html",
+  "--self-contained-html",
+  "--tb=short",
+  "--maxfail=5",
+]
+testpaths = [
+  "tests",
+  "custom-gpt-adapter/tests", 
+  "mem0/tests",
+  "mem0/embedchain/tests",
+]
+python_files = ["test_*.py", "*_test.py", "ai_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+  "unit: Unit tests - fast, isolated tests",
+  "integration: Integration tests - component interaction tests",
+  "e2e: End-to-end tests - full system tests",
+  "slow: Slow tests (>5s) - deselect with '-m \"not slow\"'",
+  "performance: Performance benchmarking tests",
+  "stress: Stress testing scenarios", 
+  "ai_framework: Tests using AI testing framework",
+  "property: Property-based tests using Hypothesis",
+  "smart_mock: Tests using intelligent mocking",
+  "smoke: Smoke tests - basic functionality verification",
+  "asyncio: Async tests",
+  "bmad: BMAD (Brownfield Memory-Augmented Development) tests",
+  "bmad_agent: BMAD agent behavior tests",
+  "bmad_memory: BMAD memory system tests",
+  "bmad_workflow: BMAD workflow integration tests",
+  "bmad_quality: BMAD quality gate tests",
+  "network: Tests requiring network access",
+  "database: Tests requiring database",
+  "external: Tests with external dependencies",
+]
+asyncio_mode = "auto"
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(name)s: %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+filterwarnings = [
+  "ignore::DeprecationWarning",
+  "ignore::PendingDeprecationWarning",
+]
+timeout = 300
+
+[tool.coverage.run]
+source = ["app", "mem0", "custom-gpt-adapter"]
+branch = true
+parallel = true
+omit = [
+  "*/tests/*",
+  "*/test_*",
+  "*/__pycache__/*",
+  "*/migrations/*",
+  "*/venv/*",
+  "*/env/*",
+  "*/.venv/*",
+  "*/.env/*",
+]
+
+[tool.coverage.paths]
+app = ["app", "*/app"]
+mem0 = ["mem0", "*/mem0"]
+custom_gpt_adapter = ["custom-gpt-adapter", "*/custom-gpt-adapter"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "def __repr__",
+  "if self.debug:",
+  "if settings.DEBUG",
+  "raise AssertionError",
+  "raise NotImplementedError",
+  "if 0:",
+  "if __name__ == .__main__.:",
+  "class .*\bProtocol\\):",
+  "@(abc\\.)?abstractmethod",
+]
+fail_under = 70
+precision = 2
+show_missing = true
+skip_covered = true
+
+[tool.coverage.html]
+directory = "reports/coverage/html"
+
+[tool.coverage.xml]
+output = "reports/coverage/coverage.xml" 
