@@ -5,6 +5,7 @@ Based on automated monitoring best practices with threshold-based alerts and esc
 """
 
 import json
+import logging
 import smtplib
 import subprocess
 import sqlite3
@@ -267,7 +268,7 @@ class AlertManager:
                 try:
                     self._send_notification(channel, alert)
                 except Exception as e:
-                    print(f"❌ Failed to send alert via {channel_name}: {e}")
+                    logger.error("Failed to send alert via %s: %s", channel_name, e)
     
     def _send_notification(self, channel: NotificationChannel, alert: Dict[str, Any]):
         """Send notification through specific channel"""
@@ -307,7 +308,7 @@ Please investigate and take appropriate action if necessary."""
     def _send_email_notification(self, channel: NotificationChannel, alert: Dict[str, Any], message: str):
         """Send email notification"""
         if not self.config.get("smtp_server"):
-            print("📧 Email notification skipped: SMTP not configured")
+            logger.warning("Email notification skipped: SMTP not configured")
             return
         
         try:
@@ -327,23 +328,31 @@ Please investigate and take appropriate action if necessary."""
             server.sendmail(msg['From'], msg['To'], text)
             server.quit()
             
-            print(f"📧 Email alert sent to {channel.config['recipient']}")
+            logger.info("Email alert sent to %s", channel.config["recipient"])
         except Exception as e:
-            print(f"❌ Email notification failed: {e}")
+            logger.error("Email notification failed: %s", e)
     
     def _send_desktop_notification(self, channel: NotificationChannel, alert: Dict[str, Any], message: str):
         """Send desktop notification"""
         try:
-            # Try notify-send (Linux)
-            subprocess.run([
-                'notify-send',
-                f"Memory-C* {alert['severity']}",
-                f"{alert['rule_name']}: {alert['value']}",
-                '-t', str(channel.config.get("timeout", 5000))
-            ], check=False)
-            print(f"🖥️ Desktop notification sent")
+            result = subprocess.run(
+                [
+                    'notify-send',
+                    f"Memory-C* {alert['severity']}",
+                    f"{alert['rule_name']}: {alert['value']}",
+                    '-t', str(channel.config.get("timeout", 5000))
+                ],
+                check=False,
+                capture_output=True,
+            )
+            if result.returncode != 0:
+                logger.warning("notify-send exited with code %s: %s", result.returncode, result.stderr.decode())
+            else:
+                logger.info("Desktop notification sent")
+        except FileNotFoundError:
+            logger.error("notify-send not found; desktop notification skipped")
         except Exception as e:
-            print(f"❌ Desktop notification failed: {e}")
+            logger.error("Desktop notification failed: %s", e)
     
     def _send_webhook_notification(self, channel: NotificationChannel, alert: Dict[str, Any], message: str):
         """Send webhook notification"""
@@ -359,9 +368,9 @@ Please investigate and take appropriate action if necessary."""
                 
                 response = requests.post(endpoint, json=payload, timeout=10)
                 response.raise_for_status()
-                print(f"🔗 Webhook alert sent to {endpoint}")
-            except Exception as e:
-                print(f"❌ Webhook notification to {endpoint} failed: {e}")
+                logger.info("Webhook alert sent to %s", endpoint)
+            except requests.RequestException as e:
+                logger.error("Webhook notification to %s failed: %s", endpoint, e)
     
     def _send_log_notification(self, channel: NotificationChannel, alert: Dict[str, Any], message: str):
         """Send log notification"""
@@ -373,9 +382,9 @@ Please investigate and take appropriate action if necessary."""
                 f.write(f"Details: {json.dumps(alert, indent=2)}\n")
                 f.write("-" * 80 + "\n")
             
-            print(f"📝 Alert logged to {log_file}")
+            logger.info("Alert logged to %s", log_file)
         except Exception as e:
-            print(f"❌ Log notification failed: {e}")
+            logger.error("Log notification failed: %s", e)
     
     def get_recent_alerts(self, hours: int = 24) -> List[Dict[str, Any]]:
         """Get recent alerts from database"""
@@ -391,7 +400,7 @@ Please investigate and take appropriate action if necessary."""
                 return [dict(zip(['timestamp', 'level', 'component', 'message'], row)) 
                        for row in cursor.fetchall()]
         except Exception as e:
-            print(f"❌ Failed to get recent alerts: {e}")
+            logger.error("Failed to get recent alerts: %s", e)
             return []
     
     def test_notifications(self):
@@ -407,9 +416,9 @@ Please investigate and take appropriate action if necessary."""
             "notification_channels": [ch.name for ch in self.notification_channels if ch.enabled]
         }
         
-        print("🧪 Testing notification channels...")
+        logger.info("Testing notification channels...")
         self.send_alert(test_alert)
-        print("✅ Notification test completed")
+        logger.info("Notification test completed")
 
 def main():
     """Main alert system function"""
@@ -431,11 +440,11 @@ def main():
     if args.recent:
         alerts = alert_manager.get_recent_alerts(args.recent)
         if alerts:
-            print(f"📋 Recent alerts ({args.recent}h):")
+            logger.info("Recent alerts (%sh):", args.recent)
             for alert in alerts:
-                print(f"  {alert['timestamp']} [{alert['level']}] {alert['component']}: {alert['message']}")
+                logger.info("  %s [%s] %s: %s", alert['timestamp'], alert['level'], alert['component'], alert['message'])
         else:
-            print(f"✅ No alerts in the last {args.recent} hours")
+            logger.info("No alerts in the last %s hours", args.recent)
 
 if __name__ == "__main__":
     main() 
