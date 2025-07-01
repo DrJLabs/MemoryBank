@@ -1,0 +1,17 @@
+agitated_engelbart	ghcr.io/github/github-mcp-server		Up 2 hours
+mem0-dev-mem0-1	mem0-dev-mem0	0.0.0.0:8888->8000/tcp, [::]:8888->8000/tcp	Up 10 hours
+mem0-dev-neo4j-1	neo4j:5.26.4	7473/tcp, 0.0.0.0:8474->7474/tcp, [::]:8474->7474/tcp, 0.0.0.0:8687->7687/tcp, [::]:8687->7687/tcp	Up 11 hours (healthy)
+mem0-dev-postgres-1	ankane/pgvector:v0.5.1	0.0.0.0:8432->5432/tcp, [::]:8432->5432/tcp	Up 11 hours (healthy)
+openmemory-openmemory-mcp-1	mem0/openmemory-mcp	127.0.0.1:8765->8765/tcp	Up 13 hours (unhealthy)
+openmemory-mem0_store-1	qdrant/qdrant	127.0.0.1:6333->6333/tcp, 6334/tcp	Up 13 hours
+bmad-debug	8964cd4a906e		Up 3 days
+portainer	portainer/portainer-ee:latest	0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp, 0.0.0.0:9443->9443/tcp, [::]:9443->9443/tcp, 9000/tcp	Up 6 days
+bmad-gdrive-production	bmad-gdrive-bmad-gdrive-bridge	7777/tcp	Up 6 days (healthy)
+bmad-github-bridge-bridge-1	bmad-github-bridge-bridge	5555/tcp	Up 6 days (healthy)
+wb-onemainarmy	tester-weather-football-app	80/tcp	Up 6 days
+coa-static-oma	caddy:alpine	80/tcp, 443/tcp, 2019/tcp, 443/udp	Up 6 days
+n8n-oma	n8nio/n8n:latest	5678/tcp	Up 6 days
+notes-static-oma	caddy:alpine	80/tcp, 443/tcp, 2019/tcp, 443/udp	Up 6 days
+tika-oma	apache/tika:2.9.2.1-full	9998/tcp	Up 6 days (healthy)
+n8n-postgres	postgres:15.6-alpine	5432/tcp	Up 6 days (healthy)
+n8n-redis	redis:7.2-alpine	6379/tcp	Up 6 days (healthy)

@@ -1,0 +1,41 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'renovate-mem0'
+    static_configs:
+      - targets: ['renovate-mem0:8000']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+
+  - job_name: 'renovate-openmemory-mcp'
+    static_configs:
+      - targets: ['renovate-openmemory-mcp:8765']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+
+  - job_name: 'renovate-postgres'
+    static_configs:
+      - targets: ['renovate-postgres:5432']
+    scrape_interval: 60s
+
+  - job_name: 'renovate-redis'
+    static_configs:
+      - targets: ['renovate-redis:6379']
+    scrape_interval: 60s
+
+  - job_name: 'renovate-qdrant'
+    static_configs:
+      - targets: ['renovate-qdrant:6333']
+    scrape_interval: 30s
+    metrics_path: '/metrics'
+
+  - job_name: 'renovate-neo4j'
+    static_configs:
+      - targets: ['renovate-neo4j:7474']
+    scrape_interval: 60s 

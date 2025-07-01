@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   eslint: {
     ignoreDuringBuilds: true,
   },
@@ -13,11 +14,11 @@ const nextConfig = {
     return [
       {
         source: '/api/bmad/:path*',
-        destination: 'http://localhost:8767/api/v1/bmad/:path*',
+        destination: 'http://host.docker.internal:8767/api/v1/bmad/:path*',
       },
       {
         source: '/api/v1/:path*',
-        destination: 'http://localhost:8765/api/v1/:path*',
+        destination: 'http://renovate-openmemory-mcp:8765/api/v1/:path*',
       },
     ];
   },

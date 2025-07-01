@@ -1,0 +1,35 @@
+[
+  {
+    "name": "email",
+    "type": "email",
+    "config": {
+      "recipient": "admin@localhost",
+      "subject_prefix": "[Memory-C* Alert]"
+    },
+    "enabled": true
+  },
+  {
+    "name": "desktop",
+    "type": "desktop",
+    "config": {
+      "timeout": 5000
+    },
+    "enabled": true
+  },
+  {
+    "name": "webhook",
+    "type": "webhook",
+    "config": {
+      "endpoints": []
+    },
+    "enabled": false
+  },
+  {
+    "name": "log",
+    "type": "log",
+    "config": {
+      "log_file": "alerts.log"
+    },
+    "enabled": true
+  }
+]

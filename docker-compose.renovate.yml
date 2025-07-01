@@ -1,0 +1,222 @@
+# Renovate Branch Deployment - Isolated Testing Environment
+# Port offset: +1000 from main branch to avoid conflicts
+# Network: renovate-network for complete isolation
+
+services:
+  # Mem0 Server (Main Application)
+  renovate-mem0:
+    build:
+      context: mem0
+      dockerfile: server/dev.Dockerfile
+    container_name: renovate-mem0-server
+    ports:
+      - "9888:8000"  # Main: 8888 -> Renovate: 9888
+    environment:
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+      - POSTGRES_SERVER=renovate-postgres
+      - NEO4J_URI=bolt://renovate-neo4j:7687
+    volumes:
+      - ./mem0/server/history:/app/history
+      - ./mem0/server:/app
+      - ./mem0/mem0:/app/packages/mem0
+    depends_on:
+      renovate-postgres:
+        condition: service_healthy
+      renovate-neo4j:
+        condition: service_healthy
+    networks:
+      - renovate-network
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL Database  
+  renovate-postgres:
+    image: ankane/pgvector:v0.5.1
+    container_name: renovate-postgres-db
+    ports:
+      - "9432:5432"  # Main: 8432 -> Renovate: 9432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=renovate_mem0
+    volumes:
+      - renovate_postgres_data:/var/lib/postgresql/data
+    networks:
+      - renovate-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-d", "renovate_mem0", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Neo4j Graph Database
+  renovate-neo4j:
+    image: neo4j:5.26.4
+    container_name: renovate-neo4j-graph
+    ports:
+      - "9474:7474"  # Main: 8474 -> Renovate: 9474 (HTTP)
+      - "9687:7687"  # Main: 8687 -> Renovate: 9687 (Bolt)
+    environment:
+      - NEO4J_AUTH=neo4j/renovate_password
+      - NEO4J_dbms_security_procedures_unrestricted=gds.*,apoc.*
+      - NEO4J_dbms_security_procedures_allowlist=gds.*,apoc.*
+    volumes:
+      - renovate_neo4j_data:/data
+    networks:
+      - renovate-network
+    healthcheck:
+      test: wget http://localhost:7474 || exit 1
+      interval: 1s
+      timeout: 10s
+      retries: 20
+
+  # Qdrant Vector Database
+  renovate-qdrant:
+    image: qdrant/qdrant:latest
+    container_name: renovate-qdrant-vector
+    ports:
+      - "7333:6333"  # Main: 6333 -> Renovate: 7333
+    volumes:
+      - renovate_qdrant_data:/qdrant/storage
+    networks:
+      - renovate-network
+    environment:
+      - QDRANT__SERVICE__HTTP_PORT=6333
+
+  # OpenMemory MCP API
+  renovate-openmemory-mcp:
+    build:
+      context: mem0/openmemory/api
+      dockerfile: Dockerfile
+    container_name: renovate-openmemory-mcp
+    ports:
+      - "9765:8765"  # Main: 8765 -> Renovate: 9765
+    environment:
+      - USER=renovate-user
+      - QDRANT_HOST=renovate-qdrant
+      - QDRANT_PORT=6333
+      - API_ENV=renovate-testing
+    depends_on:
+      - renovate-qdrant
+    volumes:
+      - ./mem0/openmemory/api:/usr/src/openmemory
+    networks:
+      - renovate-network
+    command: uvicorn main:app --host 0.0.0.0 --port 8765 --reload
+
+  # OpenMemory UI (Next.js Frontend)
+  renovate-openmemory-ui:
+    build:
+      context: mem0/openmemory/ui
+      dockerfile: Dockerfile.renovate
+    container_name: renovate-openmemory-ui
+    ports:
+      - "4000:4000"  # Using port 4000 internally and externally for renovate
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:9765
+      - NEXT_PUBLIC_USER_ID=renovate-user
+      - NODE_ENV=development
+      - PORT=4000  # Explicitly set the port to 4000
+      - HOSTNAME=0.0.0.0
+      - DOCKER_ENV=true  # Enable Docker-specific configuration
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # Enable host.docker.internal on Linux
+    depends_on:
+      - renovate-openmemory-mcp
+    networks:
+      - renovate-network
+
+  # Custom GPT Adapter API
+  renovate-custom-gpt-api:
+    build:
+      context: custom-gpt-adapter
+      dockerfile: docker/Dockerfile.api
+    container_name: renovate-custom-gpt-api
+    ports:
+      - "9000:8000"  # Separate port for custom GPT adapter
+    environment:
+      - POSTGRES_SERVER=renovate-postgres
+      - REDIS_HOST=renovate-redis
+      - MEMORY_BANK_API_URL=http://renovate-openmemory-mcp:8765
+    depends_on:
+      renovate-postgres:
+        condition: service_healthy
+      renovate-redis:
+        condition: service_healthy
+    volumes:
+      - ./custom-gpt-adapter/app:/app/app
+    networks:
+      - renovate-network
+
+  # Redis Cache
+  renovate-redis:
+    image: redis:7-alpine
+    container_name: renovate-redis-cache
+    ports:
+      - "7379:6379"  # Main: 6379 -> Renovate: 7379
+    volumes:
+      - renovate_redis_data:/data
+    networks:
+      - renovate-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Monitoring: Prometheus
+  renovate-prometheus:
+    image: prom/prometheus:latest
+    container_name: renovate-prometheus
+    ports:
+      - "9091:9090"  # Main: 9090 -> Renovate: 9091
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - renovate_prometheus_data:/prometheus
+    networks:
+      - renovate-network
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+
+  # Monitoring: Grafana
+  renovate-grafana:
+    image: grafana/grafana:latest
+    container_name: renovate-grafana
+    ports:
+      - "4001:3000"  # Different port for renovate Grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=renovate_admin
+    volumes:
+      - renovate_grafana_data:/var/lib/grafana
+    depends_on:
+      - renovate-prometheus
+    networks:
+      - renovate-network
+
+volumes:
+  renovate_postgres_data:
+    driver: local
+  renovate_neo4j_data:
+    driver: local
+  renovate_qdrant_data:
+    driver: local
+  renovate_redis_data:
+    driver: local
+  renovate_prometheus_data:
+    driver: local
+  renovate_grafana_data:
+    driver: local
+
+networks:
+  renovate-network:
+    driver: bridge
+    name: renovate-testing-network
+    ipam:
+      config:
+        - subnet: 172.30.0.0/16 
