@@ -8,12 +8,11 @@ celery
 python-dotenv
 pydantic-settings
 passlib[bcrypt]
-python-jose[cryptography]
+PyJWT
 prometheus-fastapi-instrumentator
 pytest
 httpx
 pytest-asyncio
-python-multipart
 pybreaker
 slowapi
 pytest-cov
