@@ -39,6 +39,7 @@ from mem0.memory.utils import (
 )
 from mem0.utils.factory import EmbedderFactory, LlmFactory, VectorStoreFactory
 from .metadata_utils import _build_filters_and_metadata  # Moved from inline definition
+from .graph_ops import GraphOperations
 
 
 setup_config()
@@ -118,6 +119,9 @@ class Memory(MemoryBase):
             self.config.vector_store.provider, self.config.vector_store.config
         )
         capture_event("mem0.init", self, {"sync_type": "sync"})
+
+        # Encapsulate graph interactions in dedicated helper
+        self.graph_ops = GraphOperations(self.graph, self.enable_graph)
 
     @classmethod
     def from_config(cls, config_dict: Dict[str, Any]):
@@ -446,15 +450,8 @@ class Memory(MemoryBase):
         return returned_memories
 
     def _add_to_graph(self, messages, filters):
-        added_entities = []
-        if self.enable_graph:
-            if filters.get("user_id") is None:
-                filters["user_id"] = "user"
-
-            data = "\n".join([msg["content"] for msg in messages if "content" in msg and msg["role"] != "system"])
-            added_entities = self.graph.add(data, filters)
-
-        return added_entities
+        # Delegates to GraphOperations helper (no logic change)
+        return self.graph_ops.add(messages, filters)
 
     def get(self, memory_id):
         """
@@ -1113,6 +1110,9 @@ class AsyncMemory(MemoryBase):
 
         capture_event("mem0.init", self, {"sync_type": "async"})
 
+        # Encapsulate graph interactions in dedicated helper (async context shares the same class)
+        self.graph_ops = GraphOperations(self.graph, self.enable_graph)
+
     @classmethod
     async def from_config(cls, config_dict: Dict[str, Any]):
         try:
@@ -1407,15 +1407,8 @@ class AsyncMemory(MemoryBase):
         return returned_memories
 
     async def _add_to_graph(self, messages, filters):
-        added_entities = []
-        if self.enable_graph:
-            if filters.get("user_id") is None:
-                filters["user_id"] = "user"
-
-            data = "\n".join([msg["content"] for msg in messages if "content" in msg and msg["role"] != "system"])
-            added_entities = await asyncio.to_thread(self.graph.add, data, filters)
-
-        return added_entities
+        # Delegate to GraphOperations async helper to avoid blocking the event loop
+        return await self.graph_ops.add_async(messages, filters)
 
     async def get(self, memory_id):
         """
