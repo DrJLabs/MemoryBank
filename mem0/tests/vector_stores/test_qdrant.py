@@ -1,6 +1,7 @@
 import unittest
 import uuid
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
+import pytest
 
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointIdsList, PointStruct, VectorParams
@@ -113,3 +114,88 @@ class TestQdrant(unittest.TestCase):
 
     def tearDown(self):
         del self.qdrant
+
+
+@pytest.fixture
+def qdrant_store():
+    with patch('mem0.vector_stores.qdrant.qdrant_client') as mock_qdrant_client:
+        store = Qdrant()
+        store.client = mock_qdrant_client.QdrantClient.return_value
+        store.collection_name = "test_collection"
+        yield store
+
+
+def test_search(qdrant_store):
+    """Test the search method."""
+    query_embedding = [0.1, 0.2, 0.3]
+    limit = 5
+    filters = {"user_id": "123"}
+    
+    # Mock the response from the qdrant client's search method
+    mock_search_result = [MagicMock(payload={"text": "result1", "metadata": filters}, score=0.9)]
+    qdrant_store.client.search.return_value = mock_search_result
+    
+    results = qdrant_store.search(embedding=query_embedding, limit=limit, filters=filters)
+    
+    qdrant_store.client.search.assert_called_once()
+    _, kwargs = qdrant_store.client.search.call_args
+    assert kwargs['collection_name'] == "test_collection"
+    assert kwargs['query_vector'] == query_embedding
+    assert kwargs['limit'] == limit
+    
+    assert len(results) == 1
+    assert results[0]['text'] == "result1"
+    assert results[0]['score'] == 0.9
+
+
+def test_insert(qdrant_store):
+    """Test the insert method."""
+    points = [{"id": "1", "embedding": [0.4, 0.5, 0.6], "metadata": {"text": "point1"}}]
+    
+    qdrant_store.insert(points)
+    
+    qdrant_store.client.upsert.assert_called_once()
+    _, kwargs = qdrant_store.client.upsert.call_args
+    assert kwargs['collection_name'] == "test_collection"
+    assert len(kwargs['points']) == 1
+
+
+def test_delete(qdrant_store):
+    """Test the delete method."""
+    filters = {"user_id": "123"}
+    
+    qdrant_store.delete(filters=filters)
+    
+    qdrant_store.client.delete.assert_called_once()
+    _, kwargs = qdrant_store.client.delete.call_args
+    assert kwargs['collection_name'] == "test_collection"
+    assert "must_be" in str(kwargs['points_selector'])
+
+
+def test_get(qdrant_store):
+    """Test the get method."""
+    memory_id = "test_id"
+    mock_retrieved_points = [MagicMock(payload={"text": "retrieved_point"})]
+    qdrant_store.client.retrieve.return_value = mock_retrieved_points
+    
+    result = qdrant_store.get(id=memory_id)
+    
+    qdrant_store.client.retrieve.assert_called_once_with(
+        collection_name="test_collection",
+        ids=[memory_id],
+        with_payload=True
+    )
+    assert result['text'] == 'retrieved_point'
+
+
+def test_list(qdrant_store):
+    """Test the list method."""
+    filters = {"user_id": "123"}
+    mock_scroll_result = ([MagicMock(payload={"text": "item1"})], "next_page_token")
+    qdrant_store.client.scroll.return_value = mock_scroll_result
+
+    results = qdrant_store.list(filters=filters)
+
+    qdrant_store.client.scroll.assert_called_once()
+    assert len(results) == 1
+    assert results[0]['text'] == "item1"
