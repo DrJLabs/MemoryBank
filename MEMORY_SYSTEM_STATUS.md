@@ -58,6 +58,10 @@
 - `mem-health` - Check memory service health
 - `mem-ui` - Open Memory UI at http://localhost:3010
 
+## 📋 Memory Commands Reference
+
+The full and authoritative list of memory commands is now maintained in [`docs/reference/MEMORY_COMMANDS.md`](docs/reference/MEMORY_COMMANDS.md). Please refer to that file to ensure you are using the most up-to-date commands.
+
 ---
 
 ## 🎯 Memory Categories

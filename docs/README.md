@@ -21,6 +21,9 @@
 ### **📋 For Decision Context**
 ➡️ **[AI_WORKSPACE/DECISION_LOGS.md](AI_WORKSPACE/DECISION_LOGS.md)** - Decision tracking and rationale
 
+### **🗂️ Memory Commands Reference**
+➡️ **[reference/MEMORY_COMMANDS.md](reference/MEMORY_COMMANDS.md)** - Comprehensive CLI command list
+
 ---
 
 ## 🧠 **System Overview**

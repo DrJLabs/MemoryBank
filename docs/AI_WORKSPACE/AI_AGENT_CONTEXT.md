@@ -30,22 +30,8 @@
 ## 🧠 **Memory System Integration**
 
 ### **Available Memory Commands for Agents**
-```bash
-# Context Retrieval (USE BEFORE TASKS)
-ai-get-context "your query" [type]    # Rich AI context with scoring
-ai-ctx-tech "technical query"         # Technical context
-ai-ctx-project "project query"        # Project-specific context  
-ai-ctx-workflow "workflow query"      # Process context
-ai-ctx-pref "preference query"        # User preference context
-
-# Memory Storage (USE AFTER TASKS)
-ai-add-smart "insight or solution"    # Auto-categorized memory
-ai-add "text" [TECHNICAL|PREFERENCE|PROJECT|WORKFLOW|LEARNING]
-
-# System Intelligence
-ai-analytics                          # Memory system analytics
-ai-search "query" [category]         # Search existing memories
-```
+### 🗂️ Memory Commands Quick Reference
+For the full and authoritative command list, see [../reference/MEMORY_COMMANDS.md](../reference/MEMORY_COMMANDS.md)
 
 ### **Memory Categories for AI Storage**
 - **TECHNICAL**: Code solutions, frameworks, configurations, debugging
