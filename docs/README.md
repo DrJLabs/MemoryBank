@@ -30,6 +30,9 @@
 ### **🧪 Testing & QA Guide**
 ➡️ **[reference/TESTING_GUIDE.md](reference/TESTING_GUIDE.md)** - Canonical testing & quality assurance
 
+### **🚀 Deployment & Ops Guide**
+➡️ **[reference/DEPLOYMENT_GUIDE.md](reference/DEPLOYMENT_GUIDE.md)** - Canonical deployment & operations instructions
+
 ---
 
 ## 🧠 **System Overview**
