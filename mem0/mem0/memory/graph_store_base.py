@@ -56,3 +56,7 @@ class GraphStoreBase(abc.ABC):
     @abc.abstractmethod
     def get_all(self, filters, limit=100):
         """Return graph relationships for *filters* up to *limit*."""
+
+    def __init__(self, config):
+        """Store shared configuration reference for subclasses."""
+        self.config = config
