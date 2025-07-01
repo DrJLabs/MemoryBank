@@ -70,6 +70,10 @@ Workflow integration layer documenting component interaction patterns and proces
 - [PROJECT_CONTROL_CENTER.md](./PROJECT_CONTROL_CENTER.md) - Status dashboard
 - [DECISION_LOGS.md](./AI_WORKSPACE/DECISION_LOGS.md) - Decision tracking
 
+### **Architecture**
+- [architecture.md](./architecture.md) – Core Memory Bank System architecture
+- [brownfield-architecture.md](./brownfield-architecture.md) – Custom GPT Adapter microservice architecture
+
 ---
 
 ## Documentation System Features

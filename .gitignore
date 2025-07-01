@@ -184,3 +184,8 @@ docs/build/
 *.dump
 *.backup
 *.bak
+
+# Ignore backups directory and its contents
+!backups/
+!backups/README.md
+!backups/.gitkeep
