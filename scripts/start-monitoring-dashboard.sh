@@ -30,7 +30,7 @@ print_banner() {
     echo -e "${BLUE}"
     echo "🔐 Memory-C* Infisical Monitoring Dashboard"
     echo "Architecture: Enterprise-Grade Secret Management Monitoring"
-    echo "=" * 60
+    printf '=%.0s' {1..60}; echo
     echo -e "${NC}"
 }
 
@@ -230,7 +230,7 @@ show_dashboard_info() {
     
     echo -e "${GREEN}"
     echo "🎉 Infisical Monitoring Dashboard is LIVE!"
-    echo "=" * 50
+    printf '=%.0s' {1..50}; echo
     echo -e "${NC}"
     echo "📊 Dashboard URL: $dashboard_url"
     echo "📁 Dashboard File: $(pwd)/monitoring/dashboards/infisical-dashboard.html"
@@ -289,7 +289,7 @@ stop_monitoring() {
 
 show_status() {
     echo -e "${BLUE}🔐 Infisical Monitoring Status${NC}"
-    echo "=" * 40
+    printf '=%.0s' {1..40}; echo
     
     # Check monitoring process
     if [[ -f "$PID_FILE" ]]; then

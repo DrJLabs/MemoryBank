@@ -1,6 +1,10 @@
 #!/bin/bash
 
-set -e
+# Context7 Shell Best Practices: strict mode for safer scripts
+set -euo pipefail
+
+# Ensure required commands are present early (Context7 Shell Patterns)
+command -v curl >/dev/null 2>&1 || { echo "❌ curl is required but not installed."; exit 1; }
 
 echo "🚀 Starting OpenMemory installation..."
 
@@ -33,10 +37,16 @@ if [ $(docker ps -aq -f name=mem0_ui) ]; then
   docker rm -f mem0_ui
 fi
 
-# Find an available port starting from 3000
 echo "🔍 Looking for available port for frontend..."
+# Use lsof if available, otherwise fallback to ss
 for port in {3000..3010}; do
-  if ! lsof -i:$port >/dev/null 2>&1; then
+  if command -v lsof >/dev/null 2>&1; then
+    port_in_use=$(lsof -i :$port | wc -l)
+  else
+    port_in_use=$(ss -ltn "sport = :$port" | grep -c LISTEN || true)
+  fi
+
+  if [[ $port_in_use -eq 0 ]]; then
     FRONTEND_PORT=$port
     break
   fi

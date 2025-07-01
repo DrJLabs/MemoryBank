@@ -7,7 +7,7 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     && rm -rf /var/lib/apt/lists/*
@@ -29,6 +29,11 @@ ENV PYTHONPATH=/app:$PYTHONPATH
 
 # Create test reports directory
 RUN mkdir -p /app/reports/bmad
+
+# Create non-root user for running tests (Context7 Docker Hardening)
+RUN groupadd -r tester && useradd -r -g tester tester && mkdir -p /home/tester && chown -R tester:tester /app
+
+USER tester
 
 # Default command runs all BMAD tests with coverage
 CMD ["pytest", "tests/bmad/", "-v", "--cov=.bmad-core", "--cov-report=html:/app/reports/bmad/coverage", "--cov-report=term", "--html=/app/reports/bmad/test-report.html", "--self-contained-html"] 
