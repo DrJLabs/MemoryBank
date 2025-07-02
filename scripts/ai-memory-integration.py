@@ -5,11 +5,9 @@ Implements conversational memory best practices from LangChain and modern AI sys
 """
 
 import sys
-import json
 import requests
 import os
 from typing import List, Dict, Any, Optional
-from datetime import datetime
 from collections import Counter
 import re
 
@@ -397,10 +395,10 @@ def main():
         
         print(f"📊 Search Results: {results['memory_summary']}")
         if results['should_consider']:
-            print(f"✅ Should enrich AI response: YES")
+            print("✅ Should enrich AI response: YES")
             print(f"📝 Context: {len(results['relevant_memories'])} relevant memories found")
         else:
-            print(f"❌ Should enrich AI response: NO")
+            print("❌ Should enrich AI response: NO")
     
     elif command == "demo":
         ai_memory.demonstrate_proper_usage()

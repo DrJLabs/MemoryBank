@@ -1,6 +1,6 @@
 from pydantic import computed_field
 from pydantic_settings import BaseSettings
-from typing import List, Union
+from typing import List
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Custom GPT Adapter Service"

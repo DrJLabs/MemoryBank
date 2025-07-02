@@ -8,7 +8,6 @@ import http.server
 import socketserver
 import socket
 import json
-import time
 from datetime import datetime
 
 def find_free_port(start=8080):

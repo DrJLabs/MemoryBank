@@ -3,7 +3,6 @@
 Debug script to identify memory system issues
 """
 
-import sys
 import requests
 import os
 

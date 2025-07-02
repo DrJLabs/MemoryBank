@@ -16,12 +16,9 @@ import sqlite3
 import time
 import requests
 import subprocess
-import os
 import sys
-from datetime import datetime, timedelta
-import matplotlib.pyplot as plt
-import numpy as np
-from typing import Dict, List, Tuple, Optional
+from datetime import datetime
+from typing import Dict
 
 class FixedGrowthAnalyzer:
     def __init__(self, db_path: str = "growth_analysis.db"):

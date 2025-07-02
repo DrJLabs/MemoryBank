@@ -287,7 +287,7 @@ class WeekOneMonitor:
             events = cursor.fetchall()
             
         report = {
-            "monitoring_period": f"Week One Monitoring",
+            "monitoring_period": "Week One Monitoring",
             "total_measurements": stats[0] if stats[0] else 0,
             "average_api_response": f"{stats[1]:.2f}s" if stats[1] else "N/A",
             "average_cpu_usage": f"{stats[2]:.1f}%" if stats[2] else "N/A",
@@ -324,7 +324,7 @@ def main():
     
     if args.test:
         metrics = monitor.collect_metrics()
-        print(f"✅ Test measurement:")
+        print("✅ Test measurement:")
         print(f"   Status: {metrics['status']}")
         print(f"   Memories: {metrics['memory_count']}")
         print(f"   API Response: {metrics['api_response_time']:.2f}s")

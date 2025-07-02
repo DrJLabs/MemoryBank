@@ -5,11 +5,9 @@ Automated project management using GitHub Projects API
 """
 
 import os
-import json
 import asyncio
 import logging
-from datetime import datetime
-from typing import Dict, List, Optional, Any
+from typing import Dict, List
 import requests
 from dataclasses import dataclass
 

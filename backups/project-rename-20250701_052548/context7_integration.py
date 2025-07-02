@@ -11,12 +11,10 @@ Integration: Context7 MCP + Memory-C* Storage
 """
 
 import asyncio
-import json
 import logging
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
 from dataclasses import dataclass
-from pathlib import Path
 
 # Optional httpx import for async HTTP requests
 try:
@@ -382,7 +380,7 @@ Tokens: {tokens}
             memory_content += f"\n\nContext7 docs:\n{content}"
             
             if patterns:
-                memory_content += f"\n\nExtracted patterns:\n" + "\n".join(patterns)
+                memory_content += "\n\nExtracted patterns:\n" + "\n".join(patterns)
             
             memory_id = None
             if hasattr(self.memory_system, 'add_memory'):

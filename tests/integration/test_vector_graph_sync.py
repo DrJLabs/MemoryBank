@@ -17,10 +17,8 @@ After the fix:
 - Single-store mode available for reduced complexity
 """
 
-import os
 import sys
 import logging
-import json
 from pathlib import Path
 
 # Add the mem0 directory to the path
@@ -162,7 +160,7 @@ def test_vector_graph_sync():
             return {"deleted_entities": list(self.nodes.keys())}
     
     # Import sync manager
-    from mem0.memory.sync_manager import MemorySyncManager, OperationType
+    from mem0.memory.sync_manager import MemorySyncManager
     
     # Test successful operation
     print("\n📋 Test 3a: Both stores succeed")

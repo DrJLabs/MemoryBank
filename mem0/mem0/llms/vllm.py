@@ -6,6 +6,13 @@ from mem0.configs.llms.base import BaseLlmConfig
 from mem0.llms.base import LLMBase
 from mem0.memory.utils import extract_json
 
+# Ensure the OpenAI client is available for vLLM fallback operations
+try:
+    from openai import OpenAI  # type: ignore
+except ImportError:  # pragma: no cover
+    # Degrade gracefully if the OpenAI SDK is missing – runtime will raise clearer error once used
+    OpenAI = None  # type: ignore
+
 
 class VllmLLM(LLMBase):
     def __init__(self, config: Optional[BaseLlmConfig] = None):
@@ -16,6 +23,9 @@ class VllmLLM(LLMBase):
 
         self.config.api_key = self.config.api_key or os.getenv("VLLM_API_KEY") or "vllm-api-key"
         base_url = self.config.vllm_base_url or os.getenv("VLLM_BASE_URL")
+
+        if OpenAI is None:
+            raise ImportError("openai package is required for VllmLLM but not installed")
 
         self.client = OpenAI(base_url=base_url, api_key=self.config.api_key)
 

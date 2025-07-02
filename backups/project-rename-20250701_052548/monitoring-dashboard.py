@@ -10,10 +10,9 @@ import time
 import psutil
 import requests
 import subprocess
-from datetime import datetime, timedelta
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
-import threading
+from datetime import datetime
+from typing import Dict, Any
+from dataclasses import dataclass
 from pathlib import Path
 import sqlite3
 
@@ -355,7 +354,7 @@ class MemorySystemMonitor:
     async def start_monitoring(self):
         """Start the monitoring loop"""
         self.running = True
-        print(f"🚀 Starting Advanced Memory System Monitor")
+        print("🚀 Starting Advanced Memory System Monitor")
         print(f"📊 Monitoring interval: {self.config['monitoring_interval']} seconds")
         print(f"🎯 API URL: {self.config['api_url']}")
         
@@ -417,7 +416,7 @@ def main():
     
     if args.test:
         metrics = monitor.collect_system_metrics()
-        print(f"✅ Test collection successful:")
+        print("✅ Test collection successful:")
         print(f"   Memory Count: {metrics.memory_count}")
         print(f"   API Response: {metrics.api_response_time:.2f}s")
         print(f"   CPU Usage: {metrics.cpu_usage:.1f}%")

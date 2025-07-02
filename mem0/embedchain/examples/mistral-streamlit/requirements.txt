@@ -1,2 +1,3 @@
-streamlit==1.29.0
-embedchain
+streamlit>=1.37.0
+openai
+embedchain[mistral]

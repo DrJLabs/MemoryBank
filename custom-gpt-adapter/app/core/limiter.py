@@ -1,8 +1,6 @@
 from slowapi import Limiter
-from slowapi.util import get_remote_address
 from fastapi import Request
 
-from app.api.deps import get_current_application
 from app.models.custom_gpt import CustomGPTApplication
 
 def get_rate_limit(request: Request):

@@ -11,7 +11,7 @@ import time
 import logging
 import threading
 import subprocess
-from typing import Dict, List, Optional, Any, Tuple
+from typing import Dict, List, Optional, Any
 from dataclasses import dataclass, asdict
 from datetime import datetime, timedelta
 import hashlib
@@ -491,23 +491,23 @@ def main():
         report = optimizer.generate_performance_report()
 
         # Display results
-        print(f"\n📊 Performance Report:")
+        print("\n📊 Performance Report:")
         print(f"  Grade: {report['performance_grade']}")
         print(f"  Score: {report['optimization_score']:.1f}/100")
         print(f"  Cache Hit Rate: {metrics.cache_hit_rate:.1%}")
         print(f"  Avg Load Time: {metrics.avg_secret_load_time:.3f}s")
         print(f"  Memory Usage: {metrics.memory_usage_mb:.1f}MB")
 
-        print(f"\n🎯 Recommendations:")
+        print("\n🎯 Recommendations:")
         for rec in report['recommendations']:
             print(f"  {rec}")
 
         if optimization_result['recommendations']:
-            print(f"\n🔧 Optimizations Applied:")
+            print("\n🔧 Optimizations Applied:")
             for opt in optimization_result['recommendations']:
                 print(f"  ✅ {opt}")
 
-        print(f"\n📋 Report saved to: reports/infisical-performance-report.json")
+        print("\n📋 Report saved to: reports/infisical-performance-report.json")
 
         # Store success in memory system
         if os.system("command -v ai-add-smart >/dev/null 2>&1") == 0:

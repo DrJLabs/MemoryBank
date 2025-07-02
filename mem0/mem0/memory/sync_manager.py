@@ -3,7 +3,7 @@ import asyncio
 from typing import Dict, Any, Optional, Callable, List
 from enum import Enum
 from dataclasses import dataclass
-from concurrent.futures import ThreadPoolExecutor, Future
+from concurrent.futures import ThreadPoolExecutor
 import threading
 import time
 
@@ -316,7 +316,7 @@ class MemorySyncManager:
                 
             elif vector_success and not graph_success:
                 # Vector succeeded, graph failed - rollback vector
-                logger.warning(f"Graph operation failed, rolling back vector operation")
+                logger.warning("Graph operation failed, rolling back vector operation")
                 self._rollback_operations(context)
                 
                 return {
@@ -329,7 +329,7 @@ class MemorySyncManager:
                 
             elif not vector_success and graph_success:
                 # Graph succeeded, vector failed - this is unusual since vector is primary
-                logger.error(f"Vector operation failed but graph succeeded")
+                logger.error("Vector operation failed but graph succeeded")
                 
                 return {
                     "success": False, 
@@ -341,7 +341,7 @@ class MemorySyncManager:
                 
             else:
                 # Both failed
-                logger.error(f"Both vector and graph operations failed")
+                logger.error("Both vector and graph operations failed")
                 
                 return {
                     "success": False,
@@ -409,7 +409,7 @@ class AsyncMemorySyncManager(MemorySyncManager):
             }
             
         elif vector_success and not graph_success:
-            logger.warning(f"Graph operation failed, rolling back vector operation")
+            logger.warning("Graph operation failed, rolling back vector operation")
             await asyncio.to_thread(self._rollback_operations, context)
             
             return {
@@ -421,7 +421,7 @@ class AsyncMemorySyncManager(MemorySyncManager):
             }
             
         elif not vector_success and graph_success:
-            logger.error(f"Vector operation failed but graph succeeded")
+            logger.error("Vector operation failed but graph succeeded")
             
             return {
                 "success": False,
@@ -432,7 +432,7 @@ class AsyncMemorySyncManager(MemorySyncManager):
             }
             
         else:
-            logger.error(f"Both vector and graph operations failed")
+            logger.error("Both vector and graph operations failed")
             
             return {
                 "success": False,

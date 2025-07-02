@@ -6,12 +6,11 @@ Utilizes full OpenMemory API capabilities: pagination, filtering, categories, ap
 """
 
 import sys
-import json
 import requests
 import os
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Tuple
 from datetime import datetime, timedelta
-from collections import Counter, defaultdict
+from collections import Counter
 import re
 from dataclasses import dataclass
 from enum import Enum
@@ -124,7 +123,7 @@ class AdvancedAIMemory:
                     all_memories.extend(data["items"])
                     search_strategies.append(f"{strategy}({len(data['items'])})")
                     
-            except Exception as e:
+            except Exception:
                 search_strategies.append(f"{strategy}(error)")
         
         # Strategy 2: Get related memories for relevant results

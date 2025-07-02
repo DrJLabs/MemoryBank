@@ -8,9 +8,8 @@ import socket
 import json
 import os
 import subprocess
-import time
 from datetime import datetime
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict, Optional
 
 PORT_REGISTRY = "/tmp/cursor-port-registry.json"
 COMMON_PORTS = [3000, 3001, 3010, 5000, 5001, 8000, 8001, 8080, 8081, 8765, 9000, 9001]

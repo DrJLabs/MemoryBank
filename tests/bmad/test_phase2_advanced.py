@@ -11,7 +11,6 @@ This module integrates:
 
 import sys
 import time
-import pytest
 from typing import Dict, Any, List
 from pathlib import Path
 
@@ -24,7 +23,7 @@ from tests.bmad.behavior.step_definitions.agent_steps import (
     BMAdBDDTestRunner, context, mock_agents, mock_memory
 )
 from tests.bmad.properties.memory_properties import (
-    BMAdMemoryPropertyTests, BMAdPropertyTestStrategy, MockAdvancedMemorySystem
+    BMAdMemoryPropertyTests, MockAdvancedMemorySystem
 )
 
 class BMAdPhase2AdvancedTestSuite:
@@ -104,7 +103,7 @@ class BMAdPhase2AdvancedTestSuite:
             "status": "PASSED" if passed_scenarios == total_scenarios else "FAILED"
         }
         
-        print(f"\n📋 **BDD Results Summary**")
+        print("\n📋 **BDD Results Summary**")
         print(f"Scenarios: {passed_scenarios}/{total_scenarios} passed")
         print(f"Success Rate: {bdd_results['success_rate']:.1f}%")
         
@@ -118,7 +117,7 @@ class BMAdPhase2AdvancedTestSuite:
         # Execute property-based tests
         property_results = self.property_tester.run_all_property_tests()
         
-        print(f"\n📊 **Property Testing Results Summary**")
+        print("\n📊 **Property Testing Results Summary**")
         print(f"Tests: {property_results['tests_passed']}/{property_results['total_tests']} passed")
         print(f"Success Rate: {property_results['success_rate']:.1f}%")
         
@@ -232,7 +231,7 @@ class BMAdPhase2AdvancedTestSuite:
             "test_details": integration_tests
         }
         
-        print(f"\n🔗 **Integration Testing Results Summary**")
+        print("\n🔗 **Integration Testing Results Summary**")
         print(f"Tests: {passed_integration}/{total_integration} passed")
         print(f"Success Rate: {integration_results['success_rate']:.1f}%")
         
@@ -374,12 +373,12 @@ class BMAdPhase2AdvancedTestSuite:
             print(f"Execution Time: {final_report['execution_time']:.2f}s")
             print(f"Status: {final_report['status']}")
             
-            print(f"\n📋 **Component Results:**")
+            print("\n📋 **Component Results:**")
             print(f"  BDD Testing: {self.test_results['bdd']['success_rate']:.1f}%")
             print(f"  Property Testing: {self.test_results['property']['success_rate']:.1f}%")
             print(f"  Integration Testing: {self.test_results['integration']['success_rate']:.1f}%")
             
-            print(f"\n💡 **Recommendations:**")
+            print("\n💡 **Recommendations:**")
             for i, rec in enumerate(final_report['recommendations'], 1):
                 print(f"  {i}. {rec}")
             

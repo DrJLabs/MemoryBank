@@ -8,9 +8,8 @@ This CLI provides fine-grained control over what gets reset in the memory system
 import argparse
 import sys
 import logging
-from typing import Optional
 from mem0 import Memory
-from mem0.memory.reset_manager import ResetOptions, ResetScope
+from mem0.memory.reset_manager import ResetOptions
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)

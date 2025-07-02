@@ -130,7 +130,7 @@ def generate_html_docs(openapi_spec, output_dir: str):
     os.makedirs(output_dir, exist_ok=True)
 
     # Create ReDoc HTML
-    redoc_html = f"""
+    redoc_html = """
 <!DOCTYPE html>
 <html>
 <head>
@@ -139,10 +139,10 @@ def generate_html_docs(openapi_spec, output_dir: str):
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">
     <style>
-        body {{
+        body {
             margin: 0;
             padding: 0;
-        }}
+        }
     </style>
 </head>
 <body>
@@ -188,7 +188,7 @@ with socketserver.TCPServer(("", PORT), Handler) as httpd:
         f.write(server_script)
     os.chmod(server_path, 0o755)
 
-    print(f"\nTo view the documentation locally, run:")
+    print("\nTo view the documentation locally, run:")
     print(f"  python {server_path}")
 
 
@@ -345,7 +345,7 @@ def main():
         postman_path = os.path.join(args.output_dir, "custom-gpt-adapter.postman_collection.json")
         generate_postman_collection(openapi_spec, postman_path)
 
-    print(f"\nDocumentation generation complete!")
+    print("\nDocumentation generation complete!")
     print(f"Files are located in: {args.output_dir}")
 
 

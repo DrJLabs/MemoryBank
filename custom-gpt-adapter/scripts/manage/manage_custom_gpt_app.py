@@ -286,8 +286,8 @@ def main():
     try:
         if args.command == "create":
             result = create_application(args.name, args.permissions, args.rate_limit)
-            print(f"\nApplication created successfully!")
-            print(f"\nIMPORTANT: Save these credentials securely. The client secret will not be shown again.\n")
+            print("\nApplication created successfully!")
+            print("\nIMPORTANT: Save these credentials securely. The client secret will not be shown again.\n")
             print(f"Name: {result['name']}")
             print(f"Client ID: {result['client_id']}")
             print(f"Client Secret: {result['client_secret']}")
@@ -308,7 +308,7 @@ def main():
 
         elif args.command == "update":
             result = update_application(args.client_id, args.name, args.permissions, args.rate_limit)
-            print(f"\nApplication updated successfully!")
+            print("\nApplication updated successfully!")
             print(f"Name: {result['name']}")
             print(f"Client ID: {result['client_id']}")
             print(f"Permissions: {', '.join(result['permissions'])}")
@@ -320,8 +320,8 @@ def main():
 
         elif args.command == "reset-secret":
             new_secret = reset_client_secret(args.client_id)
-            print(f"\nClient secret reset successfully!")
-            print(f"\nIMPORTANT: Save this secret securely. It will not be shown again.\n")
+            print("\nClient secret reset successfully!")
+            print("\nIMPORTANT: Save this secret securely. It will not be shown again.\n")
             print(f"New Client Secret: {new_secret}")
 
         elif args.command == "stats":
@@ -330,14 +330,14 @@ def main():
             print(f"Client ID: {stats['application']['client_id']}")
             print(f"Created: {stats['application']['created_at']}")
             print(f"Last Used: {stats['application']['last_used']}")
-            print(f"\nStatistics:")
+            print("\nStatistics:")
             print(f"  Total Requests: {stats['statistics']['total_requests']}")
             print(f"  Successful: {stats['statistics']['successful_requests']}")
             print(f"  Success Rate: {stats['statistics']['success_rate']}")
             print(f"  Active Sessions: {stats['statistics']['active_sessions']}")
 
             if stats['operations']:
-                print(f"\nOperations:")
+                print("\nOperations:")
                 for op, count in stats['operations'].items():
                     print(f"  {op}: {count}")
 

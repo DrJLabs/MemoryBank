@@ -5,7 +5,7 @@ Tests the comprehensive reset functionality with various scopes and options.
 """
 
 import pytest
-from unittest.mock import Mock, MagicMock, patch
+from unittest.mock import Mock
 from mem0.memory.reset_manager import (
     ResetManager, AsyncResetManager, ResetOptions, ResetScope
 )

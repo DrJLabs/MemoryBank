@@ -11,16 +11,9 @@ Tests the core functionality of the BMAD orchestrator agent including:
 
 import pytest
 import time
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock
 
 # Import BMAD test fixtures
-from tests.bmad.conftest import (
-    bmad_agent_context,
-    mock_agent_orchestrator, 
-    agent_test_scenarios,
-    quality_metrics_tracker,
-    performance_monitor
-)
 
 
 class TestBMADOrchestrator:
@@ -57,11 +50,6 @@ class TestBMADOrchestrator:
         """Test that *help command returns proper command list."""
         # Arrange
         start_time = time.time()
-        expected_response_structure = {
-            "type": "help",
-            "commands": list,
-            "agent_info": dict,
-        }
         
         # Mock help command response
         mock_agent_orchestrator.execute_command.return_value = {

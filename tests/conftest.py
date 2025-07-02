@@ -2,9 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
 import os
-import tempfile
 
 os.environ["TESTING"] = "1"
 

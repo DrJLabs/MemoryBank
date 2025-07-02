@@ -5,11 +5,10 @@ Phase 1: Foundation Testing Infrastructure
 
 import os
 import sys
-import json
 import time
 from pathlib import Path
-from typing import Dict, Any, List, Optional
-from unittest.mock import Mock, MagicMock
+from typing import Dict, Any
+from unittest.mock import Mock
 
 import pytest
 
@@ -18,7 +17,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import BMAD test configuration
-from tests.bmad import BMAD_TEST_CONFIG, BMAD_TEST_CATEGORIES
+from tests.bmad import BMAD_TEST_CONFIG
 
 
 # ==================== BMAD AGENT TESTING FIXTURES ====================
@@ -358,5 +357,5 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         if bmad_tests:
             terminalreporter.write_sep("=", "BMAD Testing Summary")
             terminalreporter.write_line(f"🔬 BMAD Tests Run: {len(bmad_tests)}")
-            terminalreporter.write_line(f"🎯 Phase 1: Foundation Testing")
+            terminalreporter.write_line("🎯 Phase 1: Foundation Testing")
             terminalreporter.write_line(f"📊 Quality Threshold: {BMAD_TEST_CONFIG['coverage_threshold']}% coverage") 

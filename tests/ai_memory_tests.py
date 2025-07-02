@@ -25,9 +25,12 @@ try:
 except ImportError:
     HYPOTHESIS_AVAILABLE = False
     # Create fallback decorators
-    given = lambda *args, **kwargs: lambda func: func
-    settings = lambda *args, **kwargs: lambda func: func
-    assume = lambda x: None
+    def given(*args, **kwargs):
+        return lambda func: func
+    def settings(*args, **kwargs):
+        return lambda func: func
+    def assume(x):
+        return None
 
 # Import our AI testing framework
 from tests.ai_testing_framework import (

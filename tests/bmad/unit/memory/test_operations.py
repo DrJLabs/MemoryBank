@@ -11,17 +11,8 @@ Tests the core memory operations including:
 
 import pytest
 import time
-from unittest.mock import Mock, patch, MagicMock
-from typing import Dict, List, Any
 
 # Import BMAD test fixtures
-from tests.bmad.conftest import (
-    mock_memory_system,
-    memory_test_data,
-    memory_property_strategies,
-    quality_metrics_tracker,
-    performance_monitor
-)
 
 
 class TestBMADMemoryOperations:
@@ -326,7 +317,7 @@ class TestBMADMemoryPerformance:
         # Test memory creation performance
         start_time = time.time()
         mock_memory_system.add.return_value = {"success": True, "id": "perf_test"}
-        result = mock_memory_system.add(content="Performance test memory")
+        mock_memory_system.add(content="Performance test memory")
         add_time = (time.time() - start_time) * 1000
         
         assert add_time < performance_thresholds["add"]
@@ -334,7 +325,7 @@ class TestBMADMemoryPerformance:
         # Test search performance
         start_time = time.time()
         mock_memory_system.search.return_value = [{"id": "search_result", "confidence": 0.9}]
-        results = mock_memory_system.search("performance test")
+        mock_memory_system.search("performance test")
         search_time = (time.time() - start_time) * 1000
         
         assert search_time < performance_thresholds["search"]
@@ -342,7 +333,7 @@ class TestBMADMemoryPerformance:
         # Test context retrieval performance
         start_time = time.time()
         mock_memory_system.get_context.return_value = {"confidence": 0.85, "relevant_memories": []}
-        context = mock_memory_system.get_context("performance context")
+        mock_memory_system.get_context("performance context")
         context_time = (time.time() - start_time) * 1000
         
         assert context_time < performance_thresholds["context"]

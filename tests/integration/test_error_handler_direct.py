@@ -5,7 +5,6 @@ Direct test of error handler implementation without package imports
 
 import sys
 import os
-import time
 import importlib.util
 
 # Load the error_handler module directly from file
@@ -39,7 +38,7 @@ def test_basic_functionality():
         return "success"
     
     result = error_handler.execute_with_handling(success_op, "test_success")
-    assert result.is_success() == True
+    assert result.is_success()
     assert result.data == "success"
     print("   ✓ Success operation works")
     
@@ -48,7 +47,7 @@ def test_basic_functionality():
         raise ValueError("Test error")
     
     result = error_handler.execute_with_handling(fail_op, "test_failure")
-    assert result.is_success() == False
+    assert not result.is_success()
     assert result.status == OperationStatus.FAILURE
     print("   ✓ Failure operation works")
 
@@ -78,7 +77,7 @@ def test_retry_mechanism():
     print(f"   Debug: Result status={result.status}, data={result.data}")
     print(f"   Debug: Warnings={result.warnings}")
     print(f"   Debug: Errors={len(result.errors)} errors")
-    assert result.is_success() == True
+    assert result.is_success()
     assert result.retry_count == 2
     assert len(result.warnings) > 0
     print(f"   ✓ Retry mechanism works - succeeded after {result.retry_count} retries")
@@ -100,12 +99,12 @@ def test_circuit_breaker():
             raise ConnectionError("Always fails")
         
         result = error_handler.execute_with_handling(fail_op, f"test_circuit_{i}")
-        assert result.is_success() == False
+        assert not result.is_success()
     
     # Circuit should be open now
     result = error_handler.execute_with_handling(fail_op, "test_circuit_open")
     # The error handler will still retry because circuit breaker exceptions are retryable
-    assert result.is_success() == False
+    assert not result.is_success()
     assert len(result.errors) > 0  # Circuit breaker errors are recorded
     print("   ✓ Circuit breaker opens after threshold")
 
@@ -135,7 +134,7 @@ def test_partial_success():
     result.add_warning("Some operations failed")
     result.data = {"completed": ["item1", "item2"], "failed": ["item3"]}
     
-    assert result.is_partial_success() == True
+    assert result.is_partial_success()
     assert not result.is_success()
     assert len(result.warnings) == 1
     print("   ✓ Partial success handling works")

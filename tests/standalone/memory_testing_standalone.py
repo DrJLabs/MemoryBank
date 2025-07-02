@@ -4,7 +4,6 @@ Standalone Memory Testing Framework for Memory-C* AI Memory System
 Based on research best practices for testing AI memory systems
 """
 
-import sys
 import os
 import asyncio
 import time
@@ -869,17 +868,17 @@ Consider user preferences and past patterns.
         print(f"✅ Tests Passed: {summary['passed_tests']}/{summary['total_tests']}")
         print(f"⏱️  Execution Time: {summary['total_execution_time']:.2f}s")
         
-        print(f"\n🎯 CURSOR INTEGRATION:")
+        print("\n🎯 CURSOR INTEGRATION:")
         cursor_readiness = quality["cursor_integration_readiness"]
         print(f"  Status: {cursor_readiness['readiness_level']}")
         print(f"  Score: {cursor_readiness['cursor_integration_score']:.1%}")
         
-        print(f"\n🚀 PRODUCTION READINESS:")
+        print("\n🚀 PRODUCTION READINESS:")
         prod_readiness = quality["production_readiness"]
         print(f"  Level: {prod_readiness['readiness_level']}")
         print(f"  Confidence: {prod_readiness['confidence']}")
         
-        print(f"\n🎯 IMMEDIATE PRIORITIES:")
+        print("\n🎯 IMMEDIATE PRIORITIES:")
         for action in report["recommendations"]["immediate_actions"][:3]:
             print(f"  {action}")
         

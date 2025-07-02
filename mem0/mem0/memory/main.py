@@ -23,11 +23,10 @@ from mem0.configs.prompts import (
 from mem0.memory.base import MemoryBase
 from mem0.memory.setup import mem0_dir, setup_config
 from mem0.memory.storage import SQLiteManager
-from mem0.memory.sync_manager import MemorySyncManager, AsyncMemorySyncManager, OperationType
-from mem0.memory.reset_manager import ResetManager, AsyncResetManager, ResetOptions, ResetScope
+from mem0.memory.sync_manager import MemorySyncManager, AsyncMemorySyncManager
+from mem0.memory.reset_manager import ResetManager, AsyncResetManager, ResetOptions
 from mem0.memory.error_handler import (
-    ErrorHandler, OperationResult, OperationStatus, ErrorSeverity,
-    RetryConfig, CircuitBreaker, with_error_handling
+    ErrorHandler, RetryConfig, CircuitBreaker
 )
 from mem0.memory.telemetry import capture_event
 from mem0.memory.utils import (
@@ -221,8 +220,10 @@ class Memory(MemoryBase):
             messages = parse_vision_messages(messages)
 
         # Execute parallel operations with error handling
-        vector_operation = lambda: self._add_to_vector_store(messages, processed_metadata, effective_filters, infer)
-        graph_operation = lambda: self._add_to_graph(messages, effective_filters)
+        def vector_operation():
+            return self._add_to_vector_store(messages, processed_metadata, effective_filters, infer)
+        def graph_operation():
+            return self._add_to_graph(messages, effective_filters)
         
         # Execute vector store operation with error handling
         vector_result = self.error_handler.execute_with_handling(
@@ -537,7 +538,8 @@ class Memory(MemoryBase):
         )
 
         # Execute parallel operations with error handling
-        memories_operation = lambda: self._get_all_from_vector_store(effective_filters, limit)
+        def memories_operation():
+            return self._get_all_from_vector_store(effective_filters, limit)
         
         # Execute vector store operation with error handling
         memories_result = self.error_handler.execute_with_handling(
@@ -561,7 +563,8 @@ class Memory(MemoryBase):
         # Execute graph operation with error handling if graph is enabled
         graph_entities_result = None
         if self.enable_graph:
-            graph_operation = lambda: self.graph.get_all(effective_filters, limit)
+            def graph_operation():
+                return self.graph.get_all(effective_filters, limit)
             graph_result = self.error_handler.execute_with_handling(
                 graph_operation,
                 "memory_get_all_graph_store",
@@ -680,7 +683,8 @@ class Memory(MemoryBase):
         )
 
         # Execute parallel operations with error handling
-        search_operation = lambda: self._search_vector_store(query, effective_filters, limit, threshold)
+        def search_operation():
+            return self._search_vector_store(query, effective_filters, limit, threshold)
         
         # Execute vector store search with error handling
         search_result = self.error_handler.execute_with_handling(
@@ -704,7 +708,8 @@ class Memory(MemoryBase):
         # Execute graph search with error handling if graph is enabled
         graph_entities = None
         if self.enable_graph:
-            graph_search_operation = lambda: self.graph.search(query, effective_filters, limit)
+            def graph_search_operation():
+                return self.graph.search(query, effective_filters, limit)
             graph_search_result = self.error_handler.execute_with_handling(
                 graph_search_operation,
                 "memory_search_graph_store",

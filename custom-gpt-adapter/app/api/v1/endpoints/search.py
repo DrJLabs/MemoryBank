@@ -1,6 +1,5 @@
-import uuid
-from fastapi import APIRouter, Depends, HTTPException, status, Request
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 from app.api import deps
 from app import models, schemas
@@ -69,7 +68,7 @@ async def search_memories(
         raise HTTPException(
             status_code=e.response.status_code, detail="Error searching memories"
         )
-    except Exception as e:
+    except Exception:
         log_search_activity.delay(
             application_id=str(current_application.id),
             request_data=request.model_dump(),

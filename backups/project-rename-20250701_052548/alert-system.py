@@ -13,7 +13,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path
 from typing import Dict, List, Any, Optional
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass
 import requests
 
 @dataclass
@@ -341,7 +341,7 @@ Please investigate and take appropriate action if necessary."""
                 f"{alert['rule_name']}: {alert['value']}",
                 '-t', str(channel.config.get("timeout", 5000))
             ], check=False)
-            print(f"🖥️ Desktop notification sent")
+            print("🖥️ Desktop notification sent")
         except Exception as e:
             print(f"❌ Desktop notification failed: {e}")
     

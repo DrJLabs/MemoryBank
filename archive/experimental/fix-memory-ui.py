@@ -7,14 +7,9 @@ Starts all necessary services and provides working UI
 import http.server
 import socketserver
 import json
-import subprocess
 import os
 import time
-import threading
-import sys
 import socket
-from urllib.parse import urlparse, parse_qs
-from datetime import datetime
 
 # Import our port manager
 try:

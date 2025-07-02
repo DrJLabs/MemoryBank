@@ -9,8 +9,6 @@ import socketserver
 import json
 import subprocess
 import os
-from urllib.parse import urlparse, parse_qs
-import threading
 import time
 
 PORT = 8080

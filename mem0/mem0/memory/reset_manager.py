@@ -7,7 +7,7 @@ what gets reset (vector store, graph store, history, etc.)
 
 import logging
 import asyncio
-from typing import Dict, Any, Optional, Set
+from typing import Dict, Any, Optional
 from enum import Enum
 from dataclasses import dataclass
 import threading

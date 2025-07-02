@@ -4,9 +4,7 @@ Advanced testing framework for agent persona validation and consistency.
 """
 import re
 import time
-import pytest
 from typing import Dict, Any, List
-from unittest.mock import Mock, patch
 
 # BDD Step Framework (Mock implementation since pytest-bdd not available)
 class BMAdBDDStep:
@@ -252,7 +250,7 @@ def step_provide_invalid_input():
 def step_send_rapid_commands(count: str, seconds: str):
     """Send rapid commands to test performance"""
     command_count = int(count)
-    time_limit = int(seconds)
+    int(seconds)
     
     start_time = time.time()
     for i in range(command_count):
@@ -394,7 +392,7 @@ class BMAdBDDTestRunner:
                     raise AssertionError(f"Step not implemented: {step_type} {step_text}")
                     
             self.scenarios_passed += 1
-            print(f"  ✅ Scenario PASSED")
+            print("  ✅ Scenario PASSED")
             return True
             
         except Exception as e:

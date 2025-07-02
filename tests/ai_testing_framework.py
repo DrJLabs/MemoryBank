@@ -18,16 +18,12 @@ import inspect
 import logging
 import time
 import traceback
-from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import (
-    Any, Callable, Dict, List, Optional, Union, TypeVar, Generic,
-    Protocol, runtime_checkable, Awaitable, Type, Tuple
+    Any, Callable, Dict, List, Optional, TypeVar, Protocol, runtime_checkable
 )
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock
 
-import pytest
 
 # Graceful imports with fallbacks
 try:
@@ -38,8 +34,10 @@ except ImportError:
     # Create mock hypothesis functionality
     HYPOTHESIS_AVAILABLE = False
     st = None
-    given = lambda *args, **kwargs: lambda func: func
-    settings = lambda *args, **kwargs: lambda func: func
+    def given(*args, **kwargs):
+        return lambda func: func
+    def settings(*args, **kwargs):
+        return lambda func: func
     InvalidArgument = Exception
     HealthCheck = type('HealthCheck', (), {})
 
@@ -789,7 +787,7 @@ def smart_mock_test(
         def wrapper(*args, **kwargs):
             # This decorator is designed to work with pytest-mock
             # The actual mocking setup happens in the AITestFramework
-            config = AITestConfig(
+            AITestConfig(
                 smart_mocking=True,
                 use_autospec=use_autospec,
             )

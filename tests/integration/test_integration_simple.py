@@ -4,7 +4,6 @@ Simple test to verify error handling integration in Memory class
 """
 
 import os
-import ast
 
 print("Error Handling Integration Verification")
 print("=" * 50)

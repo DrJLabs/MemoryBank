@@ -10,11 +10,9 @@ import json
 import time
 import logging
 import subprocess
-import psutil
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
-import requests
 from dataclasses import dataclass, asdict
 
 # Configure logging
@@ -183,7 +181,7 @@ class InfisicalMonitor:
         api_response_time = self.measure_api_response_time()
         cli_version = self.get_infisical_version()
         auth_status, auth_message = self.check_authentication_status()
-        env_access = self.validate_environment_access()
+        self.validate_environment_access()
         policy_violations = self.check_secret_policy_compliance()
         
         # Calculate cache hit ratio (simulated based on response times)
@@ -427,7 +425,7 @@ def main():
         metrics = monitor.run_monitoring_cycle()
         
         # Display results
-        print(f"📊 Monitoring Results:")
+        print("📊 Monitoring Results:")
         print(f"  Secret Load Time: {metrics.secret_load_time_seconds:.2f}s")
         print(f"  Cache Hit Ratio: {metrics.secret_cache_hit_ratio:.1%}")
         print(f"  API Response Time: {metrics.infisical_api_response_time_seconds:.2f}s")
@@ -441,7 +439,7 @@ def main():
         else:
             print("\n✅ No alerts - system healthy!")
         
-        print(f"\n📋 Dashboard saved to: monitoring/dashboards/infisical-dashboard.html")
+        print("\n📋 Dashboard saved to: monitoring/dashboards/infisical-dashboard.html")
         print(f"🔍 View dashboard: file://{os.path.abspath('monitoring/dashboards/infisical-dashboard.html')}")
         
         return 0

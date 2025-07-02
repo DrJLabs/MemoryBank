@@ -5,9 +5,8 @@ Test error handling integration in Mem0 Memory class
 
 import sys
 import os
-import time
 import importlib.util
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 
 # Load modules directly from file to bypass package init issues
 def load_module_from_file(module_name, file_path):
@@ -30,8 +29,8 @@ def test_memory_has_error_handler():
     with patch('mem0.memory.main.VectorStoreFactory') as mock_vector_factory, \
          patch('mem0.memory.main.EmbedderFactory') as mock_embedder_factory, \
          patch('mem0.memory.main.LlmFactory') as mock_llm_factory, \
-         patch('mem0.memory.main.SQLiteManager') as mock_sqlite, \
-         patch('mem0.memory.main.capture_event') as mock_capture:
+         patch('mem0.memory.main.SQLiteManager'), \
+         patch('mem0.memory.main.capture_event'):
         
         # Setup mocks
         mock_vector_store = Mock()
@@ -67,8 +66,8 @@ def test_memory_add_error_handling():
     with patch('mem0.memory.main.VectorStoreFactory') as mock_vector_factory, \
          patch('mem0.memory.main.EmbedderFactory') as mock_embedder_factory, \
          patch('mem0.memory.main.LlmFactory') as mock_llm_factory, \
-         patch('mem0.memory.main.SQLiteManager') as mock_sqlite, \
-         patch('mem0.memory.main.capture_event') as mock_capture:
+         patch('mem0.memory.main.SQLiteManager'), \
+         patch('mem0.memory.main.capture_event'):
         
         # Setup mocks
         mock_vector_store = Mock()
@@ -122,7 +121,7 @@ def test_error_recovery_scenarios():
     # In real implementation, this would be handled by Memory class
     # For now, just verify the result structure is correct
     assert not result.is_success()
-    assert result.has_critical_errors() == False  # HIGH severity, not CRITICAL
+    assert not result.has_critical_errors()  # HIGH severity, not CRITICAL
     print("     ✓ Vector store failure result structured correctly")
     
     # Test partial success scenario

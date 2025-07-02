@@ -5,7 +5,6 @@ Simple test for port management and memory service startup
 
 import socket
 import time
-import subprocess
 import os
 
 def test_port(port):
@@ -137,7 +136,7 @@ except KeyboardInterrupt:
     
     # Start the service
     try:
-        os.system(f"python3 simple-memory-service.py &")
+        os.system("python3 simple-memory-service.py &")
         print("📡 Service started in background")
         time.sleep(2)
         
