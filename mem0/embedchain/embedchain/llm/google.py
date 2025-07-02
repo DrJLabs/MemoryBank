@@ -10,26 +10,20 @@ except ImportError:
 
 from embedchain.config import BaseLlmConfig
 from embedchain.helpers.json_serializable import register_deserializable
-from embedchain.llm.base import BaseLlm
+from .provider_base import ApiKeyLlmBase
 
 logger = logging.getLogger(__name__)
 
 
 @register_deserializable
-class GoogleLlm(BaseLlm):
-    def __init__(self, config: Optional[BaseLlmConfig] = None):
-        super().__init__(config)
-        if not self.config.api_key and "GOOGLE_API_KEY" not in os.environ:
-            raise ValueError("Please set the GOOGLE_API_KEY environment variable or pass it in the config.")
+class GoogleLlm(ApiKeyLlmBase):
+    """Google Gemini/PaLM-based LLM wrapper."""
 
-        api_key = self.config.api_key or os.getenv("GOOGLE_API_KEY")
-        genai.configure(api_key=api_key)
+    env_var_name = "GOOGLE_API_KEY"
 
-    def get_llm_model_answer(self, prompt):
-        if self.config.system_prompt:
-            raise ValueError("GoogleLlm does not support `system_prompt`")
-        response = self._get_answer(prompt)
-        return response
+    def _post_init_setup(self):
+        # Configure Google generative AI client with resolved API key.
+        genai.configure(api_key=self.api_key)
 
     def _get_answer(self, prompt: str) -> Union[str, Generator[Any, Any, None]]:
         model_name = self.config.model or "gemini-pro"

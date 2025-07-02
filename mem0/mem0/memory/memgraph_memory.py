@@ -22,13 +22,14 @@ from mem0.graphs.tools import (
 )
 from mem0.graphs.utils import EXTRACT_RELATIONS_PROMPT, get_delete_messages
 from mem0.utils.factory import EmbedderFactory, LlmFactory
+from .graph_store_base import GraphStoreBase
 
 logger = logging.getLogger(__name__)
 
 
-class MemoryGraph:
+class MemoryGraph(GraphStoreBase):
     def __init__(self, config):
-        self.config = config
+        super().__init__(config)
         self.graph = Memgraph(
             self.config.graph_store.config.url,
             self.config.graph_store.config.username,
@@ -516,13 +517,6 @@ class MemoryGraph:
             result = self.graph.query(cypher, params=params)
             results.append(result)
         return results
-
-    def _remove_spaces_from_entities(self, entity_list):
-        for item in entity_list:
-            item["source"] = item["source"].lower().replace(" ", "_")
-            item["relationship"] = item["relationship"].lower().replace(" ", "_")
-            item["destination"] = item["destination"].lower().replace(" ", "_")
-        return entity_list
 
     def _search_source_node(self, source_embedding, filters, threshold=0.9):
         """Search for source nodes with similar embeddings."""

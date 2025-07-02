@@ -4,7 +4,7 @@ from typing import Optional, Union
 from chromadb import EmbeddingFunction, Embeddings
 
 from embedchain.config import BaseEmbedderConfig
-from embedchain.embedder.base import BaseEmbedder
+from .provider_base import ApiKeyEmbedderBase
 
 
 class ClarifaiEmbeddingFunction(EmbeddingFunction):
@@ -44,9 +44,9 @@ class ClarifaiEmbeddingFunction(EmbeddingFunction):
         return embeddings
 
 
-class ClarifaiEmbedder(BaseEmbedder):
-    def __init__(self, config: Optional[BaseEmbedderConfig] = None):
-        super().__init__(config)
+class ClarifaiEmbedder(ApiKeyEmbedderBase):
+    env_var_name = "CLARIFAI_PAT"
 
+    def _post_init_setup(self):
         embedding_func = ClarifaiEmbeddingFunction(config=self.config)
         self.set_embedding_fn(embedding_fn=embedding_func)

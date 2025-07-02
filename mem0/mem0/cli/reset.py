@@ -18,19 +18,20 @@ logger = logging.getLogger(__name__)
 
 def confirm_reset(options: ResetOptions, summary: dict) -> bool:
     """Prompt user for confirmation before reset"""
-    print("\n" + "="*60)
-    print("RESET CONFIRMATION")
-    print("="*60)
-    print(f"\nScope: {options.scope.value}")
-    print("\nComponents to reset:")
+    separator = "=" * 60
+    logger.info("\n%s", separator)
+    logger.info("RESET CONFIRMATION")
+    logger.info(separator)
+    logger.info("\nScope: %s", options.scope.value)
+    logger.info("\nComponents to reset:")
     for component in summary["components_to_reset"]:
-        print(f"  - {component}")
+        logger.info("  - %s", component)
     
-    print("\nEstimated deletions:")
+    logger.info("\nEstimated deletions:")
     for key, value in summary["estimated_deletions"].items():
-        print(f"  - {key}: {value}")
+        logger.info("  - %s: %s", key, value)
     
-    print("\n" + "="*60)
+    logger.info("\n%s", separator)
     
     response = input("\nAre you sure you want to proceed? This action CANNOT be undone! (yes/no): ")
     return response.lower() == "yes"
@@ -147,44 +148,45 @@ Examples:
         
         # Show summary for dry run
         if args.dry_run:
-            print("\nDRY RUN MODE - No data will be deleted")
-            print("\n" + "="*60)
-            print("RESET SUMMARY")
-            print("="*60)
-            print(f"\nScope: {options.scope.value}")
-            print("\nComponents that would be reset:")
+            separator = "=" * 60
+            logger.info("\nDRY RUN MODE - No data will be deleted")
+            logger.info("\n%s", separator)
+            logger.info("RESET SUMMARY")
+            logger.info(separator)
+            logger.info("\nScope: %s", options.scope.value)
+            logger.info("\nComponents that would be reset:")
             for component in summary["components_to_reset"]:
-                print(f"  - {component}")
-            print("\nEstimated deletions:")
+                logger.info("  - %s", component)
+            logger.info("\nEstimated deletions:")
             for key, value in summary["estimated_deletions"].items():
-                print(f"  - {key}: {value}")
+                logger.info("  - %s: %s", key, value)
             if preserve_filters:
-                print("\nPreserve filters:")
+                logger.info("\nPreserve filters:")
                 for key, value in preserve_filters.items():
-                    print(f"  - {key}: {value}")
-            print("\n" + "="*60)
+                    logger.info("  - %s: %s", key, value)
+            logger.info("\n%s", separator)
             return 0
             
         # Confirm if not forced
         if not args.force:
             if not confirm_reset(options, summary):
-                print("\nReset cancelled.")
+                logger.info("\nReset cancelled.")
                 return 1
                 
         # Execute reset
-        print("\nExecuting reset...")
+        logger.info("\nExecuting reset...")
         result = memory.reset(options)
         
         if result["success"]:
-            print("\n✅ Reset completed successfully!")
-            print("\nComponents reset:")
+            logger.info("\n✅ Reset completed successfully!")
+            logger.info("\nComponents reset:")
             for component in result["components_reset"]:
-                print(f"  - {component}")
+                logger.info("  - %s", component)
         else:
-            print("\n❌ Reset failed!")
-            print("\nErrors:")
+            logger.error("\n❌ Reset failed!")
+            logger.error("\nErrors:")
             for error in result.get("errors", ["Unknown error"]):
-                print(f"  - {error}")
+                logger.error("  - %s", error)
             return 1
             
     except Exception as e:
