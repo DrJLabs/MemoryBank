@@ -10,12 +10,12 @@ To identify the next logical story based on project progress and epic definition
 
 [[LLM: CRITICAL - This MUST be your first step]]
 
-- Load `.bmad-core/core-config.yml` from the project root
+- Load `.bmad-core/core-config.yaml` from the project root
 - If the file does not exist:
-  - HALT and inform the user: "core-config.yml not found. This file is required for story creation. You can:
-    1. Copy it from GITHUB BMAD-METHOD/bmad-core/core-config.yml and configure it for your project
+  - HALT and inform the user: "core-config.yaml not found. This file is required for story creation. You can:
+    1. Copy it from GITHUB BMAD-METHOD/bmad-core/core-config.yaml and configure it for your project
     2. Run the BMAD installer against your project to upgrade and add the file automatically
-    Please add and configure core-config.yml before proceeding."
+    Please add and configure core-config.yaml before proceeding."
 - Extract the following key configurations:
   - `devStoryLocation`: Where to save story files
   - `prd.prdSharded`: Whether PRD is sharded or monolithic
@@ -26,6 +26,22 @@ To identify the next logical story based on project progress and epic definition
   - `architecture.architectureSharded`: Whether architecture is sharded
   - `architecture.architectureFile`: Location of monolithic architecture
   - `architecture.architectureShardedLocation`: Location of sharded architecture files
+  - `workflow.trackProgress`: Whether workflow plan tracking is enabled
+  - `workflow.planFile`: Location of workflow plan (if tracking enabled)
+
+### 0.5 Check Workflow Plan (if configured)
+
+[[LLM: Check if workflow plan tracking is enabled]]
+
+- If `workflow.trackProgress: true`, check for active plan at `workflow.planFile`
+- If plan exists:
+  - Parse plan to check if story creation is the expected next step
+  - If out of sequence and `workflow.enforceSequence: true`:
+    - Show warning: "The workflow plan indicates you should complete {expected_step} before creating stories."
+    - Block execution unless user explicitly overrides
+  - If out of sequence and `workflow.enforceSequence: false`:
+    - Show warning but allow continuation with confirmation
+- Continue with story identification after plan check
 
 ### 1. Identify Next Story for Preparation
 
@@ -248,5 +264,14 @@ Provide a summary to the user including:
 - Any deviations or conflicts noted between epic and architecture
 - Recommendations for story review before approval
 - Next steps: Story should be reviewed by PO for approval before dev work begins
+
+### 10. Update Workflow Plan (if applicable)
+
+[[LLM: After successful story creation]]
+
+- If `workflow.trackProgress: true` and `workflow.updateOnCompletion: true`:
+  - Call update-workflow-plan task to mark story creation step complete
+  - Parameters: task: create-next-story, step_id: {from plan}, status: complete
+  - If plan shows next step, mention it in completion message
 
 [[LLM: Remember - The success of this task depends on extracting real, specific technical details from the architecture shards. The dev agent should have everything they need in the story file without having to search through multiple documents.]]

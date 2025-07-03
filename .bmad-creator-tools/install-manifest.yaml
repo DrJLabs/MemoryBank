@@ -1,0 +1,51 @@
+version: 1.2.0
+installed_at: '2025-07-03T05:02:52.879Z'
+install_type: expansion-pack
+expansion_pack_id: bmad-creator-tools
+expansion_pack_name: bmad-creator-tools
+ides_setup:
+  - cursor
+  - gemini
+files:
+  - path: .bmad-creator-tools/config.yaml
+    hash: d249cdf4e50b0911
+    modified: false
+  - path: .bmad-creator-tools/README.md
+    hash: fddcdcc4375d007f
+    modified: false
+  - path: .bmad-creator-tools/utils/workflow-management.md
+    hash: 11fa4807701a4466
+    modified: false
+  - path: .bmad-creator-tools/utils/template-format.md
+    hash: c91208908af1dc78
+    modified: false
+  - path: .bmad-creator-tools/templates/expansion-pack-plan-tmpl.md
+    hash: 64e45fc281a96560
+    modified: false
+  - path: .bmad-creator-tools/templates/agent-tmpl.md
+    hash: 108605505d7aa584
+    modified: false
+  - path: .bmad-creator-tools/templates/agent-teams-tmpl.md
+    hash: 7617bebc3050770a
+    modified: false
+  - path: .bmad-creator-tools/tasks/generate-expansion-pack.md
+    hash: 42058ebe92d14a5d
+    modified: false
+  - path: .bmad-creator-tools/tasks/execute-checklist.md
+    hash: 342da4e4404f3fa6
+    modified: false
+  - path: .bmad-creator-tools/tasks/create-doc.md
+    hash: 1afad1d0d3c804e2
+    modified: false
+  - path: .bmad-creator-tools/tasks/create-deep-research-prompt.md
+    hash: a104cb9b17cde3b7
+    modified: false
+  - path: .bmad-creator-tools/tasks/create-agent.md
+    hash: 8abb08933ea3cfb6
+    modified: false
+  - path: .bmad-creator-tools/tasks/advanced-elicitation.md
+    hash: 0950e5318989db16
+    modified: false
+  - path: .bmad-creator-tools/agents/bmad-the-creator.md
+    hash: 3b72c28907a0be15
+    modified: false

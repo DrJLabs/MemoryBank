@@ -226,6 +226,21 @@ This consolidated research (task **T5**) provides guidance on modern testing str
 ### 9.7 Documentation & Traceability
 * Maintain a **project notebook** or ADRs to capture testing decisions and parameters, following traceability recommendations from the Open University's guidance on software development documentation [[source](https://www.open.edu/openlearn/science-maths-technology/approaches-software-development/content-section-2.4.1)].
 
+### 9.8 Parallel & Distributed Testing
+* Run tests in parallel across environments/containers to accelerate feedback and CI/CD cycles.
+* Tools: pytest-xdist, Jest (with --runInBand/--maxWorkers), GitHub Actions matrix, Selenium Grid.
+* **Benefit:** Dramatically reduces test execution time and increases coverage per build.
+
+### 9.9 Checklist-Based Regression & Exploratory Testing
+* Use structured checklists not only for planning, but as living regression and exploratory test artifacts.
+* Regularly update and review checklists to ensure all critical paths and requirements are covered.
+* **Benefit:** Improves consistency, repeatability, and test maintenance.
+
+### 9.10 Agile/Modern Testing Integration
+* Integrate test writing, review, and execution into each agile sprint.
+* Foster close collaboration between developers and testers; automate as much as possible.
+* **Benefit:** Faster feedback, better quality, and adaptability to changing requirements.
+
 > Implementation of these practices will be scheduled during **Phase 2** (checklists & adoption) and **Phase 3** (execution) of the roadmap. 
 
 ---
@@ -239,7 +254,10 @@ This consolidated research (task **T5**) provides guidance on modern testing str
 | Sprint-0 | Add fast-check tests to mem0 TS libs for critical functions | TS Team | T6 |
 | Sprint-0 | Create Schemathesis contract test harness for Custom-GPT Adapter (`/api/v1/search`) | QA | T6 |
 | Sprint-0 | Add `pytest-testinfra` checks for Dockerfile health & Prometheus config validation (`promtool test rules`) | DevOps | T6 |
+| Sprint-0 | **Enable parallel test execution in CI/CD pipelines** (e.g., pytest-xdist, Jest maxWorkers, GitHub Actions matrix) | QA/DevOps | T6 |
 | Sprint-1 | Enable AI-generated test stubs in PR template guidelines; reviewers confirm assertion quality | All | T6 |
+| Sprint-1 | **Adopt checklist-based regression and exploratory testing as a living artifact** | QA | T6 |
+| Sprint-1 | **Integrate test writing/review/execution into each agile sprint** | All | T6 |
 | Sprint-2 | Consolidate duplicated `test_memory_bank_client.py` fixtures | QA | T5 |
 | Phase 2 kickoff | Integrate Mutmut (Python) & Stryker-JS (TS) with 30 % mutation-score gate | QA | T7 |
 | Phase 2 | Stand-up initial Locust/k6 load scenario against `/search` endpoint (100 RPS, 95-perc < 250 ms) | Perf Team | T7 |

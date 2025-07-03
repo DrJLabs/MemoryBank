@@ -1,0 +1,52 @@
+version: 1.2.0
+installed_at: '2025-07-03T05:02:52.904Z'
+install_type: expansion-pack
+expansion_pack_id: bmad-infrastructure-devops
+expansion_pack_name: bmad-infrastructure-devops
+ides_setup:
+  - cursor
+  - gemini
+files:
+  - path: .bmad-infrastructure-devops/config.yaml
+    hash: 22fb8c0fcf8f182e
+    modified: false
+  - path: .bmad-infrastructure-devops/README.md
+    hash: ecca9854c43c75aa
+    modified: false
+  - path: .bmad-infrastructure-devops/utils/workflow-management.md
+    hash: 11fa4807701a4466
+    modified: false
+  - path: .bmad-infrastructure-devops/utils/template-format.md
+    hash: c91208908af1dc78
+    modified: false
+  - path: >-
+      .bmad-infrastructure-devops/templates/infrastructure-platform-from-arch-tmpl.md
+    hash: b8576e243a8a9b62
+    modified: false
+  - path: .bmad-infrastructure-devops/templates/infrastructure-architecture-tmpl.md
+    hash: 1465d14985aca5cf
+    modified: false
+  - path: .bmad-infrastructure-devops/tasks/validate-infrastructure.md
+    hash: 204348a3617ee91b
+    modified: false
+  - path: .bmad-infrastructure-devops/tasks/review-infrastructure.md
+    hash: 16f31fb41114cbb2
+    modified: false
+  - path: .bmad-infrastructure-devops/tasks/execute-checklist.md
+    hash: 035b3e0b944d1fca
+    modified: false
+  - path: .bmad-infrastructure-devops/tasks/create-doc.md
+    hash: caa3bf72244a692e
+    modified: false
+  - path: .bmad-infrastructure-devops/data/technical-preferences.md
+    hash: 6530bed845540b0d
+    modified: false
+  - path: .bmad-infrastructure-devops/data/bmad-kb.md
+    hash: ab414992de0d141a
+    modified: false
+  - path: .bmad-infrastructure-devops/checklists/infrastructure-checklist.md
+    hash: b3dc0a7ec1696c6c
+    modified: false
+  - path: .bmad-infrastructure-devops/agents/infra-devops-platform.md
+    hash: 063294311d03ebdf
+    modified: false

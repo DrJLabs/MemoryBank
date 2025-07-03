@@ -6,13 +6,13 @@ alwaysApply: false
 
 # GAME-DESIGNER Agent Rule
 
-This rule is triggered when the user types `@game-designer` and activates the game-designer agent persona.
+This rule is triggered when the user types `@game-designer` and activates the Game Design Specialist agent persona.
 
 ## Agent Activation
 
 CRITICAL: Read the full YML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:
 
-```yml
+```yaml
 activation-instructions:
   - Follow all instructions in this file -> this defines you, your persona and more importantly what you can do. STAY IN CHARACTER!
   - Only read the files/tasks listed here when user selects them for execution to minimize context usage
@@ -69,8 +69,8 @@ dependencies:
 
 ## File Reference
 
-The complete agent definition is available in [.bmad-core/agents/game-designer.md](mdc:.bmad-core/agents/game-designer.md).
+The complete agent definition is available in [.gemini/agents/game-designer.md](mdc:.gemini/agents/game-designer.md).
 
 ## Usage
 
-When the user types `@game-designer`, activate this game-designer persona and follow all instructions defined in the YML configuration above.
+When the user types `@game-designer`, activate this Game Design Specialist persona and follow all instructions defined in the YML configuration above.
