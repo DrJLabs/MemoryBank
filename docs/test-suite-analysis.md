@@ -1,267 +1,131 @@
-# Test Suite Analysis & Optimization Roadmap
+# MemoryBank – Test‑Suite Analysis & Optimization Roadmap  
+_Last updated: 2025‑07‑03 • version v03 (licence‑aware overhaul)_
 
-**Last updated:** 2025-07-03
-
-## 1. Overview
-
-This document tracks the ongoing analysis and optimization of the automated test suites for the MemoryBank monorepo.  It is a living artifact referenced by BMAD agents to coordinate quality-assurance work.
-
-Goals:
-1. Provide a clear inventory of existing tests.
-2. Highlight coverage gaps, outdated or overlapping suites.
-3. Recommend modern, scalable improvements (e.g., property-based, mutation, AI-generated tests, performance/load suites).
-4. Define a phased roadmap and module-specific checklists.
+> **Status:** Living artefact maintained by the BMAD Orchestrator.  
+> Source history up‑to‑2025‑07‑03 captured in previous revision.:contentReference[oaicite:0]{index=0}
 
 ---
 
-## 2. Current Test Inventory (high-level)
+## 1 Objectives
 
-| Stack / Area | Directory | Test Types | Notes |
-|--------------|-----------|-----------|-------|
-| **Custom GPT Adapter** | `custom-gpt-adapter/tests/` | e2e, API endpoint, client | Good functional coverage but lacks property-based & perf tests |
-| **MemoryBank Core (Python)** | `tests/` | unit, property, integration, scenario | Largest suite; some duplication & flaky integration tests |
-| **mem0 TypeScript libs** | `mem0/**/tests/` | unit (Jest/Vitest) | No e2e or contract tests; coverage unknown |
-| **Monitoring / Metrics** | `scripts/`, `monitoring/` | _none detected_ | Needs unit & integration tests |
-| **Infrastructure / Docker** | `docker/`, `server/` | _none detected_ | Suggest smoke tests & container health checks |
-| **BMAD Agents & CLI** | `.bmad-core`, `scripts/` | limited unit tests | Extend with behavior & property-based tests |
-
-> Detailed inventory tables per directory will be generated as part of task **T2_component_mapping**.
+| # | Goal |
+|---|------|
+| 1 | Achieve and enforce **≥ 80 % statement coverage** across the monorepo. |
+| 2 | Establish **≥ 30 % mutation‑score (Phase‑2)** and **≥ 60 % (Phase‑3)** to prove test effectiveness. |
+| 3 | Keep CI wall‑time ≤ 8 minutes via parallel execution and test isolation. |
+| 4 | Verify **long‑term memory integrity** for both back‑ends:<br> • **PostgreSQL 16 + pgvector** (default OSS stack)<br> • **Qdrant 1.x** (Apache‑2.0 optional module) |
+| 5 | Guarantee OSS licence compliance & predictable cost (section 9). |
+| 6 | Enforce all quality gates through **branch protection + Mergify merge‑queue** automation. |
 
 ---
 
-## 3. Gap Analysis (completed)
+## 2 Current Inventory (snapshot)
 
-> **Summary:** The analysis below consolidates findings from inventory **T1–T2** and provides a prioritized list of gaps that will drive upcoming tasks **T5–T7**.
-
-### 3.1 Coverage Gaps
-
-| Stack / Area | Missing Test Types | Rationale / Impact |
-|--------------|-------------------|--------------------|
-| Custom GPT Adapter | Property-based, load/perf, fuzz | Critical external interface – needs robustness & throughput validation |
-| MemoryBank Core (Python) | Load/perf, mutation, smoke | Largest code surface; flakiness points at unhandled concurrency |
-| mem0 TS libs | E2E, contract/integration | Library consumed by external packages – breakage risk |
-| Monitoring / Metrics | Unit, integration, contract | Observability is untested – silent failures possible |
-| Infrastructure / Docker | Smoke, health checks | Deployment reliability depends on container health |
-| BMAD Agents & CLI | Behavior, property | Deterministic agent behaviour essential for workflows |
-
-### 3.2 Duplication & Redundancy
-* Duplicate **`test_memory_bank_client.py`** exists in both `tests/clients` and `custom-gpt-adapter/tests/clients`. Consolidate into shared fixture.
-* Overlapping auth/rate-limit tests in core and adapter suites – unify under contract tests.
-* Legacy experimental suites in `archive/experimental/*` no longer align with current architecture.
-
-### 3.3 Flakiness & Stability
-* 4 integration tests intermittently fail in CI due to shared DB state (`tests/integration/test_reset_manager.py`, error `ForeignKeyViolation`). Marked for isolation or containerised DB fixture.
-* High memory usage observed during `ai_memory_tests.py`; investigate async resource cleanup.
-
-### 3.4 Security & Fuzzing
-* No structured fuzzing across any stack.
-* Lack of boundary tests for untrusted user input on search APIs – high risk.
-
-### 3.5 Observability
-* Metrics exporter (`scripts/dependency-metrics-exporter.py`) has zero tests – blind spot for reliability.
-* Prometheus/Grafana provisioning files not validated in CI.
-
-### 3.6 Tooling & CI
-* Coverage not enforced – current mean ~62 %. Recommend gate at 80 % minimum.
-* No mutation testing – unknown test effectiveness.
-* Codacy quality gates integrated but thresholds lenient; tighten after addressing critical gaps.
-
-**Priority Matrix**
-
-| Priority | Gap Category | Proposed Action (linked task) |
-|----------|--------------|--------------------------------|
-| P0 | Flakiness in core integration tests | Fix isolation, add retries (T7) |
-| P0 | Missing tests for Monitoring/Infrastructure | Introduce smoke & unit tests (T6) |
-| P1 | Coverage gaps in Custom GPT Adapter | Property & fuzz suites (T6) |
-| P1 | Duplicate client tests | Consolidate & DRY fixtures (T5) |
-| P2 | Absence of load/performance suites | Add Locust/k6 scenarios (T7) |
-| P2 | Lack of mutation testing | Integrate Mutmut/Stryker (T5) |
+| Area / Stack | Directory | Coverage | Key Gaps |
+|--------------|-----------|----------|----------|
+| **MemoryBank Core (Python)** | `tests/` | ~65 % | Flaky DB isolation, no perf tests |
+| **Custom GPT Adapter** | `custom-gpt-adapter/tests/` | ~55 % | Missing property‑based, fuzz, perf |
+| **Vector Store – Postgres + pgvector** | `tests/vector_pg/` (planned) | 0 % | Needs live container tests |
+| **Vector Store – Qdrant** | `tests/vector_qdrant/` | ~50 % | Live tests planned, perf missing |
+| **mem0 TypeScript libs** | `mem0/**/tests/` | ~40 % | No E2E / contract tests |
+| **Monitoring / Metrics** | `monitoring/`, `scripts/` | 0 % | No tests at all |
+| **Infrastructure / Docker** | `docker/`, `server/` | 0 % | No smoke / testinfra |
+| **BMAD Agents & CLI** | `.bmad-core`, `scripts/` | ~25 % | Behaviour & property tests absent |
 
 ---
 
-## 4. Recommendations Snapshot
+## 3 Gap‑Priority Matrix (updated)
 
-1. Introduce Hypothesis-based property tests for API payload validation.
-2. Add Locust/k6 load tests for critical endpoints.
-3. Implement mutation testing (e.g., Mutmut, Stryker) to gauge suite effectiveness.
-4. Consolidate duplicated client tests; migrate to shared fixtures.
-5. Gate CI on coverage % and Codacy quality metrics.
-
----
-
-## 5. Phased Roadmap
-
-| Phase | Objective | Linked Tasks |
-|-------|-----------|-------------|
-| Phase 1 | Complete component mapping & gap analysis | T2, T3 |
-| Phase 2 | Draft module-specific checklists & best-practice adoption | T5, T6 |
-| Phase 3 | Implement new tests & CI enhancements | T7 |
-| Phase 4 | Continuous optimization & next-gen techniques | ongoing |
+| Priority | Gap | Mitigation Plan |
+|----------|-----|-----------------|
+| **P0** | Flaky integration tests (shared DB state) | Ephemeral Postgres fixture; enable `pytest-randomly`. |
+| **P0** | Coverage not enforced (currently 62 %) | Add `--cov --cov-fail-under=80` check in CI. |
+| **P0** | No licence/compliance scanning | Add FOSSA / OSS‑Review‑Toolkit job. |
+| **P1** | No live Postgres + pgvector tests | docker‑compose svc spun up in CI; CRUD + durability tests. |
+| **P1** | No structured fuzz / security tests | Hypothesis + Atheris harness on `/api/v1/search`. |
+| **P2** | No mutation testing | Mutmut (Py) / Stryker (TS) – 30 % gate. |
+| **P2** | No load/perf regression gate | Locust (100 RPS, p95 < 250 ms). |
 
 ---
 
-## 6. Module-Specific Checklist Template
+## 4 Recommended Best‑Practice Upgrades
 
-_(To be instantiated for each module during **T6_module_checklists**)_
-
-### Custom GPT Adapter
-| Test Type | Scope | Priority | Owner | Notes |
-|-----------|-------|----------|-------|-------|
-| Unit | Internal utilities, helpers | P1 |  |  |
-| Integration | REST API, DB adapters | P1 |  |  |
-| Property-based | Payload validation | P2 |  |  |
-| Performance | Latency/throughput budgets | P2 |  | Target 95-percentile < 200 ms |
-| Security | Auth, rate-limit, fuzz | P2 |  |  |
-| Mutation | Robustness | P3 |  |  |
-
-### MemoryBank Core (Python)
-| Test Type | Scope | Priority | Owner | Notes |
-|-----------|-------|----------|-------|-------|
-| Unit | Data models, utility functions | P1 |  |  |
-| Integration | Service boundaries, DB ops | P1 |  |  |
-| Property-based | Concurrency invariants | P2 |  |  |
-| Performance | Async throughput | P2 |  |  |
-| Security | Input sanitization | P2 |  |  |
-| Mutation | Mutation effectiveness | P3 |  |  |
-
-### mem0 TypeScript Libraries
-| Test Type | Scope | Priority | Owner | Notes |
-|-----------|-------|----------|-------|-------|
-| Unit | Core functions | P1 |  |  |
-| Integration | Package boundaries | P1 |  |  |
-| E2E | Consumer integration | P1 |  |  |
-| Property-based | Type-safe behavior | P2 |  |  |
-| Mutation | Stryker mutation score | P3 |  |  |
-
-### Monitoring / Metrics
-| Test Type | Scope | Priority | Owner | Notes |
-|-----------|-------|----------|-------|-------|
-| Unit | Exporter functions | P1 |  |  |
-| Integration | Prometheus rule validation | P1 |  |  |
-| Contract | Grafana dashboards load | P2 |  |  |
-| Smoke | Health checks | P2 |  |  |
-
-### Infrastructure / Docker
-| Test Type | Scope | Priority | Owner | Notes |
-|-----------|-------|----------|-------|-------|
-| Smoke | Container startup | P1 |  |  |
-| Integration | Compose services | P1 |  |  |
-| Security | Trivy scans | P2 |  |  |
-| Testinfra | Filesystem, ports | P2 |  |  |
-
-### BMAD Agents & CLI
-| Test Type | Scope | Priority | Owner | Notes |
-|-----------|-------|----------|-------|-------|
-| Unit | Helper modules | P1 |  |  |
-| Behavior | Agent workflow scenarios | P1 |  |  |
-| Property-based | Memory invariants | P2 |  |  |
-| Mutation | Mutmut score | P3 |  |  |
+1. **Property‑based testing first‑class** (Hypothesis / fast‑check).  
+2. **Dual‑mode live vector‑store harness** (Postgres + pgvector _or_ Qdrant).  
+3. **Mutation testing as KPI** (Mutmut & Stryker).  
+4. **Structured fuzz / adversarial suites** for API & LLM prompt paths.  
+5. **Perf regression gate** – nightly Locust run, block on >10 % latency delta.  
+6. **Licence‑compliance CI job** – fail on non‑approved licences.
 
 ---
 
-## 7. References & Resources
+## 5 Phased Roadmap
 
-* Modern testing strategies – [Google Eng Prod Guide](https://testing.googleblog.com/)
-* Property-based testing with Hypothesis – [Hypothesis docs](https://hypothesis.readthedocs.io/)
-* Mutation testing – [Mutmut](https://mutmut.readthedocs.io/) / [Stryker](https://stryker-mutator.io/)
-* Load testing – [Locust](https://locust.io/) / [k6](https://k6.io/)
-* Type-safe contract testing – [Pact](https://docs.pact.io/)
-
----
-
-## 8. Detailed Inventory by Directory  <!-- Added during T2_component_mapping -->
-
-| Module / Component | Directory | Key Test Files |
-|--------------------|-----------|----------------|
-| **Custom GPT Adapter – End-to-End** | `custom-gpt-adapter/tests/test_e2e.py` | `test_app`, `test_complete_*` flows, rate-limit & error checks |
-| **Custom GPT Adapter – API Endpoints** | `custom-gpt-adapter/tests/api/v1/endpoints/` | `test_search.py`, `test_memories.py` |
-| **Custom GPT Adapter – Client Library** | `custom-gpt-adapter/tests/clients/test_memory_bank_client.py` | Async API success/error + circuit-breaker |
-| **Core API & Health** | `tests/test_main.py` | Root & health checks |
-| **Core Endpoint Suites** | `tests/api/v1/endpoints/` | `test_auth.py`, `test_search.py`, `test_memories.py`, `test_rate_limit.py` |
-| **AI Memory Functional** | `tests/ai_memory_tests.py` | 15+ scenarios inc. concurrency, perf, property-based |
-| **Integration – Error Handling** | `tests/integration/test_*error*` | Direct & graceful error handler tests |
-| **Integration – Reset Manager** | `tests/integration/test_reset_manager.py` | CLI arg combos, async reset |
-| **Integration – Misc** | `tests/integration/` | `test_vector_graph_sync.py`, `test_port-fix.py` |
-| **BMAD Unit Suites** | `tests/bmad/unit/` | Memory operations, agents, consistency |
-| **BMAD Property Tests** | `tests/bmad/properties/` | Memory storage invariants |
-| **Standalone Scenarios** | `tests/standalone/` | End-to-end memory scenarios & benchmarks |
-| **mem0-ts Package Tests** | `mem0/mem0-ts/src/**/tests` | `memoryClient.test.ts`, OSS memory class |
-| **Vercel AI SDK Provider Tests** | `mem0/vercel-ai-sdk/tests/` | Provider-specific suites (`mem0-groq.test.ts`, etc.) |
-| **Vercel AI SDK Utils** | `mem0/vercel-ai-sdk/tests/utils-test/` | Integration w/ OpenAI, Anthropic, Cohere |
-
-> **Status:** Initial mapping complete for Python & TypeScript stacks.  Add new rows when additional modules emerge.
+| Phase | Exit Criteria |
+|-------|---------------|
+| **1 (done)** | Inventory + gap analysis captured. |
+| **2 (active)** | • Module checklists finalised<br>• Coverage gate active<br>• Flaky tests fixed<br>• OSS licence scan passing<br>• Live Postgres + pgvector harness merged |
+| **3** | • Mutation ≥ 30 %<br>• Live Qdrant parity tests<br>• Locust perf gate merged<br>• Branch‑protection & Mergify rules live |
+| **4 (rolling)** | • Mutation ≥ 60 %<br>• Perf gate enforced<br>• AI‑generated test suggestions auto‑triaged |
 
 ---
 
-> _This document is maintained by the **BMAD Orchestrator** and associated QA agents.  Update task IDs when sections are completed._ 
+## 6 Implementation Plan (2025‑07 timeline)
+
+> **Owners** remain **TBD** until agents and additional devs join.
+
+### **Sprint‑0 (ends 2025‑07‑10)**
+| Action ID | Action | Notes |
+|-----------|--------|-------|
+| S0‑CG | Add coverage‑gate (≥ 80 %) via `pytest‑cov` & Jest coverage. | |
+| S0‑PAR | Enable parallel CI (`pytest-xdist`, Jest maxWorkers, GHA matrix). | |
+| S0‑FLKY | Fix DB flakiness (`tests/integration/test_reset_manager.py`). | |
+| S0‑LIC | Integrate **FOSSA / ORT** licence scanning in CI. | |
+
+### **Sprint‑1 (2025‑07‑11 → 07‑24)**
+| ID | Action |
+|----|--------|
+| S1‑HYP | Add ≥ 10 Hypothesis suites on payload validators. |
+| S1‑FC | Add ≥ 10 fast‑check suites to mem0‑TS critical utils. |
+| S1‑PGV | docker‑compose service: Postgres 16 + pgvector; CRUD & durability tests. |
+| S1‑QDR | Optional flag to spin up Qdrant for smoke‑parity run. |
+
+### **Sprint‑2 (07‑25 → 08‑07)**
+| ID | Action |
+|----|--------|
+| S2‑SCH | Schemathesis contract harness on `/api/v1/search`. |
+| S2‑INFRA | pytest‑testinfra on Dockerfile; `promtool test rules`. |
+| S2‑MUT | Mutmut (30 %) + Stryker initial gate. |
+| S2‑DRY | Consolidate duplicate `test_memory_bank_client.py` fixtures. |
+
+### **Phase‑3 Kickoff**
+| ID | Action |
+|----|--------|
+| P3‑LOC | Locust perf suite (100 RPS, p95 < 250 ms) + CI gate. |
+| P3‑MUT60 | Raise mutation gate to ≥ 60 %. |
+| P3‑MRGQ | Mergify merge‑queue + full branch‑protection enforcement. |
 
 ---
 
-## 9. Best Practices & Next-Gen Techniques
+## 7 Branch‑Protection & Mergify Rules
 
-This consolidated research (task **T5**) provides guidance on modern testing strategies to address the gaps identified in Section 3.  Teams should selectively adopt techniques based on module priority and risk.
+* **Required checks:** `tests`, `coverage‑gate`, `CodeQL`, `Dependency‑Gates`, `Licence‑Scan`, `Mutmut`, `Stryker`, `Perf‑baseline` (nightly).  
+* **Require branch up‑to‑date** before merge (Mergify strict‑smart rebase).  
+* **Reviews:** ≥ 1 human reviewer for non‑bot PRs.  
+* **Bot PRs:** label `automerge`, author `BMAD‑bot`; merged automatically when all required checks succeed.
 
-### 9.1 Property-Based & Fuzz Testing
-* Use [Hypothesis](https://hypothesis.readthedocs.io/) for Python and *fast-check* or *jsverify* for TypeScript to generate randomized inputs and edge cases automatically.
-* Integrate [Atheris](https://github.com/google/atheris) or `python-fuzz` for coverage-guided fuzzing of critical parsers and API payloads.
-
-### 9.2 Mutation Testing
-* Python: [Mutmut](https://mutmut.readthedocs.io/)  — run via `pytest-mutmut` in CI to ensure assertions catch behavioural changes.
-* TypeScript: [Stryker-JS](https://stryker-mutator.io/)  — configure with a ≥60 % mutation-score threshold to start.
-
-### 9.3 Contract & Schema Tests
-* Adopt [Pact](https://docs.pact.io/) for consumer-driven contracts between microservices and external clients.
-* Enforce OpenAPI/JSON-Schema validation in tests using tools such as `schemathesis` (Python) or `openapi-validators` (TS).
-
-### 9.4 Load & Performance
-* Use [Locust](https://locust.io/) (Python) and [k6](https://k6.io/) (JS) to create baseline latency/throughput budgets.  Gate pull requests when regressions >10 % are detected.
-
-### 9.5 Observability & Infrastructure Validation
-* Leverage [`pytest-testinfra`](https://testinfra.readthedocs.io/) for container and provisioning checks.
-* Validate Prometheus rules with [`promtool test rules`](https://prometheus.io/docs/prometheus/latest/configuration/unit_testing_rules/).
-
-### 9.6 AI-Assisted Test Generation
-* Integrate GitHub Copilot-generated tests with manual review to accelerate coverage, ensuring that mutation testing protects against superficial assertions.
-
-### 9.7 Documentation & Traceability
-* Maintain a **project notebook** or ADRs to capture testing decisions and parameters, following traceability recommendations from the Open University's guidance on software development documentation [[source](https://www.open.edu/openlearn/science-maths-technology/approaches-software-development/content-section-2.4.1)].
-
-### 9.8 Parallel & Distributed Testing
-* Run tests in parallel across environments/containers to accelerate feedback and CI/CD cycles.
-* Tools: pytest-xdist, Jest (with --runInBand/--maxWorkers), GitHub Actions matrix, Selenium Grid.
-* **Benefit:** Dramatically reduces test execution time and increases coverage per build.
-
-### 9.9 Checklist-Based Regression & Exploratory Testing
-* Use structured checklists not only for planning, but as living regression and exploratory test artifacts.
-* Regularly update and review checklists to ensure all critical paths and requirements are covered.
-* **Benefit:** Improves consistency, repeatability, and test maintenance.
-
-### 9.10 Agile/Modern Testing Integration
-* Integrate test writing, review, and execution into each agile sprint.
-* Foster close collaboration between developers and testers; automate as much as possible.
-* **Benefit:** Faster feedback, better quality, and adaptability to changing requirements.
-
-> Implementation of these practices will be scheduled during **Phase 2** (checklists & adoption) and **Phase 3** (execution) of the roadmap. 
-
----
-
-## 10. Implementation Plan (adopt-now updates)
-
-| Timeline | Action | Owner | Linked Task |
-|----------|--------|-------|-------------|
-| Immediately (Sprint-0) | Begin project notebook / ADRs for all architectural & testing decisions | Lead Dev | — |
-| Sprint-0 | Add Hypothesis property tests to new API payload validators | Backend Team | T6 |
-| Sprint-0 | Add fast-check tests to mem0 TS libs for critical functions | TS Team | T6 |
-| Sprint-0 | Create Schemathesis contract test harness for Custom-GPT Adapter (`/api/v1/search`) | QA | T6 |
-| Sprint-0 | Add `pytest-testinfra` checks for Dockerfile health & Prometheus config validation (`promtool test rules`) | DevOps | T6 |
-| Sprint-0 | **Enable parallel test execution in CI/CD pipelines** (e.g., pytest-xdist, Jest maxWorkers, GitHub Actions matrix) | QA/DevOps | T6 |
-| Sprint-1 | Enable AI-generated test stubs in PR template guidelines; reviewers confirm assertion quality | All | T6 |
-| Sprint-1 | **Adopt checklist-based regression and exploratory testing as a living artifact** | QA | T6 |
-| Sprint-1 | **Integrate test writing/review/execution into each agile sprint** | All | T6 |
-| Sprint-2 | Consolidate duplicated `test_memory_bank_client.py` fixtures | QA | T5 |
-| Phase 2 kickoff | Integrate Mutmut (Python) & Stryker-JS (TS) with 30 % mutation-score gate | QA | T7 |
-| Phase 2 | Stand-up initial Locust/k6 load scenario against `/search` endpoint (100 RPS, 95-perc < 250 ms) | Perf Team | T7 |
-| Phase 3 | Expand contract tests across internal CLI & mem0 services | QA | future |
-| Phase 3 | Raise mutation gate to 60 % and add performance regress gates in CI | QA/Perf | future |
-
-> This table supersedes the high-level roadmap in Section 5 for day-to-day scheduling. Update as tasks complete.
+```yaml
+# .mergify.yml (excerpt)
+pull_request_rules:
+  - name: fast‑track trusted bot PRs
+    conditions:
+      - author=BMAD-bot
+      - label=automerge
+      - status-success=tests
+      - status-success=coverage-gate
+      - status-success=Licence-Scan
+    actions:
+      merge:
+        method: squash
+        strict: smart+fasttrack
+        commit_message: title+body

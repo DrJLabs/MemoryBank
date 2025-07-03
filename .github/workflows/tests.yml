@@ -1,0 +1,339 @@
+name: Test Suite - Parallel Execution
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  PYTHONPATH: ${{ github.workspace }}
+  TESTING: 1
+
+jobs:
+  test_matrix:
+    name: Tests (Python ${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.11", "3.12"]
+        test-strategy: 
+          - name: "unit"
+            markers: "unit"
+            parallel: "auto"
+          - name: "integration" 
+            markers: "integration"
+            parallel: "2"
+          - name: "slow"
+            markers: "slow"
+            parallel: "1"
+      
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        
+    - name: Install system dependencies
+      run: |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+        elif [ "$RUNNER_OS" == "macOS" ]; then
+          # Docker Desktop should be available on macOS runners
+          echo "Docker should be available on macOS"
+        fi
+        
+    - name: Install Python dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r dependencies/test.txt
+        pip install -r dependencies/core.txt
+        
+    - name: Verify Docker availability
+      run: |
+        docker --version
+        docker info || echo "Docker info failed, but continuing..."
+        
+    - name: Run ${{ matrix.test-strategy.name }} tests
+      run: |
+        pytest \
+          -m "${{ matrix.test-strategy.markers }}" \
+          -n ${{ matrix.test-strategy.parallel }} \
+          --tb=short \
+          --maxfail=5 \
+          --durations=10 \
+          --junitxml=reports/junit-${{ matrix.test-strategy.name }}-${{ matrix.python-version }}-${{ matrix.os }}.xml
+          
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-${{ matrix.test-strategy.name }}-${{ matrix.python-version }}-${{ matrix.os }}
+        path: reports/junit-*.xml
+        
+    - name: Generate test summary
+      if: always()
+      run: |
+        echo "## Test Results Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **OS**: ${{ matrix.os }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Python**: ${{ matrix.python-version }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Strategy**: ${{ matrix.test-strategy.name }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Parallel Workers**: ${{ matrix.test-strategy.parallel }}" >> $GITHUB_STEP_SUMMARY
+
+  coverage_report:
+    name: Coverage Report
+    runs-on: ubuntu-latest
+    needs: test_matrix
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+        cache: 'pip'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r dependencies/test.txt
+        pip install -r dependencies/core.txt
+        
+    - name: Run tests with coverage
+      run: |
+        pytest \
+          --cov=mem0 \
+          --cov=custom-gpt-adapter \
+          --cov=scripts \
+          --cov-report=xml \
+          --cov-report=html:reports/coverage \
+          --cov-fail-under=80 \
+          -n auto \
+          --tb=short
+          
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+        
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: coverage-reports
+        path: reports/coverage/
+
+  license_compliance:
+    name: License Compliance Gate
+    runs-on: ubuntu-latest
+    needs: test_matrix
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+        cache: 'pip'
+        
+    - name: Install dependencies and license tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r dependencies/test.txt
+        pip install -r dependencies/core.txt
+        pip install pip-licenses licensecheck
+        
+    - name: Generate license reports
+      run: |
+        echo "📜 Generating license compliance reports..."
+        mkdir -p reports/license-compliance
+        
+        # Generate comprehensive license reports
+        pip-licenses --format=json --output-file=reports/license-compliance/pip-licenses.json
+        pip-licenses --format=csv --output-file=reports/license-compliance/pip-licenses.csv
+        pip-licenses --format=html --output-file=reports/license-compliance/pip-licenses.html
+        pip-licenses --format=plain --output-file=reports/license-compliance/all-licenses.txt
+        
+        # Generate summary for each Python project
+        echo "Scanning Python projects for license compliance..."
+        for project in custom-gpt-adapter mem0 mem0/embedchain mem0/openmemory; do
+          if [ -d "$project" ]; then
+            echo "📦 Scanning $project..."
+            cd "$project"
+            if [ -f "pyproject.toml" ]; then
+              pip-licenses --format=json --output-file="../reports/license-compliance/${project//\//-}-licenses.json" || true
+              pip-licenses --format=plain --output-file="../reports/license-compliance/${project//\//-}-licenses.txt" || true
+            fi
+            cd - > /dev/null
+          fi
+        done
+        
+    - name: Analyze license compliance
+      run: |
+        echo "🔍 Analyzing license compliance..."
+        
+        # Define license policies
+        PROBLEMATIC_LICENSES=("GPL-2.0" "GPL-3.0" "AGPL-3.0" "LGPL-2.1" "LGPL-3.0" "GPL-2.0-only" "GPL-3.0-only" "AGPL-3.0-only")
+        ALLOWED_LICENSES=("MIT" "Apache-2.0" "BSD-3-Clause" "BSD-2-Clause" "ISC" "Python-2.0" "PSF" "LGPL-3.0" "MPL-2.0" "Apache License 2.0" "Apache Software License" "BSD License" "MIT License")
+        
+        # Create compliance report
+        echo "# 📜 License Compliance Report" > reports/license-compliance/compliance-summary.md
+        echo "" >> reports/license-compliance/compliance-summary.md
+        echo "**Scan Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> reports/license-compliance/compliance-summary.md
+        echo "**Project:** MemoryBank" >> reports/license-compliance/compliance-summary.md
+        echo "" >> reports/license-compliance/compliance-summary.md
+        
+        # Check for problematic licenses
+        echo "## 🚨 License Compliance Status" >> reports/license-compliance/compliance-summary.md
+        echo "" >> reports/license-compliance/compliance-summary.md
+        
+        found_problematic=false
+        if [ -f "reports/license-compliance/all-licenses.txt" ]; then
+          echo "### Problematic Licenses Found:" >> reports/license-compliance/compliance-summary.md
+          
+          for license in "${PROBLEMATIC_LICENSES[@]}"; do
+            if grep -q "$license" reports/license-compliance/all-licenses.txt; then
+              echo "- ❌ **$license** - POLICY VIOLATION" >> reports/license-compliance/compliance-summary.md
+              found_problematic=true
+            fi
+          done
+          
+          if [ "$found_problematic" = false ]; then
+            echo "- ✅ No problematic licenses detected" >> reports/license-compliance/compliance-summary.md
+          fi
+        fi
+        
+        echo "" >> reports/license-compliance/compliance-summary.md
+        echo "### License Summary:" >> reports/license-compliance/compliance-summary.md
+        
+        # Generate license summary
+        if [ -f "reports/license-compliance/all-licenses.txt" ]; then
+          echo "**All detected licenses:**" >> reports/license-compliance/compliance-summary.md
+          cat reports/license-compliance/all-licenses.txt | sort | uniq | sed 's/^/- /' >> reports/license-compliance/compliance-summary.md
+        fi
+        
+        # Fail if problematic licenses found
+        if [ "$found_problematic" = true ]; then
+          echo ""
+          echo "❌ LICENSE COMPLIANCE FAILURE: Problematic licenses detected!"
+          echo "Please review the license compliance report and update dependencies."
+          echo ""
+          cat reports/license-compliance/compliance-summary.md
+          exit 1
+        else
+          echo ""
+          echo "✅ LICENSE COMPLIANCE PASSED: No problematic licenses detected"
+          echo ""
+        fi
+        
+    - name: Upload license compliance reports
+      uses: actions/upload-artifact@v3
+      with:
+        name: license-compliance-reports
+        path: reports/license-compliance/
+        
+    - name: Comment PR with license summary (on PR)
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          if (fs.existsSync('reports/license-compliance/compliance-summary.md')) {
+            const report = fs.readFileSync('reports/license-compliance/compliance-summary.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `📜 **License Compliance Report**\n\n${report}\n\n*Full license reports available in CI artifacts*`
+            });
+          }
+
+  parallel_performance:
+    name: Parallel Performance Benchmark
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+        cache: 'pip'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r dependencies/test.txt
+        pip install -r dependencies/core.txt
+        
+    - name: Benchmark sequential vs parallel execution
+      run: |
+        echo "## Parallel Execution Performance" >> $GITHUB_STEP_SUMMARY
+        
+        echo "### Sequential Execution" >> $GITHUB_STEP_SUMMARY
+        time pytest tests/test_ephemeral_postgres.py -v --tb=no | tee sequential.log
+        SEQUENTIAL_TIME=$(grep "passed in" sequential.log | awk '{print $(NF-1)}')
+        echo "- **Time**: ${SEQUENTIAL_TIME}s" >> $GITHUB_STEP_SUMMARY
+        
+        echo "### Parallel Execution (auto)" >> $GITHUB_STEP_SUMMARY
+        time pytest tests/test_ephemeral_postgres.py -n auto -v --tb=no | tee parallel.log
+        PARALLEL_TIME=$(grep "passed in" parallel.log | awk '{print $(NF-1)}')
+        echo "- **Time**: ${PARALLEL_TIME}s" >> $GITHUB_STEP_SUMMARY
+        
+        echo "### Performance Improvement" >> $GITHUB_STEP_SUMMARY
+        python -c "
+        import sys
+        try:
+            seq = float('${SEQUENTIAL_TIME}')
+            par = float('${PARALLEL_TIME}')
+            improvement = ((seq - par) / seq) * 100
+            print(f'- **Speedup**: {improvement:.1f}% faster')
+        except:
+            print('- **Speedup**: Unable to calculate')
+        " >> $GITHUB_STEP_SUMMARY
+
+  test_isolation_validation:
+    name: Test Isolation Validation
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+        cache: 'pip'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r dependencies/test.txt
+        pip install -r dependencies/core.txt
+        
+    - name: Validate test isolation with high parallelism
+      run: |
+        echo "Testing isolation with 8 parallel workers..."
+        pytest tests/test_ephemeral_postgres.py::test_database_isolation_between_tests \
+          tests/test_ephemeral_postgres.py::test_database_isolation_second_test \
+          -n 8 \
+          --count=10 \
+          -v
+          
+        echo "✅ Test isolation validated with high parallelism" >> $GITHUB_STEP_SUMMARY 

@@ -309,3 +309,148 @@ When adding new tests:
 ---
 
 **Happy Testing! 🧪✨** 
+
+# MemoryBank Test Suite
+
+This directory contains the test suite for MemoryBank, featuring ephemeral Postgres databases for complete test isolation.
+
+## Quick Start
+
+1. **Install test dependencies:**
+   ```bash
+   pip install -r dependencies/test.txt
+   ```
+
+2. **Run all tests:**
+   ```bash
+   pytest
+   ```
+
+3. **Run tests with coverage:**
+   ```bash
+   pytest --cov=app --cov-report=html
+   ```
+
+4. **Run tests in parallel:**
+   ```bash
+   pytest -n auto
+   ```
+
+## Ephemeral Postgres Setup
+
+Our test suite uses **ephemeral Postgres containers** with pgvector extension for complete test isolation. Each test gets a fresh database, eliminating flaky tests caused by shared state.
+
+### Key Features
+
+- **Complete Isolation**: Each test gets its own database
+- **pgvector Support**: Vector extension pre-installed and ready
+- **Fast Setup**: Containers start automatically via testcontainers
+- **Parallel Safe**: Tests can run concurrently without conflicts
+- **CI Ready**: Works in GitHub Actions and other CI environments
+
+### Available Fixtures
+
+```python
+def test_my_feature(test_db_url):
+    """Use test_db_url for SQLAlchemy engine creation."""
+    engine = create_engine(test_db_url)
+    # Your test code here
+
+def test_with_session(test_db_session):
+    """Use test_db_session for SQLAlchemy ORM operations."""
+    result = test_db_session.execute(text("SELECT 1"))
+    # Your test code here
+
+def test_raw_connection(test_db_connection):
+    """Use test_db_connection for raw psycopg2 access."""
+    with test_db_connection.cursor() as cur:
+        cur.execute("SELECT 1")
+        # Your test code here
+```
+
+### Test Organization
+
+```
+tests/
+├── conftest.py              # Pytest configuration and fixtures
+├── test_ephemeral_postgres.py  # Fixture validation tests
+├── unit/                    # Unit tests
+├── integration/             # Integration tests
+└── performance/             # Performance tests (marked as slow)
+```
+
+### Test Markers
+
+- `@pytest.mark.unit` - Fast unit tests
+- `@pytest.mark.integration` - Integration tests requiring database
+- `@pytest.mark.slow` - Tests taking >5 seconds (skip with `-m "not slow"`)
+
+### Running Specific Test Types
+
+```bash
+# Run only unit tests
+pytest -m unit
+
+# Run only integration tests
+pytest -m integration
+
+# Skip slow tests
+pytest -m "not slow"
+
+# Run tests matching a pattern
+pytest -k "test_database"
+```
+
+## Environment Variables
+
+- `EPHEMERAL_POSTGRES_URI` - Override to use external Postgres instance
+- `TESTING=1` - Automatically set during test runs
+- `LOG_LEVEL=DEBUG` - Automatically set for detailed logging
+
+## CI/CD Integration
+
+The ephemeral Postgres setup works seamlessly in CI environments:
+
+```yaml
+# .github/workflows/test.yml
+- name: Run tests
+  run: |
+    pip install -r dependencies/test.txt
+    pytest --cov=app --cov-fail-under=80 -n auto
+```
+
+No additional services or setup required - testcontainers handles everything.
+
+## Troubleshooting
+
+### Docker Issues
+If you encounter Docker-related errors:
+1. Ensure Docker is running
+2. Check Docker permissions for your user
+3. Try running tests without parallelization: `pytest -n 0`
+
+### Slow Test Startup
+First test run may be slow while Docker pulls the pgvector image. Subsequent runs are much faster.
+
+### Memory Usage
+Each test creates a new database. For large test suites, consider:
+- Using `@pytest.mark.slow` for expensive tests
+- Running tests in smaller batches
+- Increasing Docker memory limits
+
+## Contributing
+
+When adding new tests:
+
+1. **Use appropriate fixtures** - `test_db_url`, `test_db_session`, or `test_db_connection`
+2. **Add proper markers** - `@pytest.mark.unit`, `@pytest.mark.integration`, etc.
+3. **Test isolation** - Don't rely on data from other tests
+4. **Clean up** - Fixtures handle cleanup automatically
+
+## Next Steps
+
+This setup enables Sprint-0 goals:
+- ✅ **S0-EPH-PG**: Ephemeral Postgres fixture implemented
+- 🔄 **S0-PAR**: Parallel testing ready (use `pytest -n auto`)
+- 🔄 **S0-CG**: Coverage gate ready (use `--cov-fail-under=80`)
+- 🔄 **S0-LIC**: License scanning (separate CI job) 
