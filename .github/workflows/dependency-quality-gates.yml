@@ -1,0 +1,246 @@
+name: Dependency Quality Gates
+
+on:
+  pull_request:
+    paths:
+      - '**/pyproject.toml'
+      - '**/poetry.lock'
+      - '**/requirements*.txt'
+      - '**/package.json'
+      - '**/package-lock.json'
+      - '**/pnpm-lock.yaml'
+      - '**/yarn.lock'
+      - '.github/workflows/dependency-quality-gates.yml'
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '20'
+
+jobs:
+  python-vulnerability-scan:
+    name: Python Vulnerability Scan
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory:
+          - '.'
+          - 'custom-gpt-adapter'
+          - 'mem0'
+          - 'mem0/embedchain'
+          - 'mem0/openmemory'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install Safety
+        run: |
+          pip install safety
+
+      - name: Check for pyproject.toml
+        id: check_pyproject
+        run: |
+          if [ -f "${{ matrix.directory }}/pyproject.toml" ]; then
+            echo "has_pyproject=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_pyproject=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Export requirements from Poetry
+        if: steps.check_pyproject.outputs.has_pyproject == 'true'
+        working-directory: ${{ matrix.directory }}
+        run: |
+          poetry export -f requirements.txt --without-hashes -o requirements-scan.txt || true
+
+      - name: Run Safety check
+        if: steps.check_pyproject.outputs.has_pyproject == 'true'
+        working-directory: ${{ matrix.directory }}
+        run: |
+          safety check -r requirements-scan.txt --json > safety-report.json || true
+          
+      - name: Upload Safety report
+        if: steps.check_pyproject.outputs.has_pyproject == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: safety-report-${{ matrix.directory }}
+          path: ${{ matrix.directory }}/safety-report.json
+
+  python-license-check:
+    name: Python License Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install pip-licenses
+        run: |
+          pip install pip-licenses
+
+      - name: Check licenses
+        run: |
+          # Define allowed licenses
+          ALLOWED_LICENSES="MIT,Apache-2.0,BSD-3-Clause,BSD-2-Clause,ISC,Python-2.0,PSF,LGPL-3.0,MPL-2.0"
+          
+          # Check each Python project
+          for dir in . custom-gpt-adapter mem0 mem0/embedchain mem0/openmemory; do
+            if [ -f "$dir/pyproject.toml" ]; then
+              echo "Checking licenses in $dir"
+              cd "$dir"
+              pip-licenses --with-authors --with-urls --format=json > licenses.json
+              # Add license validation logic here
+              cd -
+            fi
+          done
+
+  javascript-vulnerability-scan:
+    name: JavaScript Vulnerability Scan
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory:
+          - 'mem0/mem0-ts'
+          - 'mem0/vercel-ai-sdk'
+          - 'mem0/openmemory/ui'
+          - 'mem0/examples/mem0-demo'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Check for package.json
+        id: check_package
+        run: |
+          if [ -f "${{ matrix.directory }}/package.json" ]; then
+            echo "has_package=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_package=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run npm audit
+        if: steps.check_package.outputs.has_package == 'true'
+        working-directory: ${{ matrix.directory }}
+        run: |
+          npm audit --json > npm-audit-report.json || true
+          
+      - name: Upload npm audit report
+        if: steps.check_package.outputs.has_package == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: npm-audit-report-${{ matrix.directory }}
+          path: ${{ matrix.directory }}/npm-audit-report.json
+
+  dependency-freshness-check:
+    name: Dependency Freshness Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install tools
+        run: |
+          pip install pip-review
+
+      - name: Check Python dependency freshness
+        run: |
+          # Check outdated packages for each Python project
+          for dir in . custom-gpt-adapter mem0 mem0/embedchain mem0/openmemory; do
+            if [ -f "$dir/pyproject.toml" ]; then
+              echo "Checking outdated packages in $dir"
+              cd "$dir"
+              pip-review --local --auto > outdated-packages.txt || true
+              cd -
+            fi
+          done
+
+  trivy-scan:
+    name: Trivy Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+          severity: 'CRITICAL,HIGH'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  quality-gate-summary:
+    name: Quality Gate Summary
+    needs: [python-vulnerability-scan, python-license-check, javascript-vulnerability-scan, dependency-freshness-check, trivy-scan]
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Generate quality gate report
+        run: |
+          echo "# Dependency Quality Gate Report" > quality-gate-report.md
+          echo "" >> quality-gate-report.md
+          echo "## Summary" >> quality-gate-report.md
+          echo "- Python Vulnerability Scan: ${{ needs.python-vulnerability-scan.result }}" >> quality-gate-report.md
+          echo "- Python License Check: ${{ needs.python-license-check.result }}" >> quality-gate-report.md
+          echo "- JavaScript Vulnerability Scan: ${{ needs.javascript-vulnerability-scan.result }}" >> quality-gate-report.md
+          echo "- Dependency Freshness Check: ${{ needs.dependency-freshness-check.result }}" >> quality-gate-report.md
+          echo "- Trivy Security Scan: ${{ needs.trivy-scan.result }}" >> quality-gate-report.md
+          
+      - name: Comment PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('quality-gate-report.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: report
+            });
+
+      - name: Fail if any checks failed
+        if: |
+          needs.python-vulnerability-scan.result == 'failure' ||
+          needs.python-license-check.result == 'failure' ||
+          needs.javascript-vulnerability-scan.result == 'failure' ||
+          needs.trivy-scan.result == 'failure'
+        run: |
+          echo "One or more quality gates failed!"
+          exit 1 

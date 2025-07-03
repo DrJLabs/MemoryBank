@@ -1,1 +1,4 @@
-excludePaths = [".*\\.toml$", ".*\\.md$", "pyproject.toml"] 
+excludePaths = [".*\\.toml$", ".*\\.md$", "pyproject.toml"]
+
+[ignore]
+  patterns = ["**/*.md", "docs/*.md"] 

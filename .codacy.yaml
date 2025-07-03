@@ -1,0 +1,7 @@
+engines:
+  revive:
+    ignore_paths:
+      - "docs/*.md"
+      - "**/*.md"
+ignore_paths:
+  - "docs/**" 

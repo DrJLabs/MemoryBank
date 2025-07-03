@@ -1,0 +1,28 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Node.js for npm audit
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
+# Install Poetry
+RUN pip install poetry safety prometheus-client
+
+# Copy the metrics exporter script
+COPY scripts/dependency-metrics-exporter.py /app/
+
+# Make the script executable
+RUN chmod +x /app/dependency-metrics-exporter.py
+
+# Expose metrics port
+EXPOSE 9091
+
+# Run the metrics exporter
+CMD ["python", "/app/dependency-metrics-exporter.py"] 

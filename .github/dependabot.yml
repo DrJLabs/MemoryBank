@@ -1,0 +1,206 @@
+# Dependabot configuration for MemoryBank monorepo
+# Documentation: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Root Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "python"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    reviewers:
+      - "backend-team"
+    groups:
+      dev-dependencies:
+        patterns:
+          - "pytest*"
+          - "black"
+          - "mypy"
+          - "ruff"
+          - "pre-commit"
+      
+  # Custom GPT Adapter Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/custom-gpt-adapter"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+      - "custom-gpt-adapter"
+    commit-message:
+      prefix: "chore(custom-gpt-adapter)"
+      include: "scope"
+    
+  # Mem0 Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/mem0"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+      - "mem0"
+    commit-message:
+      prefix: "chore(mem0)"
+      include: "scope"
+    
+  # Embedchain Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/mem0/embedchain"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+      - "embedchain"
+    commit-message:
+      prefix: "chore(embedchain)"
+      include: "scope"
+    
+  # OpenMemory Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/mem0/openmemory"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "python"
+      - "openmemory"
+    commit-message:
+      prefix: "chore(openmemory)"
+      include: "scope"
+    
+  # Mem0 TypeScript SDK dependencies
+  - package-ecosystem: "npm"
+    directory: "/mem0/mem0-ts"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "javascript"
+      - "mem0-ts"
+    commit-message:
+      prefix: "chore(mem0-ts)"
+      include: "scope"
+    reviewers:
+      - "frontend-team"
+    
+  # Vercel AI SDK dependencies
+  - package-ecosystem: "npm"
+    directory: "/mem0/vercel-ai-sdk"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "javascript"
+      - "vercel-ai-sdk"
+    commit-message:
+      prefix: "chore(vercel-ai-sdk)"
+      include: "scope"
+    
+  # OpenMemory UI dependencies
+  - package-ecosystem: "npm"
+    directory: "/mem0/openmemory/ui"
+    schedule:
+      interval: "weekly"
+      day: "tuesday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "javascript"
+      - "openmemory-ui"
+    commit-message:
+      prefix: "chore(openmemory-ui)"
+      include: "scope"
+    
+  # Mem0 Demo dependencies
+  - package-ecosystem: "npm"
+    directory: "/mem0/examples/mem0-demo"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "javascript"
+      - "examples"
+    commit-message:
+      prefix: "chore(examples)"
+      include: "scope"
+    
+  # GitHub Actions dependencies
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "04:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
+    
+  # Docker dependencies
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "04:00"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "docker"
+    commit-message:
+      prefix: "build"
+      include: "scope"
+    
+  # Custom GPT Adapter Docker
+  - package-ecosystem: "docker"
+    directory: "/custom-gpt-adapter/docker"
+    schedule:
+      interval: "weekly"
+      day: "wednesday"
+      time: "04:00"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "docker"
+      - "custom-gpt-adapter"
+    commit-message:
+      prefix: "build(custom-gpt-adapter)"
+      include: "scope"
+
+# Security updates are enabled by default for all ecosystems
+# Dependabot will automatically create PRs for security vulnerabilities 
