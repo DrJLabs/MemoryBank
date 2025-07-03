@@ -37,8 +37,7 @@ def test_app():
         name="Test GPT",
         client_id="test-client-id",
         client_secret="test-client-secret",
-        permissions=["read", "write"],
-        rate_limit="100/minute"
+        permissions=["read", "write"]
     )
     db.add(app)
     db.commit()

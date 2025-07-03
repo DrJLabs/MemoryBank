@@ -55,7 +55,7 @@ def agent_test_scenarios():
             "persona_check": True,
         },
         {
-            "name": "invalid_command", 
+            "name": "invalid_command",
             "input": "invalid_command",
             "expected_output": {"type": "error", "message": str},
             "persona_check": False,
@@ -75,7 +75,7 @@ def agent_test_scenarios():
 def mock_memory_system():
     """Mock memory system for testing memory operations."""
     memory_system = Mock()
-    
+
     # Mock memory operations
     memory_system.add = Mock(return_value={"id": "test_memory_123", "success": True})
     memory_system.search = Mock(return_value=[
@@ -88,7 +88,7 @@ def mock_memory_system():
         "categories": ["TECHNICAL", "WORKFLOW"],
     })
     memory_system.categorize = Mock(return_value="TECHNICAL")
-    
+
     return memory_system
 
 
@@ -99,7 +99,7 @@ def memory_test_data():
         "valid_memories": [
             {
                 "content": "User prefers Python for AI development",
-                "expected_category": "PREFERENCE", 
+                "expected_category": "PREFERENCE",
                 "metadata": {"user_id": "test_user", "confidence": 0.95},
             },
             {
@@ -128,19 +128,19 @@ def memory_property_strategies():
         @staticmethod
         def text(min_size=1, max_size=1000):
             return lambda: f"test_memory_content_{int(time.time())}"
-        
+
         @staticmethod
         def sampled_from(choices):
             return lambda: choices[0] if choices else "TECHNICAL"
-        
+
         @staticmethod
         def dictionaries(keys=None, values=None, min_size=0, max_size=10):
             return lambda: {"test_key": "test_value", "timestamp": time.time()}
-        
+
         @staticmethod
         def floats(min_value=0.0, max_value=1.0):
             return lambda: 0.85
-    
+
     return MockStrategies()
 
 
@@ -152,7 +152,7 @@ def workflow_test_config():
     return {
         "workflows": [
             "greenfield-fullstack",
-            "brownfield-service", 
+            "brownfield-service",
             "greenfield-ui",
             "brownfield-fullstack",
         ],
@@ -190,9 +190,9 @@ def quality_metrics_tracker():
         "agent_persona_scores": [],
         "workflow_success_rate": 0.0,
     }
-    
+
     yield metrics
-    
+
     # Calculate final metrics
     metrics["test_duration"] = time.time() - metrics["test_start_time"]
     metrics["avg_performance"] = sum(metrics["performance_ms"]) / len(metrics["performance_ms"]) if metrics["performance_ms"] else 0
@@ -210,7 +210,7 @@ def quality_gate_validator():
             "agent_persona_gate": all(score >= BMAD_TEST_CONFIG["agent_persona_threshold"] for score in metrics.get("agent_persona_scores", [1.0])),
             "workflow_success_gate": metrics.get("workflow_success_rate", 0) >= BMAD_TEST_CONFIG["workflow_success_threshold"],
         }
-    
+
     return validate_quality_gates
 
 
@@ -221,49 +221,73 @@ def performance_monitor():
     """Monitor performance during tests."""
     import psutil
     import threading
-    
+
     process = psutil.Process()
     start_time = time.time()
     start_memory = process.memory_info().rss
-    
-    # Performance data collection
-    performance_data = {
-        "start_time": start_time,
-        "start_memory": start_memory,
-        "cpu_samples": [],
-        "memory_samples": [],
-    }
-    
+
+    # Performance data collection with dynamic duration calculation
+    class PerformanceData:
+        def __init__(self, start_time, start_memory, process):
+            self.start_time = start_time
+            self.start_memory = start_memory
+            self.process = process
+            self.cpu_samples = []
+            self.memory_samples = []
+            self.end_time = None
+            self.end_memory = None
+
+        def __getitem__(self, key):
+            if key == "duration":
+                current_time = time.time()
+                return current_time - self.start_time
+            elif key == "memory_delta":
+                current_memory = self.process.memory_info().rss
+                return current_memory - self.start_memory
+            elif key == "avg_cpu":
+                return sum(self.cpu_samples) / len(self.cpu_samples) if self.cpu_samples else 0
+            elif key == "peak_memory":
+                return max(self.memory_samples) if self.memory_samples else self.start_memory
+            elif key == "start_time":
+                return self.start_time
+            elif key == "start_memory":
+                return self.start_memory
+            elif key == "cpu_samples":
+                return self.cpu_samples
+            elif key == "memory_samples":
+                return self.memory_samples
+            else:
+                raise KeyError(f"Unknown performance metric: {key}")
+
+        def get(self, key, default=None):
+            try:
+                return self[key]
+            except KeyError:
+                return default
+
+    performance_data = PerformanceData(start_time, start_memory, process)
+
     # Start monitoring thread
     monitoring = True
-    
+
     def monitor():
         while monitoring:
             try:
-                performance_data["cpu_samples"].append(process.cpu_percent())
-                performance_data["memory_samples"].append(process.memory_info().rss)
+                performance_data.cpu_samples.append(process.cpu_percent())
+                performance_data.memory_samples.append(process.memory_info().rss)
                 time.sleep(0.1)
             except:
                 break
-    
+
     monitor_thread = threading.Thread(target=monitor, daemon=True)
     monitor_thread.start()
-    
+
     yield performance_data
-    
+
     # Stop monitoring
     monitoring = False
-    end_time = time.time()
-    end_memory = process.memory_info().rss
-    
-    performance_data.update({
-        "end_time": end_time,
-        "end_memory": end_memory,
-        "duration": end_time - start_time,
-        "memory_delta": end_memory - start_memory,
-        "avg_cpu": sum(performance_data["cpu_samples"]) / len(performance_data["cpu_samples"]) if performance_data["cpu_samples"] else 0,
-        "peak_memory": max(performance_data["memory_samples"]) if performance_data["memory_samples"] else start_memory,
-    })
+    performance_data.end_time = time.time()
+    performance_data.end_memory = process.memory_info().rss
 
 
 # ==================== BMAD INTEGRATION FIXTURES ====================
@@ -309,19 +333,19 @@ def bmad_test_setup():
     # Create necessary directories
     test_dirs = [
         "reports/bmad",
-        "logs/bmad", 
+        "logs/bmad",
         ".ai/bmad",
     ]
-    
+
     for dir_path in test_dirs:
         Path(dir_path).mkdir(parents=True, exist_ok=True)
-    
+
     # Set BMAD testing environment variables
     os.environ["BMAD_TEST_MODE"] = "true"
     os.environ["BMAD_TEST_PHASE"] = "1"
-    
+
     yield
-    
+
     # Cleanup
     os.environ.pop("BMAD_TEST_MODE", None)
     os.environ.pop("BMAD_TEST_PHASE", None)
@@ -334,7 +358,7 @@ def pytest_runtest_setup(item):
     if "bmad" in item.nodeid:
         # Mark all BMAD tests
         item.add_marker(pytest.mark.bmad)
-        
+
         # Add performance monitoring to slow tests
         if "slow" in item.keywords:
             item.add_marker(pytest.mark.performance)
@@ -353,9 +377,9 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     """Custom terminal summary for BMAD tests."""
     if hasattr(terminalreporter, 'stats'):
         bmad_tests = [test for test in terminalreporter.stats.get('passed', []) + terminalreporter.stats.get('failed', []) if 'bmad' in str(test)]
-        
+
         if bmad_tests:
             terminalreporter.write_sep("=", "BMAD Testing Summary")
             terminalreporter.write_line(f"🔬 BMAD Tests Run: {len(bmad_tests)}")
             terminalreporter.write_line("🎯 Phase 1: Foundation Testing")
-            terminalreporter.write_line(f"📊 Quality Threshold: {BMAD_TEST_CONFIG['coverage_threshold']}% coverage") 
+            terminalreporter.write_line(f"📊 Quality Threshold: {BMAD_TEST_CONFIG['coverage_threshold']}% coverage")

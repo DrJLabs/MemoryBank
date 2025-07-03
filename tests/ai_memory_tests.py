@@ -20,7 +20,7 @@ import time
 
 # Graceful hypothesis imports
 try:
-    from hypothesis import given, settings, assume
+    from hypothesis import given, settings, assume, HealthCheck
     HYPOTHESIS_AVAILABLE = True
 except ImportError:
     HYPOTHESIS_AVAILABLE = False
@@ -169,7 +169,7 @@ class TestMemoryCore:
     @settings(
         max_examples=100,
         deadline=10000,
-        suppress_health_check=[settings.HealthCheck.too_slow] if HYPOTHESIS_AVAILABLE else []
+        suppress_health_check=[HealthCheck.too_slow] if HYPOTHESIS_AVAILABLE else []
     )
     def test_memory_add_property_based_modern(self, content, user_id, metadata, mocker):
         """Enhanced property-based testing with modern Hypothesis patterns"""

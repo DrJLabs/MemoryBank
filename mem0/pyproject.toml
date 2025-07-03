@@ -1,6 +1,28 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry]
+name = "mem0"
+version = "0.1.111"
+description = "Long-term memory for AI Agents"
+authors = ["Mem0 <founders@mem0.ai>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+qdrant-client = ">=1.9.1"
+pydantic = ">=2.7.3"
+openai = ">=1.33.0"
+posthog = ">=3.5.0"
+pytz = ">=2024.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=8.2.2"
+pytest-mock = ">=3.14.0"
+pytest-asyncio = ">=0.23.7"
+ruff = ">=0.6.5"
+isort = ">=5.13.2"
 
 [project]
 name = "mem0ai"
@@ -17,6 +39,12 @@ dependencies = [
     "openai>=1.33.0",
     "posthog>=3.5.0",
     "pytz>=2024.1",
+    "h11 (>=0.16.0,<0.17.0)",
+    "protobuf (>=5.29.5,<6.0.0)",
+    "setuptools (>=78.1.1,<79.0.0)",
+    "transformers (>=4.48.0,<5.0.0)",
+    "mysql-connector-python (>=9.1.0,<10.0.0)",
+    "starlette (>=0.40.0,<0.41.0)",
 ]
 
 [project.optional-dependencies]

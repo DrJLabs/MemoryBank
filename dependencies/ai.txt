@@ -1,0 +1,42 @@
+# MemoryBank AI/ML Dependencies
+# Machine Learning, Vector Databases, and AI Integration packages
+
+# Core AI/ML Libraries
+sentence-transformers>=3.0.0
+langchain-community>=0.3.0
+
+# LLM Providers
+groq>=0.11.0
+together>=1.3.0
+litellm>=1.50.0
+ollama>=0.4.0
+vertexai>=1.70.0
+google-generativeai>=0.8.0
+
+# Vector Databases
+chromadb>=0.5.0
+weaviate-client>=4.8.0
+pinecone-client<7.0.0
+pinecone-text>=0.9.0
+faiss-cpu>=1.8.0
+upstash-vector>=0.6.0
+
+# Search & Retrieval
+elasticsearch>=8.15.0
+opensearch-py>=2.7.0
+vecs>=0.5.0
+rank-bm25>=0.2.0
+
+# Graph Databases (AI Memory)
+langchain-memgraph>=0.1.0
+langchain-neo4j>=0.1.0
+
+# Cloud Storage & Services
+boto3>=1.35.0
+azure-search-documents>=11.6.0
+
+# Specialized AI Tools
+pymochow>=1.0.0
+
+# Code Quality (AI Development)
+ruff>=0.6.9 

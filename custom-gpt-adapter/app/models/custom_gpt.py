@@ -18,8 +18,6 @@ class CustomGPTApplication(Base):
     client_id = Column(String, unique=True, index=True, nullable=False)
     client_secret = Column(String, nullable=False)
     permissions = Column(JSON, default=[])
-    rate_limit = Column(String, default="10/minute")
-    rate_limits = Column(JSON)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
     last_used = Column(DateTime, onupdate=datetime.datetime.utcnow)
     

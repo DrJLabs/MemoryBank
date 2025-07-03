@@ -1,0 +1,531 @@
+name: Security Scanning Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run security scans weekly on Sundays at 2 AM UTC
+    - cron: '0 2 * * 0'
+  workflow_dispatch:
+    inputs:
+      scan_level:
+        description: 'Security scan level'
+        required: false
+        default: 'standard'
+        type: choice
+        options:
+          - quick
+          - standard
+          - comprehensive
+      target_component:
+        description: 'Target component to scan'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - mem0
+          - custom-gpt-adapter
+          - embedchain
+          - dependencies
+
+env:
+  TRIVY_CACHE_DIR: ~/.cache/trivy
+
+jobs:
+  # Job 1: Dependency Vulnerability Scanning
+  dependency-security:
+    name: Dependency Vulnerability Scan
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: 📦 Cache pip dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-security-${{ hashFiles('**/requirements*.txt', '**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-security-
+          ${{ runner.os }}-pip-
+
+    - name: 🔧 Install security scanning tools
+      run: |
+        python -m pip install --upgrade pip
+        pip install safety bandit semgrep
+
+    - name: 🛡️ Run Safety dependency vulnerability scan
+      continue-on-error: true
+      run: |
+        echo "🔍 Scanning dependencies with Safety..."
+        mkdir -p security-reports
+        
+        # Scan main project dependencies
+        if [ -f "requirements.txt" ]; then
+          safety check --json --output security-reports/safety-main.json || safety check --output security-reports/safety-main.txt
+        fi
+        
+        # Scan testing dependencies
+        if [ -f "requirements-testing.txt" ]; then
+          safety check -r requirements-testing.txt --json --output security-reports/safety-testing.json || \
+          safety check -r requirements-testing.txt --output security-reports/safety-testing.txt
+        fi
+        
+        # Scan Poetry projects
+        for dir in mem0 custom-gpt-adapter; do
+          if [ -f "$dir/pyproject.toml" ]; then
+            cd $dir
+            safety check --json --output ../security-reports/safety-$dir.json || \
+            safety check --output ../security-reports/safety-$dir.txt
+            cd ..
+          fi
+        done
+
+    - name: 🔍 Run Bandit static security analysis
+      continue-on-error: true
+      run: |
+        echo "🛡️ Running Bandit static security analysis..."
+        
+        # Scan main codebase
+        bandit -r . \
+          --exclude './tests/*,./mem0/embedchain/tests/*,./custom-gpt-adapter/tests/*' \
+          --format json \
+          --output security-reports/bandit-main.json || \
+        bandit -r . \
+          --exclude './tests/*,./mem0/embedchain/tests/*,./custom-gpt-adapter/tests/*' \
+          --output security-reports/bandit-main.txt
+        
+        # Scan specific components
+        if [ "${{ github.event.inputs.target_component }}" = "all" ] || [ "${{ github.event.inputs.target_component }}" = "mem0" ]; then
+          bandit -r mem0/ --exclude 'mem0/embedchain/tests/*' \
+            --format json --output security-reports/bandit-mem0.json || \
+          bandit -r mem0/ --exclude 'mem0/embedchain/tests/*' \
+            --output security-reports/bandit-mem0.txt
+        fi
+
+    - name: 🔎 Run Semgrep SAST scan
+      continue-on-error: true
+      run: |
+        echo "🛡️ Running Semgrep SAST analysis..."
+        
+        # Run comprehensive Semgrep analysis
+        semgrep --config=auto \
+          --json --output=security-reports/semgrep-full.json \
+          --exclude="tests/" \
+          --exclude="*/tests/*" \
+          --exclude="test_*" \
+          . || \
+        semgrep --config=auto \
+          --output=security-reports/semgrep-full.txt \
+          --exclude="tests/" \
+          --exclude="*/tests/*" \
+          --exclude="test_*" \
+          .
+        
+        # Run Python-specific rules
+        semgrep --config=p/python \
+          --json --output=security-reports/semgrep-python.json \
+          --exclude="tests/" \
+          . || true
+
+    - name: 📊 Generate security summary
+      run: |
+        echo "# 🛡️ Security Scan Summary" > security-reports/summary.md
+        echo "" >> security-reports/summary.md
+        echo "**Scan Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> security-reports/summary.md
+        echo "**Scan Level:** ${{ github.event.inputs.scan_level || 'standard' }}" >> security-reports/summary.md
+        echo "**Target:** ${{ github.event.inputs.target_component || 'all' }}" >> security-reports/summary.md
+        echo "" >> security-reports/summary.md
+        
+        # Count issues found
+        echo "## 📋 Results Summary" >> security-reports/summary.md
+        echo "" >> security-reports/summary.md
+        
+        # Safety results
+        safety_issues=$(find security-reports -name "safety-*.txt" -exec wc -l {} + | tail -1 | awk '{print $1}' || echo "0")
+        echo "- **Safety (Dependencies):** $safety_issues potential vulnerabilities" >> security-reports/summary.md
+        
+        # Bandit results
+        if [ -f "security-reports/bandit-main.txt" ]; then
+          bandit_issues=$(grep -c ">> Issue:" security-reports/bandit-main.txt || echo "0")
+        else
+          bandit_issues="0"
+        fi
+        echo "- **Bandit (Static Analysis):** $bandit_issues potential issues" >> security-reports/summary.md
+        
+        # Semgrep results
+        if [ -f "security-reports/semgrep-full.txt" ]; then
+          semgrep_issues=$(grep -c "rule:" security-reports/semgrep-full.txt || echo "0")
+        else
+          semgrep_issues="0"
+        fi
+        echo "- **Semgrep (SAST):** $semgrep_issues potential findings" >> security-reports/summary.md
+        
+        echo "" >> security-reports/summary.md
+        echo "📁 **Detailed reports available in security-reports/ directory**" >> security-reports/summary.md
+
+    - name: 📤 Upload security reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-scan-reports
+        path: security-reports/
+        retention-days: 30
+
+    - name: 💬 Comment PR with security summary (on PR)
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          if (fs.existsSync('security-reports/summary.md')) {
+            const summary = fs.readFileSync('security-reports/summary.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🛡️ **Security Scan Results**\n\n${summary}\n\n*Full reports available in CI artifacts*`
+            });
+          }
+
+  # Job 2: Container Security Scanning
+  container-security:
+    name: Container Security Scan
+    runs-on: ubuntu-latest
+    if: github.event.inputs.scan_level != 'quick'
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+
+    - name: 🐳 Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: 📦 Cache Trivy database
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.TRIVY_CACHE_DIR }}
+        key: ${{ runner.os }}-trivy-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-trivy-
+
+    - name: 🔧 Install Trivy
+      run: |
+        sudo apt-get update
+        sudo apt-get install wget apt-transport-https gnupg lsb-release
+        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+        echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+        sudo apt-get update
+        sudo apt-get install trivy
+
+    - name: 🏗️ Build containers for scanning
+      run: |
+        echo "🐳 Building containers for security scanning..."
+        
+        # Build main application containers
+        if [ -f "Dockerfile" ]; then
+          docker build -t memorybank:latest .
+        fi
+        
+        # Build component-specific containers
+        if [ -f "custom-gpt-adapter/docker/Dockerfile.api" ]; then
+          docker build -f custom-gpt-adapter/docker/Dockerfile.api -t custom-gpt-adapter:latest custom-gpt-adapter/
+        fi
+        
+        if [ -f "mem0/server/dev.Dockerfile" ]; then
+          docker build -f mem0/server/dev.Dockerfile -t mem0-server:latest mem0/server/
+        fi
+
+    - name: 🔍 Run Trivy container vulnerability scans
+      continue-on-error: true
+      run: |
+        echo "🛡️ Scanning containers with Trivy..."
+        mkdir -p container-security-reports
+        
+        # Scan built images
+        for image in $(docker images --format "{{.Repository}}:{{.Tag}}" | grep -E "(memorybank|custom-gpt-adapter|mem0-server)"); do
+          image_name=$(echo $image | sed 's/:/-/g')
+          trivy image --format json --output container-security-reports/trivy-$image_name.json $image || \
+          trivy image --format table --output container-security-reports/trivy-$image_name.txt $image
+        done
+        
+        # Scan common base images
+        trivy image --format json --output container-security-reports/trivy-python-base.json python:3.11-slim || true
+
+    - name: 📊 Generate container security summary
+      run: |
+        echo "# 🐳 Container Security Summary" > container-security-reports/summary.md
+        echo "" >> container-security-reports/summary.md
+        echo "**Scan Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> container-security-reports/summary.md
+        echo "" >> container-security-reports/summary.md
+        
+        for report in container-security-reports/trivy-*.txt; do
+          if [ -f "$report" ]; then
+            image_name=$(basename "$report" .txt | sed 's/trivy-//')
+            echo "## 📋 $image_name" >> container-security-reports/summary.md
+            echo "" >> container-security-reports/summary.md
+            
+            # Extract vulnerability counts
+            critical=$(grep -c "CRITICAL" "$report" || echo "0")
+            high=$(grep -c "HIGH" "$report" || echo "0")
+            medium=$(grep -c "MEDIUM" "$report" || echo "0")
+            
+            echo "- **Critical:** $critical" >> container-security-reports/summary.md
+            echo "- **High:** $high" >> container-security-reports/summary.md
+            echo "- **Medium:** $medium" >> container-security-reports/summary.md
+            echo "" >> container-security-reports/summary.md
+          fi
+        done
+
+    - name: 📤 Upload container security reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: container-security-reports
+        path: container-security-reports/
+        retention-days: 30
+
+  # Job 3: License Compliance Check
+  license-compliance:
+    name: License Compliance Check
+    runs-on: ubuntu-latest
+    if: github.event.inputs.scan_level == 'comprehensive'
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: 🔧 Install license checking tools
+      run: |
+        pip install pip-licenses licensecheck
+
+    - name: 📜 Generate license reports
+      run: |
+        echo "📜 Generating license compliance reports..."
+        mkdir -p license-reports
+        
+        # Generate pip-licenses report
+        pip-licenses --format=json --output-file=license-reports/pip-licenses.json || true
+        pip-licenses --format=csv --output-file=license-reports/pip-licenses.csv || true
+        pip-licenses --format=html --output-file=license-reports/pip-licenses.html || true
+        
+        # Check for problematic licenses
+        pip-licenses --format=plain --output-file=license-reports/all-licenses.txt || true
+
+    - name: 🔍 Analyze license compatibility
+      run: |
+        echo "🔍 Analyzing license compatibility..."
+        
+        # Define problematic licenses (adjust based on your policy)
+        problematic_licenses=("GPL-2.0" "GPL-3.0" "AGPL-3.0" "LGPL-2.1" "LGPL-3.0")
+        
+        echo "# 📜 License Compliance Report" > license-reports/compliance-summary.md
+        echo "" >> license-reports/compliance-summary.md
+        echo "**Scan Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> license-reports/compliance-summary.md
+        echo "" >> license-reports/compliance-summary.md
+        
+        if [ -f "license-reports/all-licenses.txt" ]; then
+          echo "## 🚨 Potentially Problematic Licenses" >> license-reports/compliance-summary.md
+          echo "" >> license-reports/compliance-summary.md
+          
+          found_issues=false
+          for license in "${problematic_licenses[@]}"; do
+            if grep -q "$license" license-reports/all-licenses.txt; then
+              echo "- ⚠️ **$license** found in dependencies" >> license-reports/compliance-summary.md
+              found_issues=true
+            fi
+          done
+          
+          if [ "$found_issues" = false ]; then
+            echo "- ✅ No problematic licenses detected" >> license-reports/compliance-summary.md
+          fi
+        fi
+
+    - name: 📤 Upload license reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: license-compliance-reports
+        path: license-reports/
+        retention-days: 30
+
+  # Job 4: Security Configuration Check
+  security-config:
+    name: Security Configuration Audit
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+
+    - name: 🔧 Install security audit tools
+      run: |
+        # Install tools for configuration security checking
+        sudo apt-get update
+        sudo apt-get install -y jq yamllint
+
+    - name: 🔍 Check configuration security
+      run: |
+        echo "🔒 Auditing security configurations..."
+        mkdir -p config-security-reports
+        
+        echo "# 🔒 Security Configuration Audit" > config-security-reports/audit-summary.md
+        echo "" >> config-security-reports/audit-summary.md
+        echo "**Audit Date:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> config-security-reports/audit-summary.md
+        echo "" >> config-security-reports/audit-summary.md
+        
+        # Check for hardcoded secrets
+        echo "## 🔐 Secret Detection" >> config-security-reports/audit-summary.md
+        secret_patterns=("password" "secret" "key" "token" "api_key")
+        
+        for pattern in "${secret_patterns[@]}"; do
+          matches=$(grep -r -i "$pattern" . --include="*.py" --include="*.yml" --include="*.yaml" --include="*.json" --exclude-dir=".git" --exclude-dir="security-reports" || true)
+          if [ ! -z "$matches" ]; then
+            echo "- ⚠️ Potential $pattern references found" >> config-security-reports/audit-summary.md
+          fi
+        done
+        
+        # Check YAML/JSON configuration files for security
+        echo "" >> config-security-reports/audit-summary.md
+        echo "## 📄 Configuration File Security" >> config-security-reports/audit-summary.md
+        
+        # Check for insecure configurations
+        find . -name "*.yml" -o -name "*.yaml" | while read file; do
+          if grep -q "security.*false\|ssl.*false\|tls.*false" "$file"; then
+            echo "- ⚠️ Potential insecure setting in $file" >> config-security-reports/audit-summary.md
+          fi
+        done || true
+
+    - name: 📤 Upload configuration audit reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: config-security-reports
+        path: config-security-reports/
+        retention-days: 30
+
+  # Job 5: Final Security Summary
+  security-summary:
+    name: Security Summary & Reporting
+    runs-on: ubuntu-latest
+    needs: [dependency-security, container-security, license-compliance, security-config]
+    if: always()
+    
+    steps:
+    - name: 📥 Download all security reports
+      uses: actions/download-artifact@v4
+
+    - name: 📊 Generate comprehensive security report
+      run: |
+        echo "📊 Generating comprehensive security report..."
+        
+        echo "# 🛡️ Comprehensive Security Report" > final-security-report.md
+        echo "" >> final-security-report.md
+        echo "**Report Generated:** $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> final-security-report.md
+        echo "**Workflow:** ${{ github.workflow }}" >> final-security-report.md
+        echo "**Run ID:** ${{ github.run_id }}" >> final-security-report.md
+        echo "" >> final-security-report.md
+        
+        # Combine all summaries
+        echo "## 📋 Security Scan Results" >> final-security-report.md
+        echo "" >> final-security-report.md
+        
+        # Include dependency security results
+        if [ -f "security-scan-reports/summary.md" ]; then
+          echo "### 📦 Dependency Security" >> final-security-report.md
+          cat security-scan-reports/summary.md >> final-security-report.md
+          echo "" >> final-security-report.md
+        fi
+        
+        # Include container security results
+        if [ -f "container-security-reports/summary.md" ]; then
+          echo "### 🐳 Container Security" >> final-security-report.md
+          cat container-security-reports/summary.md >> final-security-report.md
+          echo "" >> final-security-report.md
+        fi
+        
+        # Include license compliance results
+        if [ -f "license-compliance-reports/compliance-summary.md" ]; then
+          echo "### 📜 License Compliance" >> final-security-report.md
+          cat license-compliance-reports/compliance-summary.md >> final-security-report.md
+          echo "" >> final-security-report.md
+        fi
+        
+        # Include configuration audit results
+        if [ -f "config-security-reports/audit-summary.md" ]; then
+          echo "### 🔒 Configuration Security" >> final-security-report.md
+          cat config-security-reports/audit-summary.md >> final-security-report.md
+          echo "" >> final-security-report.md
+        fi
+        
+        echo "## 🎯 Next Steps" >> final-security-report.md
+        echo "" >> final-security-report.md
+        echo "1. Review detailed reports in CI artifacts" >> final-security-report.md
+        echo "2. Address high-priority vulnerabilities" >> final-security-report.md
+        echo "3. Update dependencies with security patches" >> final-security-report.md
+        echo "4. Validate license compliance requirements" >> final-security-report.md
+        echo "5. Implement security configuration fixes" >> final-security-report.md
+
+    - name: 💬 Comment PR with final security summary (on PR)
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          if (fs.existsSync('final-security-report.md')) {
+            const report = fs.readFileSync('final-security-report.md', 'utf8');
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🛡️ **Comprehensive Security Scan Report**\n\n${report}\n\n*Download detailed reports from CI artifacts for full analysis*`
+            });
+          }
+
+    - name: 📤 Upload final security report
+      uses: actions/upload-artifact@v4
+      with:
+        name: final-security-report
+        path: final-security-report.md
+        retention-days: 90
+
+    - name: 🚨 Fail on critical security issues
+      run: |
+        echo "🔍 Checking for critical security issues..."
+        
+        # Check if we should fail the build based on findings
+        critical_issues=false
+        
+        # Check for critical dependency vulnerabilities
+        if [ -f "security-scan-reports/safety-main.txt" ]; then
+          if grep -q "vulnerability" security-scan-reports/safety-main.txt; then
+            echo "❌ Critical dependency vulnerabilities found"
+            critical_issues=true
+          fi
+        fi
+        
+        # Check for high-severity container vulnerabilities
+        if [ -f "container-security-reports/trivy-memorybank-latest.txt" ]; then
+          critical_count=$(grep -c "CRITICAL" container-security-reports/trivy-memorybank-latest.txt || echo "0")
+          if [ "$critical_count" -gt 5 ]; then
+            echo "❌ Too many critical container vulnerabilities: $critical_count"
+            critical_issues=true
+          fi
+        fi
+        
+        if [ "$critical_issues" = true ]; then
+          echo "🚨 Build failed due to critical security issues"
+          exit 1
+        else
+          echo "✅ No critical security issues detected"
+        fi 

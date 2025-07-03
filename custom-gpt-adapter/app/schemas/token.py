@@ -11,5 +11,5 @@ class AccessToken(BaseModel):
     token_type: str = "bearer"
 
 class TokenPayload(BaseModel):
-    sub: uuid.UUID = None
+    sub: str | None = None
     token_type: str | None = None 

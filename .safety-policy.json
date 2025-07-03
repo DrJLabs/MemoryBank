@@ -1,0 +1,30 @@
+{
+  "security": {
+    "ignore-cvss-unknown-severity": false,
+    "ignore-cvss-severity-below": 7.0,
+    "ignore-vuln-during-times": [],
+    "ignore-unpinned-requirements": false,
+    "continue-on-vuln-error": false
+  },
+  "ignore": {
+    "ignore-python-vulnerabilities": [],
+    "ignore-vulnerabilities": [],
+    "ignore-packages": []
+  },
+  "report": {
+    "only-report": false,
+    "output": ["screen", "json"]
+  },
+  "scan": {
+    "max-depth": 10,
+    "exclude": [
+      "*/test/*",
+      "*/tests/*",
+      "test_*",
+      "*_test.py"
+    ]
+  },
+  "alert": {
+    "ignore-severity-rules": false
+  }
+} 

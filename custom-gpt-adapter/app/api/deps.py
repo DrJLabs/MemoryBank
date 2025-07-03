@@ -5,24 +5,18 @@ import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 from jwt.exceptions import InvalidTokenError
+import uuid
 
 from app import crud, models, schemas
 from app.core import security
 from app.core.config import settings
-from app.core.database import SessionLocal
+from app.core.database import get_db
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"{settings.API_V1_STR}/auth/token"
 )
 
-async def get_db() -> Generator:
-    try:
-        db = SessionLocal()
-        yield db
-    finally:
-        db.close()
-
-async def get_current_application(
+def get_current_application(
     db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
 ) -> models.CustomGPTApplication:
     try:
@@ -35,12 +29,22 @@ async def get_current_application(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    application = crud.get_application(db, id=token_data.sub)
+    
+    # Convert string UUID back to UUID object
+    try:
+        app_id = uuid.UUID(str(token_data.sub))
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid token format",
+        )
+    
+    application = crud.get_application(db, id=app_id)
     if not application:
         raise HTTPException(status_code=404, detail="Application not found")
     return application
 
-async def get_current_application_from_refresh_token(
+def get_current_application_from_refresh_token(
     db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
 ) -> models.CustomGPTApplication:
     try:
@@ -58,7 +62,17 @@ async def get_current_application_from_refresh_token(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    application = crud.get_application(db, id=token_data.sub)
+    
+    # Convert string UUID back to UUID object
+    try:
+        app_id = uuid.UUID(str(token_data.sub))
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid token format",
+        )
+    
+    application = crud.get_application(db, id=app_id)
     if not application:
         raise HTTPException(status_code=404, detail="Application not found")
     return application 

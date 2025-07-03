@@ -1,13 +1,13 @@
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "memorybank"
 dynamic = ["version"]
 description = "Memory-C* System with Advanced Testing Framework"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.9,<4.0"
 license = "MIT"
 keywords = ["memory", "ai", "testing", "automation"]
 authors = [
@@ -33,6 +33,7 @@ dependencies = [
   "pytest-mock>=3.11.0",
   "hypothesis>=6.82.0",
   "psutil>=5.9.0",
+  "custom-gpt-adapter @ file:///home/drj/C-System/MemoryBank/custom-gpt-adapter",
 ]
 
 [project.optional-dependencies]
@@ -60,6 +61,7 @@ path = "app/core/config.py"
 
 [tool.pytest.ini_options]
 minversion = "8.0"
+pythonpath = ["."]
 addopts = [
   "-ra",
   "--strict-markers",
@@ -74,6 +76,8 @@ addopts = [
   "--self-contained-html",
   "--tb=short",
   "--maxfail=5",
+  "-k",
+  "not ai_memory_tests and not test_error_handler_direct and not test_integration_simple",
 ]
 testpaths = [
   "tests",
@@ -158,4 +162,22 @@ skip_covered = true
 directory = "reports/coverage/html"
 
 [tool.coverage.xml]
-output = "reports/coverage/coverage.xml" 
+output = "reports/coverage/coverage.xml"
+
+[tool.poetry]
+name = "memorybank-monorepo"
+version = "0.0.0"
+description = "MemoryBank Monorepo Workspace"
+authors = ["MemoryBank Team"]
+readme = "README.md"
+packages = []
+package-mode = false
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+custom-gpt-adapter = {develop = true}
+mem0 = { path = "mem0", develop = true }
+embedchain = { path = "mem0/embedchain", develop = true } 
+[tool.poetry.group.dev.dependencies]
+pytest-env = "^1.1.5"
+

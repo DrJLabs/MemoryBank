@@ -1,0 +1,75 @@
+# Semgrep ignore file for MemoryBank
+# https://semgrep.dev/docs/ignoring-files-folders-code/
+
+# Test directories
+tests/
+test/
+*/tests/*
+*/test/*
+test_*.py
+*_test.py
+**/test_*.py
+**/*_test.py
+
+# Build and dependency directories
+node_modules/
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Documentation
+docs/
+*.md
+*.rst
+*.txt
+
+# Configuration files
+*.yml
+*.yaml
+*.json
+*.toml
+*.ini
+*.cfg
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*.backup
+*.bak
+*.orig
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# Archive files
+archive/
+archived/
+deprecated/
+
+# Example and demo files
+examples/
+demos/
+samples/ 

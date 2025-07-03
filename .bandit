@@ -1,0 +1,46 @@
+[bandit]
+# Bandit configuration for MemoryBank security scanning
+# https://bandit.readthedocs.io/en/latest/config.html
+
+# Exclude test directories and files
+exclude_dirs = ["tests", "test", "*/tests/*", "*/test/*"]
+
+# Skip specific test IDs if needed
+# skips = ['B101', 'B601']
+
+# Test severity levels
+# Default level: LOW, MEDIUM, HIGH
+level = LOW
+
+# Confidence levels 
+# Default confidence: LOW, MEDIUM, HIGH
+confidence = LOW
+
+# Report format options
+# Available: csv, custom, html, json, screen, txt, xml, yaml
+format = txt
+
+# Include additional information in reports
+verbose = true
+
+# Aggregate output by vulnerability type
+aggregate = vuln
+
+# Context lines to show around flagged code
+context_lines = 3
+
+[bandit.assert_used]
+# Allow assert statements in test files
+skips = ['*test*.py', '*_test.py', 'test_*.py']
+
+[bandit.hardcoded_password_string]
+# Additional patterns for hardcoded passwords
+word_list = ["password", "pass", "passwd", "secret", "key", "token", "api_key"]
+
+[bandit.hardcoded_sql_expressions]
+# Skip SQL injection checks for specific patterns
+confidence = MEDIUM
+
+[bandit.subprocess_popen_with_shell_equals_true]
+# Be strict about shell injection
+level = HIGH 

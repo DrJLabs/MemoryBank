@@ -1,0 +1,36 @@
+# MemoryBank Development Dependencies
+# Tools and utilities for development, debugging, and code quality
+
+# Code Quality & Formatting
+ruff>=0.6.9
+black>=24.0.0
+isort>=5.13.0
+mypy>=1.11.0
+
+# Development Tools
+pre-commit>=3.8.0
+ipython>=8.26.0
+jupyter>=1.1.0
+
+# Documentation
+mkdocs>=1.6.0
+mkdocs-material>=9.5.0
+sphinx>=7.4.0
+
+# Debugging & Profiling
+pdb-attach>=3.2.0
+line-profiler>=4.1.0
+py-spy>=0.3.0
+
+# Environment Management
+python-dotenv>=1.0.0
+environs>=11.0.0
+
+# Build & Packaging
+build>=1.2.0
+twine>=5.1.0
+wheel>=0.44.0
+
+# Git Hooks & Automation
+gitpython>=3.1.41
+pre-commit-hooks>=4.6.0 

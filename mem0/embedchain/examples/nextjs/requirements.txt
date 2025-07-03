@@ -1,5 +1,5 @@
-fastapi==0.104.0
-uvicorn==0.23.2
+fastapi==0.115.8
+uvicorn==0.34.0
 embedchain[opensource]
 beautifulsoup4
 discord

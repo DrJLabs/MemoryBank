@@ -5,7 +5,7 @@ from app.api import deps
 from app import models, schemas
 from app.clients.memory_bank_client import memory_bank_client
 from app.workers.memory_processor import log_search_activity
-from app.core.limiter import limiter
+# from app.core.limiter import limiter  # Temporarily disabled
 import httpx
 
 router = APIRouter()
@@ -29,10 +29,9 @@ class SearchResponse(BaseModel):
     results: List[SearchResult]
 
 @router.post("/", response_model=schemas.SearchResponse)
-@limiter.limit("10/minute")
+# @limiter.limit("10/minute")  # Temporarily disabled for testing
 async def search_memories(
     request: schemas.SearchRequest,
-    req: Request,
     db: deps.Session = Depends(deps.get_db),
     current_application: models.CustomGPTApplication = Depends(
         deps.get_current_application

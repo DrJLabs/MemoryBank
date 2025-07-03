@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 import uuid
 
 from app.models.custom_gpt import CustomGPTApplication
-from app.core.security import create_access_token
+from app.core.security import create_access_token, get_password_hash
 from app.core.config import settings
 from sqlalchemy.orm import Session
 
@@ -12,7 +12,14 @@ def test_create_memory_success(db_session: Session, client: TestClient):
     access_token = create_access_token(subject=str(app_id))
     headers = {"Authorization": f"Bearer {access_token}"}
 
-    app = CustomGPTApplication(id=app_id)
+    app = CustomGPTApplication(
+        id=app_id,
+        name="Test Memory App",
+        client_id="test-memory-client",
+        client_secret=get_password_hash("test-secret"),
+        permissions=["read", "write"],
+        rate_limit="100/minute"
+    )
     db_session.add(app)
     db_session.commit()
     

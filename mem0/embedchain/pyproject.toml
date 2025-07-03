@@ -93,7 +93,7 @@ exclude = '''
 color = true
 
 [tool.poetry.dependencies]
-python = ">=3.9,<=3.13.2"
+python = ">=3.9,<4.0"
 python-dotenv = "^1.0.0"
 langchain = "^0.3.1"
 requests = "^2.31.0"
@@ -108,7 +108,7 @@ pysbd = "^0.3.4"
 mem0ai = "^0.1.54"
 tiktoken = { version = "^0.7.0", optional = true }
 sentence-transformers = { version = "^2.2.2", optional = true }
-torch = { version = ">=2.6.0", optional = true }
+torch = "^2.6.0"
 # Torch 2.0.1 is not compatible with poetry (https://github.com/pytorch/pytorch/issues/100974)
 gpt4all = { version = "2.0.2", optional = true }
 # 1.0.9 is not working for some users (https://github.com/nomic-ai/gpt4all/issues/1394)
@@ -126,7 +126,7 @@ schema = "^0.7.5"
 psycopg = { version = "^3.1.12", optional = true }
 psycopg-binary = { version = "^3.1.12", optional = true }
 psycopg-pool = { version = "^3.1.8", optional = true }
-mysql-connector-python = { version = "^8.1.0", optional = true }
+mysql-connector-python = "^9.1.0"
 google-generativeai = { version = "^0.3.0", optional = true }
 google-api-python-client = { version = "^2.111.0", optional = true }
 google-auth-oauthlib = { version = "^1.2.0", optional = true }
@@ -142,12 +142,16 @@ langchain-cohere = "^0.3.0"
 langchain-community = "^0.3.1"
 langchain-aws = {version = "^0.2.1", optional = true}
 langsmith = "^0.3.18"
+h11 = "^0.16.0"
+transformers = "^4.48.0"
+setuptools = "^78.1.1"
+starlette = "^0.40.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
 pre-commit = "^3.2.2"
 ruff = "^0.1.11"
-pytest = "^7.3.1"
+pytest = "^8.0.0"
 pytest-mock = "^3.10.0"
 pytest-env = "^0.8.1"
 click = "^8.1.3"

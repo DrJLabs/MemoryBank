@@ -5,7 +5,7 @@ import uuid
 
 from app.models.custom_gpt import CustomGPTApplication
 from app.core.config import settings
-from app.core.security import create_access_token
+from app.core.security import create_access_token, get_password_hash
 
 @patch('app.api.v1.endpoints.search.memory_bank_client.search_memories', new_callable=AsyncMock)
 @patch('app.api.v1.endpoints.search.log_search_activity.delay')
@@ -14,7 +14,14 @@ def test_search_memories_success(mock_log_delay, mock_memory_search, client: Tes
     access_token = create_access_token(subject=str(app_id))
     headers = {"Authorization": f"Bearer {access_token}"}
     
-    app = CustomGPTApplication(id=app_id)
+    app = CustomGPTApplication(
+        id=app_id,
+        name="Test Search App",
+        client_id="test-search-client",
+        client_secret=get_password_hash("test-secret"),
+        permissions=["read"],
+        rate_limit="100/minute"
+    )
     db_session.add(app)
     db_session.commit()
 
@@ -34,7 +41,14 @@ def test_search_memories_service_unavailable(mock_log_delay, mock_memory_search,
     access_token = create_access_token(subject=str(app_id))
     headers = {"Authorization": f"Bearer {access_token}"}
     
-    app = CustomGPTApplication(id=app_id)
+    app = CustomGPTApplication(
+        id=app_id,
+        name="Test Search App 2",
+        client_id="test-search-client-2",
+        client_secret=get_password_hash("test-secret"),
+        permissions=["read"],
+        rate_limit="100/minute"
+    )
     db_session.add(app)
     db_session.commit()
     
