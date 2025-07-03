@@ -126,7 +126,7 @@ schema = "^0.7.5"
 psycopg = { version = "^3.1.12", optional = true }
 psycopg-binary = { version = "^3.1.12", optional = true }
 psycopg-pool = { version = "^3.1.8", optional = true }
-mysql-connector-python = "^9.1.0"
+PyMySQL = "^1.1.0"
 google-generativeai = { version = "^0.3.0", optional = true }
 google-api-python-client = { version = "^2.111.0", optional = true }
 google-auth-oauthlib = { version = "^1.2.0", optional = true }
@@ -182,7 +182,7 @@ gmail = [
 ]
 googledrive = ["google-api-python-client", "google-auth-oauthlib", "google-auth-httplib2"]
 postgres = ["psycopg", "psycopg-binary", "psycopg-pool"]
-mysql = ["mysql-connector-python"]
+mysql = ["PyMySQL"]
 google = ["google-generativeai"]
 mistralai = ["langchain-mistralai"]
 aws = ["langchain-aws"]

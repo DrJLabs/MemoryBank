@@ -5,10 +5,10 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 try:
-    import psycopg2
-    from psycopg2.extras import execute_values
+    import psycopg
+    from psycopg.extras import execute_values
 except ImportError:
-    raise ImportError("The 'psycopg2' library is required. Please install it using 'pip install psycopg2'.")
+    raise ImportError("The 'psycopg' library is required. Please install it using 'pip install psycopg[binary]'.")
 
 from mem0.vector_stores.base import VectorStoreBase
 
@@ -53,7 +53,7 @@ class PGVector(VectorStoreBase):
         self.use_hnsw = hnsw
         self.embedding_model_dims = embedding_model_dims
 
-        self.conn = psycopg2.connect(dbname=dbname, user=user, password=password, host=host, port=port)
+        self.conn = psycopg.connect(dbname=dbname, user=user, password=password, host=host, port=port)
         self.cur = self.conn.cursor()
 
         collections = self.list_cols()
@@ -186,7 +186,7 @@ class PGVector(VectorStoreBase):
         if payload:
             self.cur.execute(
                 f"UPDATE {self.collection_name} SET payload = %s WHERE id = %s",
-                (psycopg2.extras.Json(payload), vector_id),
+                (psycopg.extras.Json(payload), vector_id),
             )
         self.conn.commit()
 
