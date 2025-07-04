@@ -4,7 +4,7 @@
 
 | # | Task ID | Description | Owner | Status |
 |---|---------|-------------|-------|-------|
-| 1 | baseline_discovery | Capture baseline environment details before v16 upgrade |  | ☐ Pending |
+| 1 | baseline_discovery | Capture baseline environment details before v16 upgrade | AI Agent | ✅ Completed |
 | 2 | cluster_inventory | Run `psql -Atc "select version(), current_setting('data_directory')"` against each environment to record version info, extensions, and data directories |  | ☐ Pending |
 | 3 | extension_matrix | Export `pg_available_extensions`; flag extensions not validated on v16 |  | ☐ Pending |
 | 4 | pgvector_gap_check | Verify pgvector 0.8 cost-estimation and HNSW improvements; document any query plan changes |  | ☐ Pending |
