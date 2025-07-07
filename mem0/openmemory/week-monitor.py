@@ -197,7 +197,7 @@ class WeekOneMonitor:
             # Send desktop notification if possible
             try:
                 subprocess.run([
-                    'notify-send', 'Memory-C* Alert', alert, '-t', '5000'
+                    'notify-send', 'MemoryBank Alert', alert, '-t', '5000'
                 ], check=False)
             except:
                 pass  # Desktop notifications not available

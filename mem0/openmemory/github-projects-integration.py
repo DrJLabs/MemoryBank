@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-GitHub Projects Integration for Memory-C* System
+GitHub Projects Integration for MemoryBank System
 Automated project management using GitHub Projects API
 """
 
@@ -117,7 +117,7 @@ class GitHubProjectsAPI:
         return result.get("data", {}).get("repository", {}).get("id", "")
 
 class MemoryProjectsSync:
-    """Sync between Memory-C* and GitHub Projects"""
+    """Sync between MemoryBank and GitHub Projects"""
     
     def __init__(self, config: GitHubConfig):
         self.config = config
@@ -138,7 +138,7 @@ class MemoryProjectsSync:
             logger.error(f"Sync error: {e}")
     
     async def _get_memory_insights(self) -> List[Dict]:
-        """Get insights from Memory-C* API"""
+        """Get insights from MemoryBank API"""
         try:
             response = requests.get(f"{self.memory_api_base}/api/memories")
             response.raise_for_status()
@@ -196,7 +196,7 @@ class MemoryProjectsSync:
         
         return f"""## Memory Insight Analysis
 
-**Source**: Memory-C* System
+**Source**: MemoryBank System
 **Timestamp**: {timestamp}
 **Insight ID**: {insight.get("id", "Unknown")}
 
@@ -210,7 +210,7 @@ class MemoryProjectsSync:
 - [ ] Update documentation
 
 ---
-*Auto-generated from Memory-C* insight*"""
+*Auto-generated from MemoryBank insight*"""
 
 # Main service class
 class GitHubProjectsService:

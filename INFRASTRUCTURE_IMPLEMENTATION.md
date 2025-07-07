@@ -40,7 +40,7 @@ Successfully implemented **production-grade infrastructure** for the AI-Friendly
 
 ### **Directory Structure**
 ```
-Memory-C*/
+MemoryBank/
 ├── requirements-testing.txt           # Testing dependencies
 ├── pytest.ini                        # Test configuration
 ├── .coveragerc                       # Coverage configuration  
@@ -226,7 +226,7 @@ The enhanced GitHub Actions workflow is immediately ready:
 ```bash
 # Local development setup
 git clone <repository>
-cd Memory-C*
+cd MemoryBank
 scripts/setup-testing-environment.sh
 
 # Run tests with AI enhancements

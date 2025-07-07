@@ -1,6 +1,6 @@
 #!/bin/bash
 # Enhanced Docker Stack Startup with Infisical Integration
-# Architecture: Memory-C* Infisical Integration Architecture v1.0
+# Architecture: MemoryBank Infisical Integration Architecture v1.0
 # Pattern: Container Platform Integration with Comprehensive Monitoring
 
 set -euo pipefail
@@ -174,7 +174,7 @@ monitor_health() {
 
 # Function to display service information
 display_service_info() {
-    print_message "$GREEN" "🎯 Infisical-Secured Memory-C* Stack Information:"
+    print_message "$GREEN" "🎯 Infisical-Secured MemoryBank Stack Information:"
     print_message "$BLUE" "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     print_message "$BLUE" "🧠 Mem0 API:        http://localhost:8888"
     print_message "$BLUE" "📖 API Docs:        http://localhost:8888/docs"
@@ -217,7 +217,7 @@ main() {
     
     case "$command" in
         start)
-            print_message "$BLUE" "🔐 Memory-C* Infisical-Secured Docker Stack"
+            print_message "$BLUE" "🔐 MemoryBank Infisical-Secured Docker Stack"
             print_message "$BLUE" "=========================================="
             check_prerequisites
             validate_infisical_auth

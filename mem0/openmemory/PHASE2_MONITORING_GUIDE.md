@@ -19,7 +19,7 @@ Following [automated monitoring best practices](https://www.numberanalytics.com/
 
 ### Start Week One Monitoring
 ```bash
-cd /home/drj/*C-System/Memory-C*/mem0/openmemory
+cd /home/drj/*C-System/MemoryBank/mem0/openmemory
 
 # Test system first
 python3 week-monitor.py --test
@@ -108,13 +108,13 @@ python3 alert-system.py --recent 24
 ### Active Cron Jobs
 ```bash
 # Daily health check at 6 AM
-0 6 * * * /home/drj/*C-System/Memory-C*/mem0/openmemory/cron-maintenance.sh daily_health
+0 6 * * * /home/drj/*C-System/MemoryBank/mem0/openmemory/cron-maintenance.sh daily_health
 
 # Weekly cleanup every Sunday at 2 AM  
-0 2 * * 0 /home/drj/*C-System/Memory-C*/mem0/openmemory/cron-maintenance.sh weekly_cleanup
+0 2 * * 0 /home/drj/*C-System/MemoryBank/mem0/openmemory/cron-maintenance.sh weekly_cleanup
 
 # Monthly full maintenance on 1st at 1 AM
-0 1 1 * * /home/drj/*C-System/Memory-C*/mem0/openmemory/cron-maintenance.sh monthly_full
+0 1 1 * * /home/drj/*C-System/MemoryBank/mem0/openmemory/cron-maintenance.sh monthly_full
 ```
 
 ## 📋 Week One Monitoring Checklist

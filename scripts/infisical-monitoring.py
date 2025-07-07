@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Infisical Secret Management Monitoring System
-Architecture: Memory-C* Infisical Integration Architecture v1.0
+Architecture: MemoryBank Infisical Integration Architecture v1.0
 Pattern: Secret Management Monitoring with Metrics Collection and Alerting
 """
 
@@ -313,7 +313,7 @@ class InfisicalMonitor:
 <body>
     <div class="dashboard">
         <div class="header">
-            <h1>🔐 Memory-C* Infisical Monitoring Dashboard</h1>
+            <h1>🔐 MemoryBank Infisical Monitoring Dashboard</h1>
             <p>Real-time secret management monitoring and performance analytics</p>
             <p class="timestamp">Last updated: {data['timestamp']}</p>
         </div>
@@ -413,7 +413,7 @@ class InfisicalMonitor:
 def main():
     """Main monitoring function"""
     print("🔐 Infisical Secret Management Monitor")
-    print("Architecture: Memory-C* Infisical Integration v1.0")
+    print("Architecture: MemoryBank Infisical Integration v1.0")
     print("=" * 50)
     
     monitor = InfisicalMonitor()

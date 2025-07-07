@@ -1,5 +1,5 @@
 #!/bin/bash
-# Memory-C* Development Environment Manager
+# MemoryBank Development Environment Manager
 # Ensures all commands execute in the correct directories
 
 set -e
@@ -126,7 +126,7 @@ start_api() {
 
 # Function to start all services
 start_all() {
-    print_status "Starting all Memory-C* services..."
+    print_status "Starting all MemoryBank services..."
     
     # Start Vector DB
     if ! check_port 6333; then
@@ -164,7 +164,7 @@ stop_all() {
 # Function to show status
 show_status() {
     echo ""
-    echo "🎯 Memory-C* Service Status"
+    echo "🎯 MemoryBank Service Status"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     
     if check_port 3010; then
@@ -205,7 +205,7 @@ api_cmd() {
 # Main menu
 show_menu() {
     echo ""
-    echo "🧠 Memory-C* Development Environment Manager"
+    echo "🧠 MemoryBank Development Environment Manager"
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo "1) Start UI Server (port 3010)"
     echo "2) Start API Server (port 8765)"

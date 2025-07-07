@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Memory-C* Enhanced Monitoring Dashboard Startup Script
+# MemoryBank Enhanced Monitoring Dashboard Startup Script
 # This script starts both the monitoring API server and the React development server
 
 set -e
 
-echo "🚀 Starting Memory-C* Enhanced Monitoring Dashboard"
+echo "🚀 Starting MemoryBank Enhanced Monitoring Dashboard"
 echo "=" * 60
 
 # Colors for output

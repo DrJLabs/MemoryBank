@@ -52,7 +52,7 @@ def ttl_cache(func):
     return wrapper
 
 # Base paths
-PROJECT_ROOT = Path("/home/drj/C-System/Memory-C*")
+PROJECT_ROOT = Path("/home/drj/C-System/MemoryBank")
 STORIES_PATH = PROJECT_ROOT / "docs/stories"
 PRD_PATH = PROJECT_ROOT / "docs/prd"
 BMAD_CORE_PATH = PROJECT_ROOT / ".bmad-core"

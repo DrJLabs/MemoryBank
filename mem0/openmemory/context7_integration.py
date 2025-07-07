@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
-Context7 Integration with Memory-C* System
+Context7 Integration with MemoryBank System
 ==========================================
 
 Memory-enhanced Context7 integration that stores documentation lookups
 and builds reusable patterns for technical development.
 
 Author: Memory-Enhanced Developer Agent
-Integration: Context7 MCP + Memory-C* Storage
+Integration: Context7 MCP + MemoryBank Storage
 """
 
 import asyncio

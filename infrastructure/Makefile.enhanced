@@ -1,4 +1,4 @@
-# Memory-C* Enhanced Makefile
+# MemoryBank Enhanced Makefile
 # Ensures all commands execute in correct directories
 
 .PHONY: help ui-dev ui-build ui-install api-dev api-install start-all stop-all status clean setup
@@ -18,7 +18,7 @@ NC := \033[0m # No Color
 
 # Default target
 help:
-	@echo "$(BLUE)Memory-C* Development Commands$(NC)"
+	@echo "$(BLUE)MemoryBank Development Commands$(NC)"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@echo "$(GREEN)UI Commands:$(NC)"
 	@echo "  make ui-dev        - Start UI development server (port 3010)"
@@ -77,7 +77,7 @@ stop-all:
 # Status check
 status:
 	@echo ""
-	@echo "$(BLUE)Memory-C* Service Status$(NC)"
+	@echo "$(BLUE)MemoryBank Service Status$(NC)"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@if lsof -Pi :3010 -sTCP:LISTEN -t >/dev/null 2>&1; then \
 		echo "UI Server:     $(GREEN)● Running$(NC) (http://localhost:3010)"; \
@@ -98,7 +98,7 @@ status:
 
 # Setup
 setup:
-	@echo "$(BLUE)[INFO]$(NC) Setting up Memory-C* development environment..."
+	@echo "$(BLUE)[INFO]$(NC) Setting up MemoryBank development environment..."
 	@make ui-install
 	@make api-install
 	@echo "$(GREEN)[SUCCESS]$(NC) Setup complete!"

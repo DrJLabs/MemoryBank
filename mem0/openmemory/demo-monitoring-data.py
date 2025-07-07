@@ -219,7 +219,7 @@ def add_real_time_metric():
 
 def main():
     """Main demo function"""
-    print("🚀 Memory-C* Monitoring Dashboard Demo Data Generator")
+    print("🚀 MemoryBank Monitoring Dashboard Demo Data Generator")
     print("=" * 60)
     
     # Create database and tables

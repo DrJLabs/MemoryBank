@@ -42,7 +42,7 @@ class Alert:
     resolved: bool = False
 
 class MemorySystemMonitor:
-    """Advanced monitoring system for Memory-C* system"""
+    """Advanced monitoring system for MemoryBank system"""
     
     def __init__(self, config_file: str = "monitoring_config.json"):
         self.config = self._load_config(config_file)

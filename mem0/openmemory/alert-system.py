@@ -155,7 +155,7 @@ class AlertManager:
                 "type": "email",
                 "config": {
                     "recipient": self.config.get("default_recipient", "admin@localhost"),
-                    "subject_prefix": "[Memory-C* Alert]"
+                    "subject_prefix": "[MemoryBank Alert]"
                 },
                 "enabled": True
             },
@@ -292,7 +292,7 @@ class AlertManager:
         
         emoji = severity_emoji.get(alert["severity"], "📢")
         
-        return f"""{emoji} Memory-C* Alert: {alert['rule_name']}
+        return f"""{emoji} MemoryBank Alert: {alert['rule_name']}
 
 Component: {alert['component']}
 Metric: {alert['metric']}
@@ -337,7 +337,7 @@ Please investigate and take appropriate action if necessary."""
             # Try notify-send (Linux)
             subprocess.run([
                 'notify-send',
-                f"Memory-C* {alert['severity']}",
+                f"MemoryBank {alert['severity']}",
                 f"{alert['rule_name']}: {alert['value']}",
                 '-t', str(channel.config.get("timeout", 5000))
             ], check=False)

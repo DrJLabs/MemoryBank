@@ -1,7 +1,7 @@
 name: mem0-infisical-secured
 
 # Enhanced Docker Compose with Infisical Secret Management
-# Architecture: Memory-C* Infisical Integration Architecture v1.0
+# Architecture: MemoryBank Infisical Integration Architecture v1.0
 # Pattern: Container Platform Integration with Secret Injection
 
 services:

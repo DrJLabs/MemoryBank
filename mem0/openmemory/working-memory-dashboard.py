@@ -314,7 +314,7 @@ class MemoryDashboardHandler(BaseHTTPRequestHandler):
             # Use the mem-search system directly
             result = subprocess.run(
                 ['python3', 'mem0/openmemory/cursor-memory-enhanced.py', 'search', ''],
-                capture_output=True, text=True, cwd='/home/drj/*C-System/Memory-C*'
+                capture_output=True, text=True, cwd='/home/drj/*C-System/MemoryBank'
             )
             
             if result.returncode == 0:
@@ -353,7 +353,7 @@ class MemoryDashboardHandler(BaseHTTPRequestHandler):
             # Use the mem-add command
             result = subprocess.run(
                 ['python3', 'mem0/openmemory/cursor-memory-enhanced.py', 'add', text],
-                capture_output=True, text=True, cwd='/home/drj/*C-System/Memory-C*'
+                capture_output=True, text=True, cwd='/home/drj/*C-System/MemoryBank'
             )
             
             if result.returncode == 0:

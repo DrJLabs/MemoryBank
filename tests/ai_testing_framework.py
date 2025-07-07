@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Modern AI-Friendly Testing Framework for Memory-C* System
+Modern AI-Friendly Testing Framework for MemoryBank System
 Updated with 2024/2025 best practices for pytest, mocking, and test automation
 
 This framework provides:

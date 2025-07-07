@@ -1,8 +1,8 @@
-# 🧪 AI-Friendly Testing Suite for Memory-C*
+# 🧪 AI-Friendly Testing Suite for MemoryBank
 
 ## Overview
 
-This testing suite implements **AI-powered testing** with **self-correction capabilities**, **adaptive behavior**, and **intelligent failure recovery** for the Memory-C* system. It goes beyond traditional testing by incorporating:
+This testing suite implements **AI-powered testing** with **self-correction capabilities**, **adaptive behavior**, and **intelligent failure recovery** for the MemoryBank system. It goes beyond traditional testing by incorporating:
 
 - ✨ **Auto-correction mechanisms** for flaky tests
 - 🧠 **Intelligent mocking** based on test context  
@@ -57,7 +57,7 @@ make test
 - **Auto-correction patterns** for common failures
 - **Smart mocking** based on test context
 
-#### 2. **Memory-C* Tests** (`tests/ai_memory_tests.py`)
+#### 2. **MemoryBank Tests** (`tests/ai_memory_tests.py`)
 - **Core functionality tests** with AI enhancements
 - **Performance & stress testing** with adaptive timeouts
 - **Integration tests** with intelligent mocking
@@ -285,7 +285,7 @@ python -m pytest tests/ai_memory_tests.py -v -s --tb=long
 ### Integration Opportunities  
 - **Linear issue creation** from test failures
 - **GitHub Projects** integration for test planning
-- **Memory-C* insights** for test case generation
+- **MemoryBank insights** for test case generation
 - **Automated documentation** from test behaviors
 
 ---
@@ -294,7 +294,7 @@ python -m pytest tests/ai_memory_tests.py -v -s --tb=long
 
 - **Hypothesis Documentation**: https://hypothesis.readthedocs.io/
 - **Pytest Documentation**: https://docs.pytest.org/
-- **Memory-C* Documentation**: Local project documentation
+- **MemoryBank Documentation**: Local project documentation
 - **CI/CD Best Practices**: `.github/workflows/` examples
 
 ## 🤝 Contributing

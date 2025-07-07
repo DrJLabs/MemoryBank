@@ -22,7 +22,7 @@ memoryBank:
   # Standard Categories
   categories: ["TECHNICAL", "PREFERENCE", "PROJECT", "WORKFLOW", "LEARNING"]
   
-  # Project-Specific Categories for Memory-C*
+  # Project-Specific Categories for MemoryBank*
   projectCategories:
     - "MEMORY_OPS"      # Core memory operations, embeddings, vector stores
     - "AI_ML"           # Machine learning models, predictions, analytics
@@ -35,7 +35,7 @@ memoryBank:
     - "ARCHITECTURE"    # System design, dependencies, component relationships
     - "MAINTENANCE"     # Backup strategies, system health, operational procedures
     
-  # Auto-categorization patterns for Memory-C*
+  # Auto-categorization patterns for MemoryBank*
   categoryPatterns:
     MEMORY_OPS: ["memory operation", "embedding", "vector store", "mem0", "openmemory core"]
     AI_ML: ["machine learning", "prediction", "analytics", "model accuracy", "phase5", "predictive"]

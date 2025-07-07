@@ -19,13 +19,13 @@ I have a persistent memory system running locally. Always use these commands for
 
 **Add Memory:**
 ```bash
-python3 /home/drj/*C-System/Memory-C*/mem0/openmemory/cursor-memory-enhanced.py remember "information to store"
+python3 /home/drj/*C-System/MemoryBank/mem0/openmemory/cursor-memory-enhanced.py remember "information to store"
 ```
 Or: `mem-add "information to store"`
 
 **Search Memory:**
 ```bash
-python3 /home/drj/*C-System/Memory-C*/mem0/openmemory/cursor-memory-enhanced.py recall "search query"
+python3 /home/drj/*C-System/MemoryBank/mem0/openmemory/cursor-memory-enhanced.py recall "search query"
 ```
 Or: `mem-search "search query"`
 

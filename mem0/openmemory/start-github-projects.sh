@@ -1,7 +1,7 @@
 #!/bin/bash
 """
 GitHub Projects Integration Startup Script
-Launches Memory-C* GitHub Projects integration service
+Launches MemoryBank GitHub Projects integration service
 """
 
 set -e  # Exit on any error
@@ -17,17 +17,17 @@ NC='\033[0m' # No Color
 MEMORY_API_PORT=8765
 GITHUB_PROJECT_NUMBER=1
 
-echo -e "${BLUE}🚀 Memory-C* GitHub Projects Integration Startup${NC}"
+echo -e "${BLUE}🚀 MemoryBank GitHub Projects Integration Startup${NC}"
 echo -e "${BLUE}===============================================${NC}"
 
 # Function to check if port is available
 check_port() {
     local port=$1
     if lsof -Pi :$port -sTCP:LISTEN -t >/dev/null 2>&1; then
-        echo -e "${GREEN}✅ Memory-C* API running on port $port${NC}"
+        echo -e "${GREEN}✅ MemoryBank API running on port $port${NC}"
         return 0
     else
-        echo -e "${YELLOW}⚠️  Memory-C* API not running on port $port${NC}"
+        echo -e "${YELLOW}⚠️  MemoryBank API not running on port $port${NC}"
         return 1
     fi
 }
@@ -88,7 +88,7 @@ start_service() {
 
 # Function to show help
 show_help() {
-    echo -e "${BLUE}GitHub Projects Integration for Memory-C*${NC}"
+    echo -e "${BLUE}GitHub Projects Integration for MemoryBank${NC}"
     echo ""
     echo "Usage: $0 [OPTIONS]"
     echo ""
@@ -125,7 +125,7 @@ show_setup() {
     echo -e "${YELLOW}3. Create GitHub Project:${NC}"
     echo "   • Go to: https://github.com/orgs/DrJLabs/projects"
     echo "   • Click 'New project' → 'Table'"
-    echo "   • Name: 'Memory-C* Development'"
+    echo "   • Name: 'MemoryBank Development'"
     echo "   • Add fields: Status, Priority, Category"
     echo ""
     echo -e "${YELLOW}4. Configure Repository:${NC}"
@@ -142,7 +142,7 @@ check_health() {
     local health_score=0
     local total_checks=4
     
-    # Check Memory-C* API
+    # Check MemoryBank API
     if check_port $MEMORY_API_PORT; then
         ((health_score++))
     fi
@@ -215,7 +215,7 @@ print('✅ Sync completed!')
         
         # Check prerequisites
         if ! check_port $MEMORY_API_PORT; then
-            echo -e "${YELLOW}💡 Start Memory-C* API first: cd mem0/openmemory && python3 api.py${NC}"
+            echo -e "${YELLOW}💡 Start MemoryBank API first: cd mem0/openmemory && python3 api.py${NC}"
             echo ""
         fi
         

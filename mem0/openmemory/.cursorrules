@@ -4,21 +4,21 @@
 Use the direct API integration for memory operations (MCP has compatibility issues):
 
 ### Memory Commands
-Use the enhanced Python script `cursor-memory-enhanced.py` located in `/home/drj/*C-System/Memory-C*/mem0/openmemory/` for memory operations:
+Use the enhanced Python script `cursor-memory-enhanced.py` located in `/home/drj/*C-System/MemoryBank/mem0/openmemory/` for memory operations:
 
 1. **Basic Commands:**
    ```bash
-   python3 /home/drj/*C-System/Memory-C*/mem0/openmemory/cursor-memory-enhanced.py remember "information to store"
-   python3 /home/drj/*C-System/Memory-C*/mem0/openmemory/cursor-memory-enhanced.py recall "search query"
+   python3 /home/drj/*C-System/MemoryBank/mem0/openmemory/cursor-memory-enhanced.py remember "information to store"
+   python3 /home/drj/*C-System/MemoryBank/mem0/openmemory/cursor-memory-enhanced.py recall "search query"
    ```
 
 2. **Enhanced Commands:**
    ```bash
-   python3 /home/drj/*C-System/Memory-C*/mem0/openmemory/cursor-memory-enhanced.py analytics
-   python3 /home/drj/*C-System/Memory-C*/mem0/openmemory/cursor-memory-enhanced.py learn "learning content"
-   python3 /home/drj/*C-System/Memory-C*/mem0/openmemory/cursor-memory-enhanced.py preference "preference"
-   python3 /home/drj/*C-System/Memory-C*/mem0/openmemory/cursor-memory-enhanced.py project-add "project info"
-   python3 /home/drj/*C-System/Memory-C*/mem0/openmemory/cursor-memory-enhanced.py backup
+   python3 /home/drj/*C-System/MemoryBank/mem0/openmemory/cursor-memory-enhanced.py analytics
+   python3 /home/drj/*C-System/MemoryBank/mem0/openmemory/cursor-memory-enhanced.py learn "learning content"
+   python3 /home/drj/*C-System/MemoryBank/mem0/openmemory/cursor-memory-enhanced.py preference "preference"
+   python3 /home/drj/*C-System/MemoryBank/mem0/openmemory/cursor-memory-enhanced.py project-add "project info"
+   python3 /home/drj/*C-System/MemoryBank/mem0/openmemory/cursor-memory-enhanced.py backup
    ```
 
 ### Available Aliases

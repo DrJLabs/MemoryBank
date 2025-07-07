@@ -1,6 +1,6 @@
 #!/bin/bash
 # 🔐 Infisical Monitoring Dashboard Startup Script
-# Architecture: Memory-C* Infisical Integration Architecture v1.0
+# Architecture: MemoryBank Infisical Integration Architecture v1.0
 # Pattern: Production-Ready Monitoring Dashboard with Auto-healing
 
 set -euo pipefail
@@ -28,7 +28,7 @@ log() {
 
 print_banner() {
     echo -e "${BLUE}"
-    echo "🔐 Memory-C* Infisical Monitoring Dashboard"
+    echo "🔐 MemoryBank Infisical Monitoring Dashboard"
     echo "Architecture: Enterprise-Grade Secret Management Monitoring"
     echo "=" * 60
     echo -e "${NC}"

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Infisical Performance Optimization Engine
-Architecture: Memory-C* Infisical Integration Architecture v1.0
+Architecture: MemoryBank Infisical Integration Architecture v1.0
 Pattern: Performance Optimization with Caching and Connection Management
 """
 
@@ -469,7 +469,7 @@ class InfisicalPerformanceOptimizer:
 def main():
     """Main optimization function"""
     print("⚡ Infisical Performance Optimization Engine")
-    print("Architecture: Memory-C* Infisical Integration v1.0")
+    print("Architecture: MemoryBank Infisical Integration v1.0")
     print("=" * 55)
 
     optimizer = InfisicalPerformanceOptimizer()

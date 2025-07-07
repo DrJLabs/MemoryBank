@@ -4,7 +4,7 @@
     "type": "email",
     "config": {
       "recipient": "admin@localhost",
-      "subject_prefix": "[Memory-C* Alert]"
+      "subject_prefix": "[MemoryBank Alert]"
     },
     "enabled": true
   },

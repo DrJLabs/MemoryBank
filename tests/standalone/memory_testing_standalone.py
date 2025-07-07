@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Standalone Memory Testing Framework for Memory-C* AI Memory System
+Standalone Memory Testing Framework for MemoryBank AI Memory System
 Based on research best practices for testing AI memory systems
 """
 
@@ -144,7 +144,7 @@ class StandaloneMemoryTester:
                 "expected_retrieval": ["cursor", "command", "workflow"]
             },
             {
-                "content": "Memory-C* project uses enterprise OpenMemory API",
+                "content": "MemoryBank project uses enterprise OpenMemory API",
                 "category": "TECHNICAL",
                 "expected_retrieval": ["memory", "openmemory", "api"]
             }
@@ -635,7 +635,7 @@ Consider user preferences and past patterns.
             "metadata": {
                 "framework_version": "1.0.0",
                 "test_execution_time": datetime.now().isoformat(),
-                "test_framework": "Memory-C* AI Memory System Testing Framework",
+                "test_framework": "MemoryBank AI Memory System Testing Framework",
                 "based_on": "AI Memory Research 2025, Minerva Benchmark, LangChain Best Practices"
             },
             "executive_summary": {
@@ -891,7 +891,7 @@ Consider user preferences and past patterns.
 
 async def main():
     """Main test execution function"""
-    print("🧠 Memory-C* AI Memory System Testing Framework")
+    print("🧠 MemoryBank AI Memory System Testing Framework")
     print("📊 Based on AI Memory Research 2025, Minerva Benchmark & Production Experience")
     print("🔬 Testing Cursor IDE Integration & Production Readiness")
     print()
@@ -914,7 +914,7 @@ async def main():
         # Generate summary file
         summary_filename = f"memory_test_summary_{timestamp}.txt"
         with open(summary_filename, 'w') as f:
-            f.write("MEMORY-C* SYSTEM TEST SUMMARY\n")
+            f.write("MemoryBank SYSTEM TEST SUMMARY\n")
             f.write("=" * 40 + "\n\n")
             f.write(f"Overall Score: {report['executive_summary']['overall_score']:.1%}\n")
             f.write(f"System Status: {report['executive_summary']['system_status']}\n")

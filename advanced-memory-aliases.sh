@@ -7,24 +7,24 @@
 # CORE ADVANCED MEMORY COMMANDS
 # ============================================================================
 
-alias adv-memory='python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py'
-alias ai-search='python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py search'
-alias ai-context='python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py context'
-alias ai-add-adv='python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py add'
-alias ai-analytics='python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py analytics'
+alias adv-memory='python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py'
+alias ai-search='python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py search'
+alias ai-context='python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py context'
+alias ai-add-adv='python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py add'
+alias ai-analytics='python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py analytics'
 
 # What AI should use automatically (recommended for AI integration)
-alias ai-get-context='python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py context'
-alias ai-intelligent-search='python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py search'
+alias ai-get-context='python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py context'
+alias ai-intelligent-search='python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py search'
 
 # ============================================================================
 # QUERY TYPE SPECIFIC SEARCHES
 # ============================================================================
 
-alias ai-search-pref='python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py search'
-alias ai-search-tech='python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py search'
-alias ai-search-project='python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py search'
-alias ai-search-workflow='python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py search'
+alias ai-search-pref='python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py search'
+alias ai-search-tech='python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py search'
+alias ai-search-project='python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py search'
+alias ai-search-workflow='python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py search'
 
 # ============================================================================
 # AI INTEGRATION FUNCTIONS (Enhanced Context Commands)
@@ -34,43 +34,43 @@ alias ai-search-workflow='python3 $HOME/C-System/Memory-C*/scripts/advanced-memo
 ai-ctx() {
     local query="$*"
     local query_type="${query_type:-general}"
-    python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py context "$query" "$query_type"
+    python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py context "$query" "$query_type"
 }
 
 # Type-specific context functions for AI responses
 ai-ctx-pref() {
-    python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py context "$*" preference
+    python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py context "$*" preference
 }
 
 ai-ctx-tech() {
-    python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py context "$*" technical
+    python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py context "$*" technical
 }
 
 ai-ctx-project() {
-    python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py context "$*" project
+    python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py context "$*" project
 }
 
 ai-ctx-workflow() {
-    python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py context "$*" workflow
+    python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py context "$*" workflow
 }
 
 ai-ctx-learning() {
-    python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py context "$*" learning
+    python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py context "$*" learning
 }
 
 # ============================================================================
 # ENHANCED MEMORY MANAGEMENT
 # ============================================================================
 
-alias ai-archive-old='python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py archive-old'
-alias ai-demo='python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py demo'
+alias ai-archive-old='python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py archive-old'
+alias ai-demo='python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py demo'
 
 # Alternative integration script (lighter weight) - FULL COVERAGE
-alias ai-integration='python3 $HOME/C-System/Memory-C*/scripts/ai-memory-integration.py'
-alias ai-integration-context='python3 $HOME/C-System/Memory-C*/scripts/ai-memory-integration.py ai-context'
-alias ai-auto-search='python3 $HOME/C-System/Memory-C*/scripts/ai-memory-integration.py auto-search'
-alias ai-categorize='python3 $HOME/C-System/Memory-C*/scripts/ai-memory-integration.py categorize'
-alias ai-integration-demo='python3 $HOME/C-System/Memory-C*/scripts/ai-memory-integration.py demo'
+alias ai-integration='python3 $HOME/C-System/MemoryBank/scripts/ai-memory-integration.py'
+alias ai-integration-context='python3 $HOME/C-System/MemoryBank/scripts/ai-memory-integration.py ai-context'
+alias ai-auto-search='python3 $HOME/C-System/MemoryBank/scripts/ai-memory-integration.py auto-search'
+alias ai-categorize='python3 $HOME/C-System/MemoryBank/scripts/ai-memory-integration.py categorize'
+alias ai-integration-demo='python3 $HOME/C-System/MemoryBank/scripts/ai-memory-integration.py demo'
 
 # ============================================================================
 # COMPATIBILITY ALIASES (Enhanced versions of simple commands)
@@ -104,9 +104,9 @@ ai-add-smart() {
     fi
     
     if [[ -n "$category" ]]; then
-        python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py add "$text" "$category"
+        python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py add "$text" "$category"
     else
-        python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py add "$text"
+        python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py add "$text"
     fi
 }
 
@@ -114,14 +114,14 @@ ai-add-smart() {
 ai-search-contextual() {
     local query="$*"
     local project_context=$(basename "$(pwd)")
-    python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py search "$project_context $query" project
+    python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py search "$project_context $query" project
 }
 
 # Quick analytics dashboard
 ai-memory-status() {
     echo "🧠 Advanced Memory System Status"
     echo "================================="
-    python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py analytics
+    python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py analytics
 }
 
 # ============================================================================
@@ -131,10 +131,10 @@ ai-memory-status() {
 # Test memory system functionality
 ai-memory-test() {
     echo "🧪 Testing Advanced Memory System..."
-    python3 $HOME/C-System/Memory-C*/scripts/advanced-memory-ai.py demo
+    python3 $HOME/C-System/MemoryBank/scripts/advanced-memory-ai.py demo
     echo ""
     echo "🔧 Testing AI Integration..."
-    python3 $HOME/C-System/Memory-C*/scripts/ai-memory-integration.py demo
+    python3 $HOME/C-System/MemoryBank/scripts/ai-memory-integration.py demo
 }
 
 # Show available commands
@@ -180,5 +180,5 @@ echo "🎯 AI Context: ai-ctx, ai-ctx-pref, ai-ctx-tech, ai-ctx-project, ai-ctx-
 echo "📊 Features: Multi-Strategy Search, Relevance Scoring, Auto-Categorization"
 echo "💡 AI Integration: Use ai-get-context before responses for personalized context"
 echo "❓ Help: Type 'ai-memory-help' for full command reference"
-echo "" alias bmad=\"/home/drj/C-System/Memory-C*/bmad.sh\"
-alias bmad="python3 /home/drj/C-System/Memory-C*/bmad_interpreter.py"
+echo "" alias bmad=\"/home/drj/C-System/MemoryBank/bmad.sh\"
+alias bmad="python3 /home/drj/C-System/MemoryBank/bmad_interpreter.py"

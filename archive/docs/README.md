@@ -1,4 +1,4 @@
-# 📚 Memory-C* Living Project Intelligence System
+# 📚 MemoryBank Living Project Intelligence System
 
 **BMAD-Compliant Documentation Architecture**  
 **Version**: 1.0  
@@ -26,7 +26,7 @@
 ## 🧠 **System Overview**
 
 ### **What is the Living Project Intelligence System?**
-This documentation architecture is specifically designed for **human-AI collaboration** on the Memory-C* project. It provides:
+This documentation architecture is specifically designed for **human-AI collaboration** on the MemoryBank project. It provides:
 
 - **Real-time project status** for stakeholder communication
 - **Optimized AI agent context** for intelligent assistance
@@ -110,7 +110,7 @@ docs/
 ## 🔧 **Memory System Integration**
 
 ### **Documentation + Memory Synergy**
-This documentation system is deeply integrated with the Memory-C* memory system:
+This documentation system is deeply integrated with the MemoryBank memory system:
 
 ```python
 # Standard AI agent workflow
@@ -287,4 +287,4 @@ grep -r "TODO\|FIXME" docs/
 **AI Optimization**: COMPLETE  
 **Real-time Updates**: ACTIVE
 
-*This Living Project Intelligence System evolves with your Memory-C* project, providing intelligent context for humans and AI agents alike.* 
+*This Living Project Intelligence System evolves with your MemoryBank project, providing intelligent context for humans and AI agents alike.* 

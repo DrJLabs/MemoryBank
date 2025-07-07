@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Comprehensive AI-Friendly Tests for Memory-C* System
+Comprehensive AI-Friendly Tests for MemoryBank System
 Updated with 2024/2025 best practices for pytest, mocking, and test automation
 
 Features:
@@ -35,7 +35,7 @@ from tests.ai_testing_framework import (
     ai_test, MemoryTestStrategies
 )
 
-# Memory-C* imports with graceful fallback
+# MemoryBank imports with graceful fallback
 try:
     from mem0 import Memory
     from mem0.memory.main import AsyncMemory
@@ -50,7 +50,7 @@ except ImportError:
 
 @pytest.mark.unit
 class TestMemoryCore:
-    """Core Memory-C* functionality tests with modern pytest practices"""
+    """Core MemoryBank functionality tests with modern pytest practices"""
 
     @pytest.mark.ai_framework
     @pytest.mark.smart_mock

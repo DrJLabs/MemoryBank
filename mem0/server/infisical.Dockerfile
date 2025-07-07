@@ -1,5 +1,5 @@
 # Enhanced Mem0 Dockerfile with Infisical Integration
-# Architecture: Memory-C* Infisical Integration Architecture v1.0
+# Architecture: MemoryBank Infisical Integration Architecture v1.0
 # Pattern: Container Secret Injection with Infisical CLI
 
 FROM python:3.11-slim

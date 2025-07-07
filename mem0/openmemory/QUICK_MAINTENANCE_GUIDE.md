@@ -4,25 +4,25 @@
 
 ### Health Check
 ```bash
-cd /home/drj/*C-System/Memory-C*/mem0/openmemory
+cd /home/drj/*C-System/MemoryBank/mem0/openmemory
 ./maintenance-schedule.sh health
 ```
 
 ### Weekly Cleanup  
 ```bash
-cd /home/drj/*C-System/Memory-C*/mem0/openmemory
+cd /home/drj/*C-System/MemoryBank/mem0/openmemory
 ./maintenance-schedule.sh cleanup
 ```
 
 ### Emergency Backup
 ```bash
-cd /home/drj/*C-System/Memory-C*/mem0/openmemory
+cd /home/drj/*C-System/MemoryBank/mem0/openmemory
 ./maintenance-schedule.sh backup
 ```
 
 ### Full Maintenance
 ```bash
-cd /home/drj/*C-System/Memory-C*/mem0/openmemory
+cd /home/drj/*C-System/MemoryBank/mem0/openmemory
 ./maintenance-schedule.sh full
 ```
 
@@ -30,7 +30,7 @@ cd /home/drj/*C-System/Memory-C*/mem0/openmemory
 
 ### Install Cron Jobs (One-time)
 ```bash
-cd /home/drj/*C-System/Memory-C*/mem0/openmemory
+cd /home/drj/*C-System/MemoryBank/mem0/openmemory
 ./cron-maintenance.sh install
 ```
 
@@ -43,19 +43,19 @@ cd /home/drj/*C-System/Memory-C*/mem0/openmemory
 
 ### System Analytics
 ```bash
-cd /home/drj/*C-System/Memory-C*
+cd /home/drj/*C-System/MemoryBank
 python3 mem0/openmemory/advanced-memory-ai.py analytics
 ```
 
 ### Docker Resource Usage
 ```bash
-cd /home/drj/*C-System/Memory-C*/mem0/openmemory
+cd /home/drj/*C-System/MemoryBank/mem0/openmemory
 docker system df
 ```
 
 ### Service Status
 ```bash
-cd /home/drj/*C-System/Memory-C*/mem0/openmemory
+cd /home/drj/*C-System/MemoryBank/mem0/openmemory
 docker-compose ps
 ```
 
@@ -72,13 +72,13 @@ docker-compose ps
 
 ### Services Down
 ```bash
-cd /home/drj/*C-System/Memory-C*/mem0/openmemory
+cd /home/drj/*C-System/MemoryBank/mem0/openmemory
 docker-compose down && docker-compose up -d
 ```
 
 ### Clear Everything (Nuclear Option)
 ```bash
-cd /home/drj/*C-System/Memory-C*/mem0/openmemory
+cd /home/drj/*C-System/MemoryBank/mem0/openmemory
 docker-compose down -v
 docker system prune -af
 ./maintenance-schedule.sh full
@@ -86,7 +86,7 @@ docker system prune -af
 
 ### Check Logs
 ```bash
-cd /home/drj/*C-System/Memory-C*/mem0/openmemory
+cd /home/drj/*C-System/MemoryBank/mem0/openmemory
 ls -la logs/
 tail -f logs/maintenance.log
 ``` 

@@ -11,12 +11,12 @@ Your enterprise-grade memory system is now fully functional and permanently inst
 ### ✅ **Scripts Restored & Relocated**
 - **`advanced-memory-ai.py`** (28KB) - Enterprise-grade memory with multi-strategy search
 - **`ai-memory-integration.py`** (17KB) - Focused AI integration patterns
-- **Location**: `/home/drj/C-System/Memory-C*/scripts/`
+- **Location**: `/home/drj/C-System/MemoryBank/scripts/`
 - **Status**: ✅ Fully functional and tested
 
 ### ✅ **Path Structure Updated**
-- **Old**: `$HOME/*C-System/Memory-C*/mem0/openmemory/`
-- **New**: `$HOME/C-System/Memory-C*/scripts/`
+- **Old**: `$HOME/*C-System/MemoryBank/mem0/openmemory/`
+- **New**: `$HOME/C-System/MemoryBank/scripts/`
 - **Status**: ✅ All paths updated and working
 
 ### ✅ **Permanent Installation Complete**
@@ -164,7 +164,7 @@ curl http://localhost:8765/api/v1/memories/ -H "Content-Type: application/json"
 #### **Path Issues**
 ```bash
 # Verify scripts exist
-ls -la ~/C-System/Memory-C*/scripts/
+ls -la ~/C-System/MemoryBank/scripts/
 # Should show: advanced-memory-ai.py, ai-memory-integration.py
 ```
 

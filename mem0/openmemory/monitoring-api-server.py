@@ -21,7 +21,7 @@ except ImportError:
     print("Warning: monitoring_dashboard.py not found, using fallback")
     MemorySystemMonitor = None
 
-app = FastAPI(title="Memory-C* Monitoring API", version="1.0.0")
+app = FastAPI(title="MemoryBank Monitoring API", version="1.0.0")
 
 # Enable CORS for the React frontend
 app.add_middleware(
