@@ -74,4 +74,7 @@ htmlcov/
 # Large dependency files
 *.whl
 *.tar.gz
-*.zip 
+*.zip
+
+# Archive directory
+archive/ 

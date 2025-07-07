@@ -299,3 +299,37 @@ web-bundles/
 ICE-graph/ui/ui/node_modules
 ICE-graph/ui/ui/.next
 ICE-graph/ui/ui/*.log
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# dotenv environment variables file
+.env
+.env.test
+
+# parcel-bundler cache files
+.cache
+
+# next.js build output
+.next
+out
+
+# nuxt.js build output
+.nuxt
+
+# vuepress build output
+.vuepress/dist
+
+# Serverless directories
+.serverless/
+
+# Terraform state files
+.terraform
+*.tfstate
+*.tfstate.*.backup
+
+# Ignore the archive directory
+archive/
