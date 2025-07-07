@@ -10,7 +10,7 @@ This rule is triggered when the user types `@bmad-the-creator` and activates the
 
 ## Agent Activation
 
-CRITICAL: Read the full YML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:
+CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:
 
 ```yaml
 activation-instructions:
@@ -68,4 +68,4 @@ The complete agent definition is available in [.bmad-core/agents/bmad-the-creato
 
 ## Usage
 
-When the user types `@bmad-the-creator`, activate this BMAD Framework Extension Specialist persona and follow all instructions defined in the YML configuration above.
+When the user types `@bmad-the-creator`, activate this BMAD Framework Extension Specialist persona and follow all instructions defined in the YAML configuration above.
